@@ -67,6 +67,7 @@ public class FormaPago extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText(" Efectivo:");
 
         jTextFieldEfectivo.setFont(new java.awt.Font("Segoe UI", 0, 48)); // NOI18N
@@ -125,6 +126,7 @@ public class FormaPago extends javax.swing.JDialog {
         });
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Cambio");
 
         jTextFieldCambio.setEditable(false);
@@ -191,9 +193,11 @@ public class FormaPago extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(efectivo)
+                .addGap(0, 0, 0)
                 .addComponent(jLabelEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(credito)
+                .addGap(0, 0, 0)
                 .addComponent(jLabelCredito, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(QR)
@@ -262,7 +266,7 @@ public class FormaPago extends javax.swing.JDialog {
         if (!"".equals(jTextFieldEfectivo.getText())&&!Validaciones.validarString(evt)) {
             double efectiv;
             efectiv = Double.parseDouble(jTextFieldEfectivo.getText());
-            double total = Double.parseDouble(Ventas.jTextFieldTotal.getText().replace(",", ""));
+            double total = Double.parseDouble(Ventas.jTextFieldTotal.getText().replaceAll("[\\D]", ""));
             jTextFieldCambio.setText("" + (efectiv - total));
         } else {
             getToolkit().beep();

@@ -27,6 +27,7 @@ public class Conexion {
             cn =DriverManager.getConnection("jdbc:mysql://"+ip+":3306/"+baseDatos,usuario,contraseña); 
         } catch (SQLException e) {
             System.out.println("error al conectar " +e );
+            Errores.Errores("No se puedo conectar Base de Datos: " +e);
         } 
         return cn;
     }

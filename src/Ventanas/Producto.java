@@ -54,14 +54,14 @@ public final class Producto extends javax.swing.JFrame {
                 jTextFieldProducto.setText(rs.getString(4));
                 jTextFieldCantidad.setText(rs.getString(5));
                 jTextFieldPrecio_C.setText(rs.getString(6));
-                jTextFieldPrecio_V.setText(rs.getString(7));
-                jTextFieldUtilidad.setText(rs.getString(8));
-                jTextFieldUtilidad_Por.setText(rs.getString(9));
-                jComboBoxProveedor.setSelectedItem(rs.getString(13));
-                jComboBoxMarca.setSelectedItem(rs.getString(14));
-                jComboBoxTipo_Producto.setSelectedItem(rs.getString(15));
-                jComboBoxSeccion.setSelectedItem(rs.getString(16));
-                jDateChooser_fechav.setDate(rs.getDate(12));
+                jTextFieldPrecio_V.setText(rs.getString(8));
+                jTextFieldUtilidad.setText(rs.getString(9));
+                jTextFieldUtilidad_Por.setText(rs.getString(10));
+                jComboBoxProveedor.setSelectedItem(rs.getString(14));
+                jComboBoxMarca.setSelectedItem(rs.getString(15));
+                jComboBoxTipo_Producto.setSelectedItem(rs.getString(16));
+                jComboBoxSeccion.setSelectedItem(rs.getString(17));
+                jDateChooser_fechav.setDate(rs.getDate(19));
             }
             cn.close();
         } catch (SQLException e) {

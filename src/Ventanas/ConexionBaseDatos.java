@@ -178,6 +178,7 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
             new Login().setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo conectar con la base de datos");
+            
         }
 
     }//GEN-LAST:event_jButton1ActionPerformed

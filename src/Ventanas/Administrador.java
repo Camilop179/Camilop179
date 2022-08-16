@@ -228,7 +228,7 @@ public final class Administrador extends javax.swing.JFrame {
         jLabelventas.setPreferredSize(new java.awt.Dimension(60, 60));
         getContentPane().add(jLabelventas, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 76, -1, -1));
 
-        jLabel1.setBackground(new java.awt.Color(0, 153, 153));
+        jLabel1.setBackground(new java.awt.Color(51, 204, 255));
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel1.setText("Inventario");
         jLabel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -239,7 +239,7 @@ public final class Administrador extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 186, 90, -1));
 
-        jLabel2.setBackground(new java.awt.Color(0, 153, 153));
+        jLabel2.setBackground(new java.awt.Color(51, 204, 255));
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel2.setText("Compras");
         jLabel2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -255,7 +255,7 @@ public final class Administrador extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 296, 80, -1));
 
-        jLabel3.setBackground(new java.awt.Color(0, 153, 153));
+        jLabel3.setBackground(new java.awt.Color(51, 204, 255));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel3.setText("Reportes");
         jLabel3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
@@ -266,7 +266,7 @@ public final class Administrador extends javax.swing.JFrame {
         });
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 396, 80, -1));
 
-        jLabel6.setBackground(new java.awt.Color(0, 153, 153));
+        jLabel6.setBackground(new java.awt.Color(51, 204, 255));
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel6.setText("Ventas");
         jLabel6.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));

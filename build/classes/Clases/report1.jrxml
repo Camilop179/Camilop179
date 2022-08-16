@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="141" pageHeight="840" columnWidth="125" leftMargin="8" rightMargin="8" topMargin="20" bottomMargin="20" uuid="d83149d6-3f30-4437-a9b6-3808e47a6f79">
 	<property name="ireport.zoom" value="3.7320590416778834"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="306"/>
+	<property name="ireport.y" value="240"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -94,71 +94,49 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="89" splitType="Stretch">
+		<band height="136" splitType="Stretch">
 			<staticText>
-				<reportElement x="1" y="0" width="124" height="20" uuid="c2fdf909-7fa2-49b3-92ad-fa0af53adcb8"/>
-				<textElement textAlignment="Center"/>
-				<text><![CDATA[CALIDROGAS]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="26" y="40" width="16" height="12" uuid="ac1fa65b-4cf5-43b6-a665-c1374700ecb2"/>
+				<reportElement x="26" y="94" width="16" height="12" uuid="ac1fa65b-4cf5-43b6-a665-c1374700ecb2"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Nit:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="9" y="52" width="33" height="12" uuid="188db554-ec98-453a-a706-72ec24b6c576"/>
-				<textElement>
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Celular:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="1" y="73" width="41" height="12" uuid="8bbbe8a4-9b95-4a26-a377-ab71f7e2edd9"/>
+				<reportElement x="2" y="106" width="41" height="12" uuid="8bbbe8a4-9b95-4a26-a377-ab71f7e2edd9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Direccion:]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="88" width="125" height="1" uuid="a347e3e5-d877-410f-92ff-939177565a04"/>
+				<reportElement x="-1" y="130" width="125" height="1" uuid="a347e3e5-d877-410f-92ff-939177565a04"/>
 				<graphicElement>
 					<pen lineWidth="1.5" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="42" y="40" width="83" height="12" uuid="41e868e4-9d28-44b7-a126-fe40f39dc38c"/>
+				<reportElement x="42" y="94" width="83" height="12" uuid="41e868e4-9d28-44b7-a126-fe40f39dc38c"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[1004805976-4]]></text>
+				<text><![CDATA[1004743005]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="42" y="52" width="83" height="22" uuid="d2e170aa-3374-441d-8913-59866201527c"/>
+				<reportElement x="43" y="106" width="83" height="22" uuid="236be278-40da-481b-b720-ea441905cac5"/>
 				<textElement markup="none">
-					<font size="8"/>
-				</textElement>
-				<textFieldExpression><![CDATA["3108403107\n3178535003"]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="42" y="73" width="83" height="12" uuid="660bcd9b-ca7d-444b-840c-c5ba5607b82f"/>
-				<textElement>
 					<font size="7"/>
 				</textElement>
-				<text><![CDATA[cll3 Cr7 Barrio Comercio]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="1" y="20" width="124" height="20" uuid="e9bd535b-3b36-448e-87f9-6c096ba54bc8"/>
-				<textElement textAlignment="Center" verticalAlignment="Top">
-					<font size="8"/>
-				</textElement>
-				<text><![CDATA[Calidad en tus Medicamentos]]></text>
-			</staticText>
+				<textFieldExpression><![CDATA["Carrera12 Salida a El Peñol, El Tambo-Nariño"]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="18" y="0" width="95" height="94" uuid="a653e3c9-7601-4f73-9a81-81cfd80c1131"/>
+				<imageExpression><![CDATA["C:\\Users\\harol\\Documents\\GitHub\\Camilop179\\src\\imagenes\\logo.jpg"]]></imageExpression>
+			</image>
 		</band>
 	</title>
 	<pageHeader>
-		<band height="72" splitType="Stretch">
+		<band height="73" splitType="Stretch">
 			<staticText>
 				<reportElement x="1" y="25" width="38" height="11" uuid="cadfc816-59ca-452b-a955-4116890256e0"/>
 				<textElement textAlignment="Right">
@@ -227,7 +205,7 @@
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[Vendedor: ]]></text>
+				<text><![CDATA[Cajero: ]]></text>
 			</staticText>
 			<line>
 				<reportElement x="1" y="69" width="125" height="1" uuid="6ba77f51-7e2e-4d29-979d-f86801d50ca0"/>
@@ -255,6 +233,13 @@
 		<band height="15" splitType="Stretch">
 			<staticText>
 				<reportElement mode="Opaque" x="1" y="0" width="25" height="15" uuid="596fddb8-3d13-46e6-99d4-2e5b5f301401"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
 				<textElement textAlignment="Center" rotation="None">
 					<font size="7" isBold="true"/>
 				</textElement>
@@ -262,6 +247,13 @@
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="26" y="0" width="52" height="15" uuid="152e3bab-1a4c-4aff-afc1-bf5150d2c9a1"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
 				<textElement textAlignment="Center" rotation="None">
 					<font size="7" isBold="true"/>
 				</textElement>
@@ -269,6 +261,13 @@
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="94" y="0" width="32" height="15" uuid="f8d3aae3-fc84-4721-b66a-382f11c4add1"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
 				<textElement textAlignment="Center" rotation="None">
 					<font size="7" isBold="true"/>
 				</textElement>
@@ -276,6 +275,13 @@
 			</staticText>
 			<staticText>
 				<reportElement mode="Opaque" x="78" y="0" width="16" height="15" uuid="37dd5d0d-20ef-4d67-a857-fc4355d36f3f"/>
+				<box>
+					<pen lineWidth="0.0"/>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.0"/>
+					<rightPen lineWidth="0.0"/>
+				</box>
 				<textElement textAlignment="Center" rotation="None">
 					<font size="7" isBold="true"/>
 				</textElement>
@@ -287,6 +293,13 @@
 		<band height="28" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="26" height="28" uuid="f81a4e65-0c89-40c3-99f9-69506628f6f8"/>
+				<box>
+					<pen lineStyle="Dotted"/>
+					<topPen lineStyle="Dotted"/>
+					<leftPen lineWidth="0.5" lineStyle="Dotted"/>
+					<bottomPen lineStyle="Dotted"/>
+					<rightPen lineWidth="0.5" lineStyle="Dotted"/>
+				</box>
 				<textElement textAlignment="Center">
 					<font size="7"/>
 				</textElement>
@@ -294,13 +307,27 @@
 			</textField>
 			<textField>
 				<reportElement x="94" y="0" width="31" height="28" uuid="09004b66-cf46-4d17-9e12-08b36aeac280"/>
+				<box>
+					<pen lineStyle="Dotted"/>
+					<topPen lineStyle="Dotted"/>
+					<leftPen lineWidth="0.5" lineStyle="Dotted"/>
+					<bottomPen lineStyle="Dotted"/>
+					<rightPen lineWidth="0.5" lineStyle="Dotted"/>
+				</box>
 				<textElement textAlignment="Center">
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{precioTotal}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{precioTotal}.intValue()]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="78" y="0" width="16" height="28" uuid="3dfffc1f-c9e6-483a-8cd2-6dad4fdfb3fe"/>
+				<box>
+					<pen lineStyle="Dotted"/>
+					<topPen lineStyle="Dotted"/>
+					<leftPen lineWidth="0.5" lineStyle="Dotted"/>
+					<bottomPen lineStyle="Dotted"/>
+					<rightPen lineWidth="0.5" lineStyle="Dotted"/>
+				</box>
 				<textElement textAlignment="Center" verticalAlignment="Top">
 					<font size="7"/>
 				</textElement>
@@ -308,6 +335,13 @@
 			</textField>
 			<textField>
 				<reportElement stretchType="RelativeToBandHeight" x="26" y="0" width="52" height="28" uuid="8110d766-ec5c-4e12-b476-e5d3f72a0f13"/>
+				<box leftPadding="2" rightPadding="2">
+					<pen lineStyle="Dotted"/>
+					<topPen lineStyle="Dotted"/>
+					<leftPen lineWidth="0.5" lineStyle="Dotted"/>
+					<bottomPen lineStyle="Dotted"/>
+					<rightPen lineWidth="0.5" lineStyle="Dotted"/>
+				</box>
 				<textElement textAlignment="Center">
 					<font size="7"/>
 				</textElement>
@@ -316,36 +350,64 @@
 		</band>
 	</detail>
 	<summary>
-		<band height="91">
+		<band height="142">
 			<staticText>
-				<reportElement x="0" y="1" width="39" height="20" uuid="e4577297-a5ce-4686-a31f-8ea118681d2f"/>
+				<reportElement x="0" y="13" width="26" height="36" uuid="e4577297-a5ce-4686-a31f-8ea118681d2f"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
 				<text><![CDATA[Total:]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="0" width="125" height="1" uuid="b7a2e088-b267-46b2-bc4f-66b4de65590e"/>
+				<reportElement x="0" y="6" width="125" height="1" uuid="b7a2e088-b267-46b2-bc4f-66b4de65590e"/>
 				<graphicElement>
 					<pen lineWidth="1.5" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="41" y="1" width="83" height="20" uuid="e3860cad-714a-4405-a85f-d6c605b931b4"/>
-				<textFieldExpression><![CDATA['$'+$F{precio_Total}]]></textFieldExpression>
+				<reportElement x="26" y="13" width="98" height="36" uuid="e3860cad-714a-4405-a85f-d6c605b931b4"/>
+				<box leftPadding="7">
+					<pen lineWidth="1.0"/>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement>
+					<font size="18"/>
+				</textElement>
+				<textFieldExpression><![CDATA['$'+$F{precio_Total}.intValue()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="21" width="39" height="20" uuid="403c6842-5ca2-450e-93d0-483e76c80f17"/>
+				<reportElement x="0" y="49" width="39" height="20" uuid="403c6842-5ca2-450e-93d0-483e76c80f17"/>
 				<text><![CDATA[Efectivo:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="41" y="21" width="83" height="20" uuid="29eaba81-6ea8-4a40-9309-e9fb5da9f3d8"/>
-				<textFieldExpression><![CDATA['$'+$F{Efectivo}]]></textFieldExpression>
+				<reportElement x="41" y="49" width="83" height="20" uuid="29eaba81-6ea8-4a40-9309-e9fb5da9f3d8"/>
+				<textFieldExpression><![CDATA['$'+$F{Efectivo}.intValue()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="41" width="39" height="20" uuid="e7e1c782-ed47-478b-a160-4811c14ed455"/>
+				<reportElement x="1" y="69" width="39" height="20" uuid="e7e1c782-ed47-478b-a160-4811c14ed455"/>
 				<text><![CDATA[Cambio:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="41" y="41" width="83" height="20" uuid="0f7d3d57-58b2-44d4-bdf5-192c1d695f6f"/>
-				<textFieldExpression><![CDATA['$'+$F{Cambio}]]></textFieldExpression>
+				<reportElement x="41" y="69" width="83" height="20" uuid="0f7d3d57-58b2-44d4-bdf5-192c1d695f6f"/>
+				<box>
+					<pen lineWidth="0.0" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textFieldExpression><![CDATA['$'+$F{Cambio}.intValue()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="-1" y="89" width="125" height="33" uuid="af63f07f-892c-4754-88b7-776cae1fc05a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Impreso Por ADMPortillo de Corport \n"+
+"Tel 3178535003-3108403107"]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

@@ -2,6 +2,7 @@ package Ventanas;
 
 import Clases.ActualizarCantidad;
 import Clases.Conexion;
+import Clases.Errores;
 import Clases.Fechas;
 import Clases.Fondo;
 import Clases.ImagenBoton;
@@ -520,12 +521,6 @@ public final class Ventas extends javax.swing.JFrame {
         System.out.println(jTableVenta.getRowCount());
         if (jTableVenta.getRowCount() != 0) {
             vender();
-            jTextFieldCedula.setText("");
-            jTextFieldNombre.setText("");
-            jTextFieldTotal.setText("0");
-            limpiar();
-            utilidaTotal.clear();
-            nroVenta();
         } else {
             JOptionPane.showMessageDialog(this, "No hay Productos Para Venta");
         }
@@ -633,36 +628,44 @@ public final class Ventas extends javax.swing.JFrame {
             if (n == 0) {
                 imprimir1();
             }
-
+            jTextFieldCedula.setText("");
+            jTextFieldNombre.setText("");
+            jTextFieldTotal.setText("0");
+            limpiar();
+            utilidaTotal.clear();
+            nroVenta();
             Administrador.ventas();
         }
     }
 
     public static void total() {
-
-        int t=0;
+        DecimalFormat dm = new DecimalFormat("###,###");
+        int t = 0;
         for (int i = 0; i < jTableVenta.getRowCount(); i++) {
-            t += Integer.parseInt(jTableVenta.getValueAt(i, 4).toString().replace(",", ""));
+            t += Integer.parseInt(jTableVenta.getValueAt(i, 4).toString().replaceAll("[\\D]", ""));
         }
-        jTextFieldTotal.setText(""+t);
+        jTextFieldTotal.setText(dm.format(t));
     }
 
     public static void producto() {
         DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        DecimalFormat dm = new DecimalFormat("###,###");
         try {
             String codigo = jTextFieldCodigo.getText().trim();
             Connection cnn = Conexion.Conexion();
-            PreparedStatement pre = cnn.prepareStatement("select codigo,producto,precio_venta from producto where codigo = '" + codigo + "' or codigo_barras = '" + codigo + "'");
+            PreparedStatement pre = cnn.prepareStatement("select codigo,producto,precio_venta from producto where codigo = ? or codigo_barras = ?");
+            pre.setString(1, codigo);
+            pre.setString(2, codigo);
             ResultSet rs = pre.executeQuery();
             if (rs.next()) {
                 int i = tabla(rs.getString(1));
                 if (i >= 0) {
                     int cant = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
-                    int precio = Integer.parseInt(jTableVenta.getValueAt(i, 2).toString().replace("\\D+", ""));
+                    int precio = Integer.parseInt(jTableVenta.getValueAt(i, 2).toString().replaceAll("[\\D]", ""));
                     cant++;
                     int totalV = precio * cant;
                     jTableVenta.setValueAt(cant, i, 3);
-                    jTableVenta.setValueAt(totalV, i, 4);
+                    jTableVenta.setValueAt(dm.format(totalV), i, 4);
                     utilidaTotal.set(i, Utilidad.utilidad(codigo) * cant);
                     System.out.println(utilidaTotal);
                     total();
@@ -670,9 +673,9 @@ public final class Ventas extends javax.swing.JFrame {
                     String[] datos = new String[5];
                     datos[0] = rs.getString(1);
                     datos[1] = rs.getString(2);
-                    datos[2] = String.valueOf(rs.getInt(3));
+                    datos[2] = dm.format(rs.getInt(3));
                     datos[3] = "1";
-                    datos[4] = String.valueOf(rs.getInt(3));
+                    datos[4] = dm.format(rs.getInt(3));
                     tabla.addRow(datos);
                     Object obg = Utilidad.utilidad(codigo);
                     utilidaTotal.add(obg);
@@ -687,12 +690,13 @@ public final class Ventas extends javax.swing.JFrame {
 
         } catch (SQLException e) {
             System.err.println(e);
+            Errores.Errores("Error al Agregar Producto: " + e);
         }
     }
 
     public void buscarcl() {
         if (!jTextFieldCedula.getText().equals("")) {
-            try (Connection cn = Conexion.Conexion()){
+            try ( Connection cn = Conexion.Conexion()) {
 
                 String cedula = jTextFieldCedula.getText();
                 PreparedStatement pr = cn.prepareStatement("select nombres from clientes where cedula = ?");
@@ -718,6 +722,7 @@ public final class Ventas extends javax.swing.JFrame {
                 }
             } catch (SQLException e) {
                 System.out.println(e);
+                Errores.Errores("Error al Buscar CLiente: " + e);
             }
         }
     }
@@ -744,10 +749,10 @@ public final class Ventas extends javax.swing.JFrame {
                 pr.setInt(2, Integer.parseInt(jLabelNoVenta.getText()));
                 pr.setString(3, jTableVenta.getValueAt(i, 0).toString());
                 pr.setString(4, jTableVenta.getValueAt(i, 1).toString());
-                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString()));
+                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString().replaceAll("[\\D]", "")));
                 pr.setInt(6, Integer.parseInt(jTableVenta.getValueAt(i, 3).toString()));
                 pr.setDouble(7, (double) utilidaTotal.get(i));
-                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString()));
+                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString().replaceAll("[\\D]", "")));
                 pr.executeUpdate();
                 String codigo = jTableVenta.getValueAt(i, 0).toString();
                 int cantidad = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
@@ -756,6 +761,8 @@ public final class Ventas extends javax.swing.JFrame {
 
         } catch (SQLException e) {
             System.err.println(e);
+            JOptionPane.showMessageDialog(null, "Error al subir detalles venta: "+e);
+            Errores.Errores("Error al Subir Detalles de venta: " + e);
         }
     }
 
@@ -780,7 +787,7 @@ public final class Ventas extends javax.swing.JFrame {
             pr.setInt(5, Login.idUsuario);
             pr.setDouble(6, utilidad);
             pr.setDate(7, fecho_i_bd);
-            pr.setDouble(8, Double.parseDouble(jTextFieldTotal.getText()));
+            pr.setDouble(8, Double.parseDouble(jTextFieldTotal.getText().replaceAll("[\\D]", "")));
             pr.setDouble(9, efectivo);
             pr.setDouble(10, cambio);
             pr.setString(11, FormaPago);
@@ -789,6 +796,8 @@ public final class Ventas extends javax.swing.JFrame {
 
         } catch (SQLException e) {
             System.err.println(e);
+            JOptionPane.showMessageDialog(null, "Error al subir Venta: "+e);
+            Errores.Errores("Error al subir venta: " + e);
         }
     }
 
@@ -803,14 +812,15 @@ public final class Ventas extends javax.swing.JFrame {
     }
 
     public void cambiarCant() {
+        DecimalFormat dm = new DecimalFormat("###,###");
         int row = jTableVenta.getSelectedRow();
         String codigo = jTableVenta.getValueAt(row, 0).toString();
         int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
-        int precio = Integer.parseInt(jTableVenta.getValueAt(row, 2).toString());
+        int precio = Integer.parseInt(jTableVenta.getValueAt(row, 2).toString().replaceAll("[\\D]", ""));
         int total1 = cant * precio;
         double util = Utilidad.costo(codigo) - precio;
         utilidaTotal.set(row, util);
-        jTableVenta.setValueAt(total1, row, 4);
+        jTableVenta.setValueAt(dm.format(total1), row, 4);
     }
 
     public static int tabla(String codigo) {

@@ -81,23 +81,7 @@ public final class Catalogo extends javax.swing.JFrame {
         
 
     }
-    public static void total_bd(){
-        for(int i=0;i<Table.getRowCount();i++){
-            double cost = Double.parseDouble(Table.getValueAt(i, 4).toString());
-            int cant = Integer.parseInt(Table.getValueAt(i, 7).toString());
-            
-            double total = cost*cant;
-            
-            try (Connection cn = Conexion.Conexion()){
-                PreparedStatement ps = cn.prepareStatement("update producto set total_cost=? where idProducto=?");
-                ps.setDouble(1, total);
-                ps.setInt(2, Integer.parseInt(Table.getValueAt(i, 0).toString()));
-                ps.executeUpdate();
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-        }
-    }
+   
     public static DefaultTableModel tabla() {
         DefaultTableModel tabla = new DefaultTableModel() {
             @Override
@@ -194,7 +178,7 @@ public final class Catalogo extends javax.swing.JFrame {
         jScrollPane1.setOpaque(false);
 
         Table.setAutoCreateRowSorter(true);
-        Table.setBackground(new java.awt.Color(0, 204, 204));
+        Table.setBackground(new java.awt.Color(51, 153, 255));
         Table.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 204, 204)));
         Table.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         Table.setForeground(new java.awt.Color(0, 51, 51));
@@ -349,7 +333,7 @@ public final class Catalogo extends javax.swing.JFrame {
 
     private void jTextFieldBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldBusquedaKeyReleased
         
-        total_bd();
+
         boolean codigo = jCheckBoxCodigo.isSelected();
         boolean codigoBarra = jCheckBoxCodigo_Barra.isSelected();
         boolean nombre = jCheckBoxNombre.isSelected();
@@ -370,7 +354,17 @@ public final class Catalogo extends javax.swing.JFrame {
     private void TableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableMouseClicked
         String cod;
         int i = Table.getSelectedRow();
-        if (Administrador.m) {
+        if(Ventas.m) {
+            cod = Table.getValueAt(i, 1).toString();
+            Ventas.jTextFieldCodigo.setText(cod);
+            this.dispose();
+            Ventas.producto();
+        }else if(Compras.n){
+            cod = Table.getValueAt(i, 1).toString();
+            Compras.jTextFieldCodigo.setText(cod);
+            this.dispose();
+            Compras.producto();
+        }else if (Administrador.m) {
             if (evt.getClickCount() == 2) {
                 if (Ventas.m == true) {
                     cod = Table.getValueAt(i, 1).toString();
@@ -385,12 +379,7 @@ public final class Catalogo extends javax.swing.JFrame {
                     Producto.idp = id;
                 }
             }
-        } else if(Ventas.m) {
-            cod = Table.getValueAt(i, 1).toString();
-            Ventas.jTextFieldCodigo.setText(cod);
-            this.dispose();
-            Ventas.producto();
-        }
+        } 
 
 
     }//GEN-LAST:event_TableMouseClicked
@@ -432,17 +421,18 @@ public final class Catalogo extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckBoxCodigo_BarraActionPerformed
     public void buscar(String columna) {
         DefaultTableModel tabla = tabla();
-        String[] datos = new String[16];
+        String[] datos = new String[17];
         try {
             Connection cnn = Conexion.Conexion();
 
             PreparedStatement pre = cnn.prepareStatement("select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_compra"
-                    + ",p.precio_venta,p.cantidad,p.utilidad,p.porcentaje_utilidad,p.tipo,p.seccion"
-                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on u.idusuarios = p.idUsuario where p." + columna + " like '%" + jTextFieldBusqueda.getText().trim() + "%'");
+                    + ",p.total_cost,p.precio_venta,p.cantidad,p.utilidad,p.porcentaje_utilidad,p.tipo,p.seccion"
+                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on u.idusuarios = p.idUsuario where p."+columna+" like ?");
+            pre.setString(1, '%'+jTextFieldBusqueda.getText().trim()+'%');
             ResultSet rs = pre.executeQuery();
 
             while (rs.next()) {
-                for (int i = 0; i < 16; i++) {
+                for (int i = 0; i < 17; i++) {
                     datos[i] = rs.getString(i + 1);
                 }
                 tabla.addRow(datos);
