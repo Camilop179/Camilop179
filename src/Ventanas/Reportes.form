@@ -1201,6 +1201,9 @@
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="jPanel7">
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new Fondo(&quot;FondoMenu.jpg&quot;)"/>
+          </AuxValues>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
               <JTabbedPaneConstraints tabName="Cartera">

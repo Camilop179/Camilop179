@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="141" pageHeight="840" columnWidth="125" leftMargin="8" rightMargin="8" topMargin="20" bottomMargin="20" uuid="d83149d6-3f30-4437-a9b6-3808e47a6f79">
 	<property name="ireport.zoom" value="3.7320590416778834"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="240"/>
+	<property name="ireport.y" value="48"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -94,7 +94,7 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="136" splitType="Stretch">
+		<band height="152" splitType="Stretch">
 			<staticText>
 				<reportElement x="26" y="94" width="16" height="12" uuid="ac1fa65b-4cf5-43b6-a665-c1374700ecb2"/>
 				<textElement>
@@ -103,14 +103,21 @@
 				<text><![CDATA[Nit:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="2" y="106" width="41" height="12" uuid="8bbbe8a4-9b95-4a26-a377-ab71f7e2edd9"/>
+				<reportElement x="9" y="106" width="33" height="12" uuid="188db554-ec98-453a-a706-72ec24b6c576"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Celular:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="127" width="41" height="12" uuid="8bbbe8a4-9b95-4a26-a377-ab71f7e2edd9"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Direccion:]]></text>
 			</staticText>
 			<line>
-				<reportElement x="-1" y="130" width="125" height="1" uuid="a347e3e5-d877-410f-92ff-939177565a04"/>
+				<reportElement x="0" y="142" width="125" height="1" uuid="a347e3e5-d877-410f-92ff-939177565a04"/>
 				<graphicElement>
 					<pen lineWidth="1.5" lineStyle="Dashed"/>
 				</graphicElement>
@@ -120,18 +127,32 @@
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[1004743005]]></text>
+				<text><![CDATA[1004805976-4]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="43" y="106" width="83" height="22" uuid="236be278-40da-481b-b720-ea441905cac5"/>
+				<reportElement x="42" y="106" width="83" height="22" uuid="d2e170aa-3374-441d-8913-59866201527c"/>
 				<textElement markup="none">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["3108403107\n3178535003"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="42" y="127" width="83" height="12" uuid="660bcd9b-ca7d-444b-840c-c5ba5607b82f"/>
+				<textElement>
 					<font size="7"/>
 				</textElement>
-				<textFieldExpression><![CDATA["Carrera12 Salida a El Peñol, El Tambo-Nariño"]]></textFieldExpression>
-			</textField>
+				<text><![CDATA[cll3 Cr7 Barrio Comercio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="74" width="124" height="20" uuid="e9bd535b-3b36-448e-87f9-6c096ba54bc8"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[¡Tu motor en las mejores manos!]]></text>
+			</staticText>
 			<image>
-				<reportElement x="18" y="0" width="95" height="94" uuid="a653e3c9-7601-4f73-9a81-81cfd80c1131"/>
-				<imageExpression><![CDATA["C:\\Users\\harol\\Documents\\GitHub\\Camilop179\\src\\imagenes\\logo.jpg"]]></imageExpression>
+				<reportElement x="29" y="6" width="79" height="70" uuid="ae44d62c-1ccd-4d56-9a50-138dd4c28cef"/>
+				<imageExpression><![CDATA["D:\\CORPORT\\FULLMOTORS\\LOGO.jpg"]]></imageExpression>
 			</image>
 		</band>
 	</title>

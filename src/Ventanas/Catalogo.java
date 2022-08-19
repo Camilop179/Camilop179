@@ -213,6 +213,7 @@ public final class Catalogo extends javax.swing.JFrame {
         jScrollPane1.setViewportView(Table);
 
         jCheckBoxNombre.setBackground(null);
+        jCheckBoxNombre.setForeground(new java.awt.Color(255, 255, 255));
         jCheckBoxNombre.setText("Nombre Producto");
         jCheckBoxNombre.setBorder(null);
         jCheckBoxNombre.addActionListener(new java.awt.event.ActionListener() {
@@ -222,6 +223,7 @@ public final class Catalogo extends javax.swing.JFrame {
         });
 
         jCheckBoxCodigo_Barra.setBackground(null);
+        jCheckBoxCodigo_Barra.setForeground(new java.awt.Color(255, 255, 255));
         jCheckBoxCodigo_Barra.setText("Codigo De Barras");
         jCheckBoxCodigo_Barra.setBorder(null);
         jCheckBoxCodigo_Barra.addActionListener(new java.awt.event.ActionListener() {
@@ -231,6 +233,7 @@ public final class Catalogo extends javax.swing.JFrame {
         });
 
         jCheckBoxCodigo.setBackground(null);
+        jCheckBoxCodigo.setForeground(new java.awt.Color(255, 255, 255));
         jCheckBoxCodigo.setText("Codigo");
         jCheckBoxCodigo.setBorder(null);
         jCheckBoxCodigo.addActionListener(new java.awt.event.ActionListener() {
@@ -261,6 +264,7 @@ public final class Catalogo extends javax.swing.JFrame {
             }
         });
 
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Total:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

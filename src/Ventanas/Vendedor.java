@@ -34,7 +34,7 @@ public class Vendedor extends javax.swing.JFrame {
      * Creates new form Vendedor
      */
     public Vendedor() {
-        Fondo fondo = new Fondo("Fondo_Dialogos.jpg");
+        Fondo fondo = new Fondo("Dialogos.jpg");
         this.setContentPane(fondo);
         this.setUndecorated(true);
         initComponents();

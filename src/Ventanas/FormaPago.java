@@ -25,7 +25,7 @@ public class FormaPago extends javax.swing.JDialog {
     public FormaPago(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         m = true;
-        Fondo fondo = new Fondo("Fondo_Dialogos.jpg");
+        Fondo fondo = new Fondo("Dialogos.jpg");
         this.setContentPane(fondo);
         this.setUndecorated(true);
         initComponents();

@@ -25,7 +25,7 @@ public class AgregarProveedor extends javax.swing.JDialog {
      */
     public AgregarProveedor(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        Fondo fondo = new Fondo("Fondo_Dialogos.jpg");
+        Fondo fondo = new Fondo("Dialogos.jpg");
         this.setContentPane(fondo);
         this.setUndecorated(true);
         this.setContentPane(fondo);

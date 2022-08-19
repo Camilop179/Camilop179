@@ -360,7 +360,7 @@ public final class Reportes extends javax.swing.JFrame {
         jButton4 = new javax.swing.JButton();
         jLabel47 = new javax.swing.JLabel();
         jTextTotalNomina = new javax.swing.JFormattedTextField();
-        jPanel7 = new javax.swing.JPanel();
+        jPanel7 = new Fondo("FondoMenu.jpg");
         jPanel1 = new Fondo("FondoMenu.jpg");
         jButton3 = new javax.swing.JButton();
         jTextField1 = new javax.swing.JTextField();

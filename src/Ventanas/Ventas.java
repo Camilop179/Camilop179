@@ -804,11 +804,9 @@ public final class Ventas extends javax.swing.JFrame {
     public void eliminarProducto() {
         DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
         int row = jTableVenta.getSelectedRow();
-        double totald = Double.parseDouble(jTableVenta.getValueAt(row, 4).toString());
-        total -= totald;
-        jTextFieldTotal.setText("" + total);
         utilidaTotal.remove(row);
         tabla.removeRow(jTableVenta.getSelectedRow());
+        total();
     }
 
     public void cambiarCant() {

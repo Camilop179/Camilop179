@@ -178,6 +178,9 @@
         <Property name="background" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="null" type="code"/>
         </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Nombre Producto"/>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="null"/>
@@ -192,6 +195,9 @@
         <Property name="background" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="null" type="code"/>
         </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Codigo De Barras"/>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
           <Border info="null"/>
@@ -205,6 +211,9 @@
       <Properties>
         <Property name="background" type="java.awt.Color" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
           <Connection code="null" type="code"/>
+        </Property>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="ff" type="rgb"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Codigo"/>
         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
@@ -270,6 +279,9 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
+        <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="ff" green="ff" red="ff" type="rgb"/>
+        </Property>
         <Property name="text" type="java.lang.String" value="Total:"/>
       </Properties>
     </Component>
