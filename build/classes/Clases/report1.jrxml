@@ -152,7 +152,7 @@
 			</staticText>
 			<image>
 				<reportElement x="29" y="6" width="79" height="70" uuid="ae44d62c-1ccd-4d56-9a50-138dd4c28cef"/>
-				<imageExpression><![CDATA["D:\\CORPORT\\FULLMOTORS\\LOGO.jpg"]]></imageExpression>
+				<imageExpression><![CDATA["logo.jpg"]]></imageExpression>
 			</image>
 		</band>
 	</title>

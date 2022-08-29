@@ -108,27 +108,33 @@ public class Proveedor extends javax.swing.JFrame {
         });
 
         jLabel1.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Nit:");
 
         jTextFieldCelular.setBackground(new java.awt.Color(0, 153, 153));
 
         jLabel2.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Nombre:");
 
         jTextFieldNombre.setBackground(new java.awt.Color(0, 153, 153));
 
         jLabel3.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Celular:");
 
         jTextFieldNit.setBackground(new java.awt.Color(0, 153, 153));
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Direccion:");
 
         jLabel5.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Correo:");
 
         jLabel6.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Asesor:");
 
         jTextFieldDireccion.setBackground(new java.awt.Color(0, 153, 153));
