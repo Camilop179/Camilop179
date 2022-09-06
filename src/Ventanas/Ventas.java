@@ -154,7 +154,7 @@ public final class Ventas extends javax.swing.JFrame {
     public final void tamañoColumna() {
         DefaultTableModel tabla = new DefaultTableModel() {
             boolean[] m = new boolean[]{
-                false, false, true, true, false
+                false, true, true, true, false
             };
 
             @Override
@@ -666,7 +666,7 @@ public final class Ventas extends javax.swing.JFrame {
                     int totalV = precio * cant;
                     jTableVenta.setValueAt(cant, i, 3);
                     jTableVenta.setValueAt(dm.format(totalV), i, 4);
-                    utilidaTotal.set(i, Utilidad.utilidad(codigo) * cant);
+                    utilidaTotal.set(i, (precio-Utilidad.costo(codigo))* cant);
                     System.out.println(utilidaTotal);
                     total();
                 } else {
@@ -677,7 +677,7 @@ public final class Ventas extends javax.swing.JFrame {
                     datos[3] = "1";
                     datos[4] = dm.format(rs.getInt(3));
                     tabla.addRow(datos);
-                    Object obg = Utilidad.utilidad(codigo);
+                    Object obg = Utilidad.costo(codigo);
                     utilidaTotal.add(obg);
                     System.out.println(utilidaTotal);
                     total();
@@ -816,7 +816,7 @@ public final class Ventas extends javax.swing.JFrame {
         int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
         int precio = Integer.parseInt(jTableVenta.getValueAt(row, 2).toString().replaceAll("[\\D]", ""));
         int total1 = cant * precio;
-        double util = Utilidad.costo(codigo) - precio;
+        double util = (precio - Utilidad.costo(codigo))*cant;
         utilidaTotal.set(row, util);
         jTableVenta.setValueAt(dm.format(total1), row, 4);
     }

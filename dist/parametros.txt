@@ -1,3 +1,0 @@
-admportillo
-localhost
-root
