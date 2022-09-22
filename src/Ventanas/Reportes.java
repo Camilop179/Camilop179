@@ -1351,7 +1351,6 @@ public final class Reportes extends javax.swing.JFrame {
     private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
         int fila = jTable2.rowAtPoint(evt.getPoint());
         if (fila > -1) {
-            System.out.println(jTable2.getValueAt(fila, 1).toString());
 
             nro = jTable2.getValueAt(fila, 1).toString();
 

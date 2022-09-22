@@ -20,6 +20,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,6 +59,7 @@ public final class Ventas extends javax.swing.JFrame {
         new Imagenes("Adelante.png", jLabelRegresar1);
         new Imagenes("Atras.png", jLabelRegresar);
         new Imagenes("imprimir.png", jLabelImprimir);
+        new ImagenBoton("buscando.png", jButtonBuscando, 38 , 38);
         Icon icono = new ImageIcon(imagen1.getImage().getScaledInstance(45, 45, Image.SCALE_DEFAULT));
         jLabelFecha.setText(Fechas.fechaActual());
         this.setLocationRelativeTo(null);
@@ -101,17 +103,20 @@ public final class Ventas extends javax.swing.JFrame {
 
     public void reportes() {
         if (Reportes.m == 1) {
-            buscarDetalle();
-            buscarVentas();
+            String NroVentas = jLabelNoVenta.getText();
+            buscarDetalle(NroVentas);
+            buscarVentas(NroVentas);
         }
     }
 
-    public void buscarDetalle() {
+    public static void buscarDetalle(String NroVenta) {
+        limpiar();
         DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
         String[] datos = new String[5];
         try {
             Connection cn = Conexion.Conexion();
-            PreparedStatement pr2 = cn.prepareStatement("select codigo,producto,precioUnitario,cantidad,PrecioTotal from detallesventa where nro_venta = " + jLabelNoVenta.getText());
+            PreparedStatement pr2 = cn.prepareStatement("select codigo,producto,precioUnitario,cantidad,PrecioTotal from detallesventa where nro_venta = ?");
+            pr2.setString(1, NroVenta);
             ResultSet rs2 = pr2.executeQuery();
             while (rs2.next()) {
                 for (int i = 0; i < 5; i++) {
@@ -125,12 +130,13 @@ public final class Ventas extends javax.swing.JFrame {
         }
     }
 
-    public void buscarVentas() {
+    public static void buscarVentas(String NroVenta) {
         try {
             Connection cn;
             cn = Conexion.Conexion();
             PreparedStatement pr;
-            pr = cn.prepareStatement("select * from ventas where nroVentas = " + jLabelNoVenta.getText());
+            pr = cn.prepareStatement("select * from ventas where nroVentas = ?");
+            pr.setString(1, NroVenta);
             ResultSet rs = pr.executeQuery();
 
             while (rs.next()) {
@@ -138,6 +144,9 @@ public final class Ventas extends javax.swing.JFrame {
                 jTextFieldTotal.setText(rs.getString(8));
                 jTextFieldCedula.setText(rs.getString(4));
                 jTextFieldNombre.setText(rs.getString(3));
+                jTextFieldPlaca.setText(rs.getString(13));
+                jTextFieldMoto.setText(rs.getString(12));
+                jTextFieldColor.setText(rs.getString(14));
             }
 
             jTextFieldCodigo.setEditable(false);
@@ -230,8 +239,6 @@ public final class Ventas extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTableVenta1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
         jLabelFecha = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -253,20 +260,13 @@ public final class Ventas extends javax.swing.JFrame {
         jLabelRegresar = new javax.swing.JLabel();
         jLabelRegresar1 = new javax.swing.JLabel();
         jLabelImprimir = new javax.swing.JLabel();
-
-        jTableVenta1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jTableVenta1.getTableHeader().setReorderingAllowed(false);
-        jScrollPane3.setViewportView(jTableVenta1);
+        jLabel4 = new javax.swing.JLabel();
+        jTextFieldMoto = new javax.swing.JTextField();
+        jTextFieldColor = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jTextFieldPlaca = new javax.swing.JTextField();
+        jButtonBuscando = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setSize(new java.awt.Dimension(1000, 600));
@@ -378,6 +378,7 @@ public final class Ventas extends javax.swing.JFrame {
         jTableVenta.setGridColor(new java.awt.Color(51, 153, 255));
         jTableVenta.setOpaque(false);
         jTableVenta.setRowHeight(40);
+        jTableVenta.setRowMargin(2);
         jTableVenta.setSelectionBackground(new java.awt.Color(0, 102, 255));
         jTableVenta.setSelectionForeground(new java.awt.Color(0, 0, 204));
         jTableVenta.getTableHeader().setReorderingAllowed(false);
@@ -409,6 +410,48 @@ public final class Ventas extends javax.swing.JFrame {
             }
         });
 
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel4.setText("Moto:");
+
+        jTextFieldMoto.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextFieldMoto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextFieldMotoKeyPressed(evt);
+            }
+        });
+
+        jTextFieldColor.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextFieldColor.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextFieldColorKeyPressed(evt);
+            }
+        });
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel8.setText("Color:");
+
+        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel10.setText("Placa:");
+
+        jTextFieldPlaca.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextFieldPlaca.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextFieldPlacaKeyPressed(evt);
+            }
+        });
+
+        jButtonBuscando.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonBuscandoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -432,27 +475,16 @@ public final class Ventas extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(71, 71, 71)
-                                        .addComponent(jLabelRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabelRegresar1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabelImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
                                         .addContainerGap()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabel9))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(10, 10, 10)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGap(187, 187, 187)
                                                 .addComponent(jLabel7)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jLabelNoVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                            .addComponent(jTextFieldCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                                .addComponent(jLabelBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGroup(layout.createSequentialGroup()
                                                     .addComponent(jTextFieldCedula, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                     .addGap(31, 31, 31)
@@ -461,10 +493,39 @@ public final class Ventas extends javax.swing.JFrame {
                                                     .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))
                                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                                     .addGap(83, 83, 83)
-                                                    .addComponent(jButtonVender, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                                .addGap(35, 35, 35)))
+                                                    .addComponent(jButtonVender, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(jLabel9)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jTextFieldCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 283, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(10, 10, 10)
+                                        .addComponent(jTextFieldMoto, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel8)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jTextFieldColor, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel10)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jTextFieldPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(71, 71, 71)
+                                        .addComponent(jLabelRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelRegresar1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonBuscando, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(50, 50, 50)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 441, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -475,10 +536,11 @@ public final class Ventas extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(111, 111, 111)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabelRegresar1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jLabelRegresar1, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(jLabelRegresar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabelImprimir, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonBuscando, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -504,12 +566,20 @@ public final class Ventas extends javax.swing.JFrame {
                             .addComponent(jTextFieldCedula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6)
                             .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(16, 16, 16)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(jTextFieldMoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8)
+                            .addComponent(jTextFieldColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel10)
+                            .addComponent(jTextFieldPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel9)
                             .addComponent(jTextFieldCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabelBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(199, 199, 199)
+                        .addGap(177, 177, 177)
                         .addComponent(jButtonVender, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 108, Short.MAX_VALUE))))
         );
@@ -536,7 +606,7 @@ public final class Ventas extends javax.swing.JFrame {
     private void jTextFieldNombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldNombreKeyPressed
         if (!Validaciones.validarEnter(evt)) {
 
-            jTextFieldCodigo.requestFocus();
+            jTextFieldMoto.requestFocus();
         }
     }//GEN-LAST:event_jTextFieldNombreKeyPressed
 
@@ -547,8 +617,8 @@ public final class Ventas extends javax.swing.JFrame {
             limpiar();
             nr--;
             jLabelNoVenta.setText("" + nr);
-            buscarVentas();
-            buscarDetalle();
+            buscarVentas(String.valueOf(nr));
+            buscarDetalle(String.valueOf(nr));
             jButtonVender.setVisible(false);
         }
     }//GEN-LAST:event_jLabelRegresarMouseClicked
@@ -577,8 +647,8 @@ public final class Ventas extends javax.swing.JFrame {
                     nro++;
                     jLabelNoVenta.setText("" + nro);
                     limpiar();
-                    buscarDetalle();
-                    buscarVentas();
+                    buscarDetalle(String.valueOf(nro));
+                    buscarVentas(String.valueOf(nro));
                 }
             }
         } catch (SQLException e) {
@@ -615,11 +685,41 @@ public final class Ventas extends javax.swing.JFrame {
     }//GEN-LAST:event_jTableVentaKeyPressed
 
     private void jTableVentaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableVentaKeyReleased
+        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
+        dfs.setDecimalSeparator('.');
+        dfs.setGroupingSeparator(',');
+        DecimalFormat df = new DecimalFormat("###,###",dfs);
+        
+        int fila = jTableVenta.getSelectedRow();
+        int precio = Integer.parseInt(jTableVenta.getValueAt(fila,2).toString().replace(",", ""));
+        jTableVenta.setValueAt(df.format(precio), fila, 2);
         if (!Validaciones.validarEnter(evt)) {
             cambiarCant();
             total();
         }
     }//GEN-LAST:event_jTableVentaKeyReleased
+
+    private void jTextFieldMotoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldMotoKeyPressed
+        if(!Validaciones.validarEnter(evt)){
+            jTextFieldColor.requestFocus();
+        }
+    }//GEN-LAST:event_jTextFieldMotoKeyPressed
+
+    private void jTextFieldColorKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldColorKeyPressed
+        if(!Validaciones.validarEnter(evt)){
+            jTextFieldPlaca.requestFocus();
+        }
+    }//GEN-LAST:event_jTextFieldColorKeyPressed
+
+    private void jTextFieldPlacaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPlacaKeyPressed
+        if(!Validaciones.validarEnter(evt)){
+            jTextFieldCodigo.requestFocus();
+        }
+    }//GEN-LAST:event_jTextFieldPlacaKeyPressed
+
+    private void jButtonBuscandoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscandoActionPerformed
+        new Buscar_Venta(this, true).setVisible(true);
+    }//GEN-LAST:event_jButtonBuscandoActionPerformed
 
     public void vender() {
         new FormaPago(this, true).setVisible(true);
@@ -639,17 +739,23 @@ public final class Ventas extends javax.swing.JFrame {
     }
 
     public static void total() {
-        DecimalFormat dm = new DecimalFormat("###,###");
+        DecimalFormatSymbols sm = new DecimalFormatSymbols();
+        sm.setDecimalSeparator('.');
+        sm.setGroupingSeparator(',');
+        DecimalFormat dm = new DecimalFormat("###,###",sm);
         int t = 0;
         for (int i = 0; i < jTableVenta.getRowCount(); i++) {
-            t += Integer.parseInt(jTableVenta.getValueAt(i, 4).toString().replaceAll("[\\D]", ""));
+            t += Integer.parseInt(jTableVenta.getValueAt(i, 4).toString().replace(",", ""));
         }
         jTextFieldTotal.setText(dm.format(t));
     }
 
     public static void producto() {
         DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
-        DecimalFormat dm = new DecimalFormat("###,###");
+        DecimalFormatSymbols sm = new DecimalFormatSymbols();
+        sm.setDecimalSeparator('.');
+        sm.setGroupingSeparator(',');
+        DecimalFormat dm = new DecimalFormat("###,###",sm);
         try {
             String codigo = jTextFieldCodigo.getText().trim();
             Connection cnn = Conexion.Conexion();
@@ -735,6 +841,9 @@ public final class Ventas extends javax.swing.JFrame {
             jTextFieldCedula.setText("");
             jTextFieldNombre.setText("");
             jTextFieldTotal.setText("0");
+            jTextFieldMoto.setText("");
+            jTextFieldPlaca.setText("");
+            jTextFieldColor.setText("");
 
         }
     }
@@ -749,10 +858,10 @@ public final class Ventas extends javax.swing.JFrame {
                 pr.setInt(2, Integer.parseInt(jLabelNoVenta.getText()));
                 pr.setString(3, jTableVenta.getValueAt(i, 0).toString());
                 pr.setString(4, jTableVenta.getValueAt(i, 1).toString());
-                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString().replaceAll("[\\D]", "")));
+                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString().replace(",", "")));
                 pr.setInt(6, Integer.parseInt(jTableVenta.getValueAt(i, 3).toString()));
                 pr.setDouble(7, (double) utilidaTotal.get(i));
-                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString().replaceAll("[\\D]", "")));
+                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString().replace(",", "")));
                 pr.executeUpdate();
                 String codigo = jTableVenta.getValueAt(i, 0).toString();
                 int cantidad = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
@@ -775,7 +884,7 @@ public final class Ventas extends javax.swing.JFrame {
             int nro = nroVenta();
             java.sql.Date fecho_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
             Connection cn = Conexion.Conexion();
-            PreparedStatement pr = cn.prepareStatement("INSERT INTO ventas (idventas,nroVentas,cliente,cedula_cliente,idUsuario,utilidad,fecha,precio_Total,Efectivo,Cambio,FormaPago) values(?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement pr = cn.prepareStatement("INSERT INTO ventas (idventas,nroVentas,cliente,cedula_cliente,idUsuario,utilidad,fecha,precio_Total,Efectivo,Cambio,FormaPago,moto,placa,color) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             pr.setInt(1, 0);
             pr.setInt(2, nro);
             pr.setString(3, jTextFieldNombre.getText());
@@ -787,10 +896,13 @@ public final class Ventas extends javax.swing.JFrame {
             pr.setInt(5, Login.idUsuario);
             pr.setDouble(6, utilidad);
             pr.setDate(7, fecho_i_bd);
-            pr.setDouble(8, Double.parseDouble(jTextFieldTotal.getText().replaceAll("[\\D]", "")));
+            pr.setDouble(8, Double.parseDouble(jTextFieldTotal.getText().replace(",", "")));
             pr.setDouble(9, efectivo);
             pr.setDouble(10, cambio);
             pr.setString(11, FormaPago);
+            pr.setString(12, jTextFieldMoto.getText().trim());
+            pr.setString(13, jTextFieldPlaca.getText().trim());
+            pr.setString(14, jTextFieldColor.getText().trim());
 
             pr.executeUpdate();
 
@@ -810,11 +922,14 @@ public final class Ventas extends javax.swing.JFrame {
     }
 
     public void cambiarCant() {
-        DecimalFormat dm = new DecimalFormat("###,###");
+        DecimalFormatSymbols sm = new DecimalFormatSymbols();
+        sm.setDecimalSeparator('.');
+        sm.setGroupingSeparator(',');
+        DecimalFormat dm = new DecimalFormat("###,###",sm);
         int row = jTableVenta.getSelectedRow();
         String codigo = jTableVenta.getValueAt(row, 0).toString();
         int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
-        int precio = Integer.parseInt(jTableVenta.getValueAt(row, 2).toString().replaceAll("[\\D]", ""));
+        int precio = Integer.parseInt(jTableVenta.getValueAt(row, 2).toString().replace(",", ""));
         int total1 = cant * precio;
         double util = (precio - Utilidad.costo(codigo))*cant;
         utilidaTotal.set(row, util);
@@ -833,28 +948,33 @@ public final class Ventas extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButtonBuscando;
     private javax.swing.JButton jButtonVender;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelBuscar;
-    private javax.swing.JLabel jLabelFecha;
+    private static javax.swing.JLabel jLabelFecha;
     private javax.swing.JLabel jLabelImprimir;
     public static javax.swing.JLabel jLabelNoVenta;
     private javax.swing.JLabel jLabelRegresar;
     private javax.swing.JLabel jLabelRegresar1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private static javax.swing.JTable jTableVenta;
-    private static javax.swing.JTable jTableVenta1;
     public static javax.swing.JTextField jTextFieldCedula;
     public static javax.swing.JTextField jTextFieldCodigo;
+    public static javax.swing.JTextField jTextFieldColor;
+    public static javax.swing.JTextField jTextFieldMoto;
     private static javax.swing.JTextField jTextFieldNombre;
+    public static javax.swing.JTextField jTextFieldPlaca;
     public static javax.swing.JTextField jTextFieldTotal;
     // End of variables declaration//GEN-END:variables
 }

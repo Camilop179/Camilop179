@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="141" pageHeight="840" columnWidth="125" leftMargin="8" rightMargin="8" topMargin="20" bottomMargin="20" uuid="d83149d6-3f30-4437-a9b6-3808e47a6f79">
-	<property name="ireport.zoom" value="3.7320590416778834"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="141" pageHeight="5669" columnWidth="125" leftMargin="8" rightMargin="8" topMargin="20" bottomMargin="20" uuid="d83149d6-3f30-4437-a9b6-3808e47a6f79">
+	<property name="ireport.zoom" value="4.132231404958677"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="48"/>
+	<property name="ireport.y" value="1757"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -61,6 +61,15 @@
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="FormaPago" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="moto" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="placa" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="color" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="iddetallesVenta" class="java.lang.Integer">
@@ -157,7 +166,7 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band height="73" splitType="Stretch">
+		<band height="111" splitType="Stretch">
 			<staticText>
 				<reportElement x="1" y="25" width="38" height="11" uuid="cadfc816-59ca-452b-a955-4116890256e0"/>
 				<textElement textAlignment="Right">
@@ -222,20 +231,20 @@
 				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="55" width="38" height="11" uuid="3bdb8286-4056-4007-8af4-119208bad002"/>
+				<reportElement x="1" y="89" width="38" height="11" uuid="3bdb8286-4056-4007-8af4-119208bad002"/>
 				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<text><![CDATA[Cajero: ]]></text>
 			</staticText>
 			<line>
-				<reportElement x="1" y="69" width="125" height="1" uuid="6ba77f51-7e2e-4d29-979d-f86801d50ca0"/>
+				<reportElement x="0" y="110" width="125" height="1" uuid="6ba77f51-7e2e-4d29-979d-f86801d50ca0"/>
 				<graphicElement>
 					<pen lineWidth="1.5" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="41" y="55" width="84" height="11" uuid="5b703a17-cbed-408c-8493-5905af53cc62"/>
+				<reportElement x="42" y="89" width="84" height="11" uuid="5b703a17-cbed-408c-8493-5905af53cc62"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
@@ -247,6 +256,48 @@
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{celular}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="56" width="38" height="11" uuid="9a98e8a6-9bba-4ff7-a84b-3d4ceba9668e"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Moto: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="67" width="38" height="11" uuid="5b8c72f0-cb26-4f77-adae-3603afe72147"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Placa: ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="77" width="38" height="11" uuid="f4cc142b-eeb5-46dc-b431-8593f091a241"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[Color: ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="42" y="56" width="84" height="11" uuid="c894f3aa-4226-45a2-9202-bad9114f1652"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{moto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="42" y="67" width="84" height="11" uuid="4d74c46a-1ece-4993-9785-a9f4f28b6ab7"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{placa}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="42" y="78" width="84" height="11" uuid="1136d0cc-9825-4553-9bc1-ea10468857e4"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{color}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -371,7 +422,7 @@
 		</band>
 	</detail>
 	<summary>
-		<band height="142">
+		<band height="259">
 			<staticText>
 				<reportElement x="0" y="13" width="26" height="36" uuid="e4577297-a5ce-4686-a31f-8ea118681d2f"/>
 				<textElement>
@@ -423,12 +474,17 @@
 				<textFieldExpression><![CDATA['$'+$F{Cambio}.intValue()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="-1" y="89" width="125" height="33" uuid="af63f07f-892c-4754-88b7-776cae1fc05a"/>
+				<reportElement x="-1" y="220" width="125" height="33" uuid="af63f07f-892c-4754-88b7-776cae1fc05a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA["Impreso Por ADMPortillo de Corport \n"+
 "Tel 3178535003-3108403107"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="1" y="94" width="124" height="126" uuid="71bf4bc9-e511-4151-8466-10f99858be2a"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA["Estimado cliente los \n accesorios elecricos \n no tienen garantia ni cambio.\n Los cilindros rectificados \n no tienen garantia por mal despegue,\n por favor siga las instrucciones del tecnico"]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
