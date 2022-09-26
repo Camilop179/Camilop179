@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="141" pageHeight="5669" columnWidth="125" leftMargin="8" rightMargin="8" topMargin="20" bottomMargin="20" uuid="d83149d6-3f30-4437-a9b6-3808e47a6f79">
 	<property name="ireport.zoom" value="4.132231404958677"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="1757"/>
+	<property name="ireport.y" value="0"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -27,6 +28,7 @@
 	<parameter name="NroVentas" class="java.lang.Integer">
 		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
 	</parameter>
+	<parameter name="url" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[select v.*,d.*,u.usuario,c.celular from ventas v join detallesventa d on nroVentas = nro_venta join usuarios u on u.idUsuarios=v.idUsuario join clientes c on c.cedula=v.cedula_cliente where nroVentas = $P{NroVentas};]]>
 	</queryString>
@@ -161,7 +163,7 @@
 			</staticText>
 			<image>
 				<reportElement x="29" y="6" width="79" height="70" uuid="ae44d62c-1ccd-4d56-9a50-138dd4c28cef"/>
-				<imageExpression><![CDATA["logo.jpg"]]></imageExpression>
+				<imageExpression><![CDATA[$P{url}]]></imageExpression>
 			</image>
 		</band>
 	</title>

@@ -19,6 +19,7 @@ import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
@@ -215,16 +216,18 @@ public final class Ventas extends javax.swing.JFrame {
 
     public void imprimir1() {
         JasperReport jr;
-        String file = "src/Clases/report1.jasper";
+        URL file = this.getClass().getResource("/Clases/report1.jasper");
         try {
             Connection cn = Conexion.Conexion();
             Map parametro = new HashMap();
+            URL url = getClass().getResource("/imagenes/LOGO.jpg");
             parametro.put("NroVentas", Integer.parseInt(jLabelNoVenta.getText()));
-            jr = (JasperReport) JRLoader.loadObjectFromFile(file);
+            parametro.put("url", url);
+            jr = (JasperReport) JRLoader.loadObject(file);
             JasperPrint jp = JasperFillManager.fillReport(jr, parametro, cn);
             JasperViewer jv = new JasperViewer(jp, false);
             jv.setVisible(true);
-            jv.setTitle("Reporte VEntas");
+            jv.setTitle("Reporte Ventas");
         } catch (JRException e) {
             System.out.println(e);
         }
@@ -759,7 +762,7 @@ public final class Ventas extends javax.swing.JFrame {
         try {
             String codigo = jTextFieldCodigo.getText().trim();
             Connection cnn = Conexion.Conexion();
-            PreparedStatement pre = cnn.prepareStatement("select codigo,producto,precio_venta from producto where codigo = ? or codigo_barras = ?");
+            PreparedStatement pre = cnn.prepareStatement("select codigo,producto,precio_venta,precio_compra from producto where codigo = ? or codigo_barras = ?");
             pre.setString(1, codigo);
             pre.setString(2, codigo);
             ResultSet rs = pre.executeQuery();
@@ -772,7 +775,7 @@ public final class Ventas extends javax.swing.JFrame {
                     int totalV = precio * cant;
                     jTableVenta.setValueAt(cant, i, 3);
                     jTableVenta.setValueAt(dm.format(totalV), i, 4);
-                    utilidaTotal.set(i, (precio-Utilidad.costo(codigo))* cant);
+                    utilidaTotal.set(i, (precio-rs.getDouble(4))* cant);
                     System.out.println(utilidaTotal);
                     total();
                 } else {
@@ -783,7 +786,7 @@ public final class Ventas extends javax.swing.JFrame {
                     datos[3] = "1";
                     datos[4] = dm.format(rs.getInt(3));
                     tabla.addRow(datos);
-                    Object obg = Utilidad.costo(codigo);
+                    Object obg = rs.getDouble(3)-rs.getDouble(4);
                     utilidaTotal.add(obg);
                     System.out.println(utilidaTotal);
                     total();

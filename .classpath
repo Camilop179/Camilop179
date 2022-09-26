@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="dist/ADMPortilloFullMotors.jar"/>
+	<classpathentry kind="lib" path="dist/lib/AbsoluteLayout.jar"/>
+	<classpathentry kind="lib" path="dist/lib/com.mysql.jdbc.Driver.jar"/>
+	<classpathentry kind="lib" path="dist/lib/commons-beanutils-1.8.2.jar"/>
+	<classpathentry kind="lib" path="dist/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="dist/lib/commons-digester-2.1.jar"/>
+	<classpathentry kind="lib" path="dist/lib/commons-javaflow-20060411.jar"/>
+	<classpathentry kind="lib" path="dist/lib/commons-logging-1.3.jar"/>
+	<classpathentry kind="lib" path="dist/lib/dom4j-1.6.jar"/>
+	<classpathentry kind="lib" path="dist/lib/groovy-3.0.8.jar"/>
+	<classpathentry kind="lib" path="dist/lib/groovy-ant-3.0.8.jar"/>
+	<classpathentry kind="lib" path="dist/lib/itext-5.0.6.jar"/>
+	<classpathentry kind="lib" path="dist/lib/jasperreports-6.1.0.jar"/>
+	<classpathentry kind="lib" path="dist/lib/jcalendar-1.4.jar"/>
+	<classpathentry kind="lib" path="dist/lib/kernel-7.2.1.jar"/>
+	<classpathentry kind="lib" path="dist/lib/layout-7.2.1.jar"/>
+	<classpathentry kind="lib" path="dist/lib/pdfbox-app-2.0.25.jar"/>
+	<classpathentry kind="lib" path="dist/lib/poi-3.5-FINAL.jar"/>
+	<classpathentry kind="lib" path="dist/lib/poi-ooxml-3.7.jar"/>
+	<classpathentry kind="lib" path="dist/lib/poi-ooxml-schemas-3.7.jar"/>
+	<classpathentry kind="lib" path="dist/lib/poi-scratchpad-3.7.jar"/>
+	<classpathentry kind="lib" path="dist/lib/slf4j-api-1.7.9.jar"/>
+	<classpathentry kind="lib" path="dist/lib/slf4j-nop-1.7.9-javadoc.jar"/>
+	<classpathentry kind="lib" path="dist/lib/xmlbeans-2.3.0.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>
