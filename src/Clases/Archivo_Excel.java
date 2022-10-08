@@ -4,14 +4,10 @@
  */
 package Clases;
 
-import java.util.List;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
@@ -56,12 +52,8 @@ public class Archivo_Excel {
                     } else {
                         if (celda != null) {
                             switch (celda.getCellType()) {
-                                case Cell.CELL_TYPE_NUMERIC:
-                                    list[indiceColumn] = (int) Math.round(celda.getNumericCellValue());
-                                    break;
-                                case Cell.CELL_TYPE_STRING:
-                                    list[indiceColumn] = celda.getStringCellValue();
-                                    break;
+                                case Cell.CELL_TYPE_NUMERIC -> list[indiceColumn] = (int) Math.round(celda.getNumericCellValue());
+                                case Cell.CELL_TYPE_STRING -> list[indiceColumn] = celda.getStringCellValue();
                             }
                         }
                     }

@@ -1559,7 +1559,7 @@ public final class Reportes extends javax.swing.JFrame {
             n = Double.parseDouble(tabla.getValueAt(i, columna).toString().replace(",", ""));
             t += n;
         }
-        total.setText("$" + dm1.format(t));
+        total.setText(dm1.format(t));
     }
 
     public void buscarT(String columna, int n) {
