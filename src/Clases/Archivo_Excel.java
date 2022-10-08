@@ -33,6 +33,7 @@ public class Archivo_Excel {
 
     public Archivo_Excel(File excel, JTable j){
 
+               System.out.println("Clases.Archivo_Excel.<init>()");
         DefaultTableModel table = new DefaultTableModel();
         j.setModel(table);
         try {
