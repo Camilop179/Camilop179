@@ -9,7 +9,6 @@ import Clases.Validaciones;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
-import java.util.Date;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -61,7 +60,6 @@ public final class Producto extends javax.swing.JFrame {
                 jComboBoxMarca.setSelectedItem(rs.getString(15));
                 jComboBoxTipo_Producto.setSelectedItem(rs.getString(16));
                 jComboBoxSeccion.setSelectedItem(rs.getString(17));
-                jDateChooser_fechav.setDate(rs.getDate(19));
             }
             cn.close();
         } catch (SQLException e) {
@@ -106,6 +104,162 @@ public final class Producto extends javax.swing.JFrame {
             System.err.println(e);
         }
     }
+    public void actualizar(int id){
+        String codigo = jTextFieldCodigo.getText();
+        String codigo_B = jTextFieldCodigoB.getText();
+        String product = jTextFieldProducto.getText();
+        Double precio_C = Double.parseDouble(jTextFieldPrecio_C.getText());
+        Double precio_V = Double.parseDouble(jTextFieldPrecio_V.getText());
+        int cantidad = Integer.parseInt(jTextFieldCantidad.getText());
+        Double utilidad = Double.parseDouble(jTextFieldUtilidad.getText());
+        Double utilidad_Por = Double.parseDouble(jTextFieldUtilidad_Por.getText());
+        String tipo = jComboBoxTipo_Producto.getSelectedItem().toString();
+        String seccion = jComboBoxSeccion.getSelectedItem().toString();
+        String prov = jComboBoxProveedor.getSelectedItem().toString();
+        String marca = jComboBoxMarca.getSelectedItem().toString();
+
+        if (!("".equals(codigo + codigo_B + product + tipo + seccion) && precio_C + precio_V == 0)) {
+            try {
+                Connection cn = Conexion.Conexion();
+                PreparedStatement pre = cn.prepareStatement("Update producto set codigo = ?, codigo_barras=?, producto=?, precio_compra=?, precio_venta=?, "
+                        + "cantidad=?, utilidad=?, porcentaje_utilidad=?, tipo=?, seccion=?, marca=?, proveedor=?, idUsuario=?, fecha_ingreso=?,"
+                        + "fecha_vencimiento=?,total_cost=? where idProducto=?");
+             
+                pre.setString(1, codigo);
+                pre.setString(2, codigo_B);
+                pre.setString(3, product);
+                pre.setDouble(4, precio_C);
+                pre.setDouble(5, precio_V);
+                pre.setInt(6, cantidad);
+                pre.setDouble(7, utilidad);
+                pre.setDouble(8, utilidad_Por);
+                pre.setString(9, tipo);
+                pre.setString(10, seccion);
+                pre.setString(11, marca);
+                pre.setString(12, prov);
+                pre.setInt(13, Login.idUsuario);
+                pre.setDouble(16, (precio_C*cantidad));
+                pre.setInt(17, id);
+
+                pre.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Actualizacion exitoso");
+                jTextFieldCantidad.setText("");
+                jTextFieldCodigo.setText("");
+                jTextFieldCodigoB.setText("");
+                jTextFieldPrecio_C.setText("");
+                jTextFieldPrecio_V.setText("");
+                jTextFieldProducto.setText("");
+                jTextFieldUtilidad.setText("");
+                jTextFieldUtilidad_Por.setText("");
+                jTextFieldProducto.requestFocus();
+                Catalogo.inventario();
+                Catalogo.total();
+                cn.close();
+            } catch (SQLException e) {
+                System.err.println("Error al ingresar el producto " + e);
+                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
+            }
+        }
+}
+    public void agregar() {
+        String codigo = jTextFieldCodigo.getText();
+        
+        String codigo_B = jTextFieldCodigoB.getText();
+        
+        String product = jTextFieldProducto.getText();
+        
+        Double precio_C = Double.parseDouble(jTextFieldPrecio_C.getText());
+        
+        Double precio_V = Double.parseDouble(jTextFieldPrecio_V.getText());
+        
+        int cantidad = Integer.parseInt(jTextFieldCantidad.getText());
+        
+        Double utilidad = Double.parseDouble(jTextFieldUtilidad.getText());
+        
+        Double utilidad_Por = Double.parseDouble(jTextFieldUtilidad_Por.getText());
+        
+        String tipo= jComboBoxTipo_Producto.getSelectedItem().toString();
+        
+        String seccion = jComboBoxSeccion.getSelectedItem().toString();
+        
+        String prov = jComboBoxProveedor.getSelectedItem().toString();
+        String marca = jComboBoxMarca.getSelectedItem().toString();
+
+        if (!("".equals(codigo + codigo_B + product + tipo + seccion) && precio_C + precio_V == 0)) {
+            try {
+                Connection cn = Conexion.Conexion();
+                PreparedStatement pre = cn.prepareStatement("INSERT INTO producto (idProducto,codigo,codigo_barras,producto,cantidad,precio_compra,"
+                        + "precio_venta,utilidad,porcentaje_utilidad,"
+                        + "idUsuario,fecha_ingreso,fecha_vencimiento,proveedor,marca,tipo,seccion,total_cost) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                pre.setInt(1, 0);
+                pre.setString(2, codigo);
+                pre.setString(3, codigo_B);
+                pre.setString(4, product);
+                pre.setInt(5, cantidad);
+                pre.setDouble(6, precio_C);
+                pre.setDouble(7, precio_V);
+                pre.setDouble(8, utilidad);
+                pre.setDouble(9, utilidad_Por);
+
+                pre.setInt(10, Login.idUsuario);
+                pre.setString(13, prov);
+                pre.setString(14, marca);
+                pre.setString(15, tipo);
+                pre.setString(16, seccion);
+                pre.setDouble(17, precio_C*cantidad);
+
+                pre.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Registro exitoso");
+                jTextFieldCantidad.setText("");
+                jTextFieldCodigo.setText("");
+                jTextFieldCodigoB.setText("");
+                jTextFieldPrecio_C.setText("");
+                jTextFieldPrecio_V.setText("");
+                jTextFieldProducto.setText("");
+                jTextFieldUtilidad.setText("");
+                jTextFieldUtilidad_Por.setText("");
+                jTextFieldProducto.requestFocus();
+                jComboBoxMarca.setSelectedIndex(0);
+                jComboBoxProveedor.setSelectedIndex(0);
+                jComboBoxSeccion.setSelectedIndex(0);
+                jComboBoxTipo_Producto.setSelectedIndex(0);
+                Catalogo.inventario();
+                Catalogo.total();
+                cn.close();
+            } catch (SQLException e) {
+                System.err.println("Error al ingresar el producto " + e);
+                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo. \n" + e);
+            }
+        }else{
+            JOptionPane.showMessageDialog(this, "Llene Todos Los Campos");
+        }
+    }
+    public void cerra() {
+        try {
+            this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    Catalogo.m=0;
+                }
+            });
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+    }
+
+    public void utilidad() {
+        if (!(jTextFieldPrecio_C.getText().equals("") || jTextFieldPrecio_V.getText().equals(""))) {
+            double precio_v = Double.parseDouble(jTextFieldPrecio_V.getText());
+            double preico_c = Double.parseDouble(jTextFieldPrecio_C.getText());
+            double util = precio_v - preico_c;
+            double utilpo = ((precio_v / preico_c) - 1) * 100;
+            jTextFieldUtilidad.setText(String.valueOf((double) Math.round(util)));
+            jTextFieldUtilidad_Por.setText(String.valueOf((double) Math.round(utilpo * 100) / 100));
+        }
+
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -130,7 +284,6 @@ public final class Producto extends javax.swing.JFrame {
         jTextFieldUtilidad = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
         jTextFieldUtilidad_Por = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         jComboBoxTipo_Producto = new javax.swing.JComboBox<>();
@@ -145,7 +298,6 @@ public final class Producto extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jComboBoxProveedor = new javax.swing.JComboBox<>();
-        jDateChooser_fechav = new com.toedter.calendar.JDateChooser();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -218,9 +370,6 @@ public final class Producto extends javax.swing.JFrame {
                 jTextFieldUtilidad_PorKeyTyped(evt);
             }
         });
-
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Fecha de Vencimiento:");
 
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Tipo de Producto:");
@@ -301,22 +450,14 @@ public final class Producto extends javax.swing.JFrame {
             }
         });
 
-        jDateChooser_fechav.setDateFormatString("d/MM/y");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(13, 13, 13)
-                        .addComponent(jLabel8)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabelListo, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
@@ -351,11 +492,12 @@ public final class Producto extends javax.swing.JFrame {
                                         .addComponent(jTextFieldUtilidad_Por, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jLabel11))
-                                    .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(jDateChooser_fechav, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel14)))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jComboBoxTipo_Producto, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -366,17 +508,13 @@ public final class Producto extends javax.swing.JFrame {
                                     .addComponent(jComboBoxMarca, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                             .addComponent(jTextFieldProducto)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(12, 12, 12)
-                                .addComponent(jLabel9)
-                                .addGap(78, 78, 78)
-                                .addComponent(jLabel15))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(78, 78, 78)
-                                .addComponent(jLabel7)))
-                        .addGap(10, 10, 10)
-                        .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel9)
+                        .addGap(78, 78, 78)
+                        .addComponent(jLabel15))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(78, 78, 78)
+                        .addComponent(jLabel7)))
                 .addContainerGap(95, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -436,20 +574,14 @@ public final class Producto extends javax.swing.JFrame {
                                     .addComponent(jLabel14)
                                     .addComponent(jComboBoxMarca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                            .addComponent(jLabel15)
-                                            .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(28, 28, 28)
-                                        .addComponent(jLabel9)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel8)
-                                    .addComponent(jDateChooser_fechav, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                .addGap(27, 27, 27)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel15)
+                                    .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(jLabel9)))))
+                .addGap(46, 46, 46)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelListo, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
@@ -562,178 +694,12 @@ public final class Producto extends javax.swing.JFrame {
             j.setVisible(true);
         }
     }//GEN-LAST:event_jComboBoxProveedorActionPerformed
-public void actualizar(int id){
-        String codigo = jTextFieldCodigo.getText();
-        String codigo_B = jTextFieldCodigoB.getText();
-        String product = jTextFieldProducto.getText();
-        Double precio_C = Double.parseDouble(jTextFieldPrecio_C.getText());
-        Double precio_V = Double.parseDouble(jTextFieldPrecio_V.getText());
-        int cantidad = Integer.parseInt(jTextFieldCantidad.getText());
-        Double utilidad = Double.parseDouble(jTextFieldUtilidad.getText());
-        Double utilidad_Por = Double.parseDouble(jTextFieldUtilidad_Por.getText());
-        String tipo = jComboBoxTipo_Producto.getSelectedItem().toString();
-        String seccion = jComboBoxSeccion.getSelectedItem().toString();
-        Date fecha_v = jDateChooser_fechav.getDate();
-        java.sql.Date fecha_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
-        java.sql.Date fecha_v_bd = new java.sql.Date(fecha_v.getTime());
-        String prov = jComboBoxProveedor.getSelectedItem().toString();
-        String marca = jComboBoxMarca.getSelectedItem().toString();
-
-        if (!("".equals(codigo + codigo_B + product + tipo + seccion) && precio_C + precio_V == 0)) {
-            try {
-                Connection cn = Conexion.Conexion();
-                PreparedStatement pre = cn.prepareStatement("Update producto set codigo = ?, codigo_barras=?, producto=?, precio_compra=?, precio_venta=?, "
-                        + "cantidad=?, utilidad=?, porcentaje_utilidad=?, tipo=?, seccion=?, marca=?, proveedor=?, idUsuario=?, fecha_ingreso=?,"
-                        + "fecha_vencimiento=?,total_cost=? where idProducto=?");
-             
-                pre.setString(1, codigo);
-                pre.setString(2, codigo_B);
-                pre.setString(3, product);
-                pre.setDouble(4, precio_C);
-                pre.setDouble(5, precio_V);
-                pre.setInt(6, cantidad);
-                pre.setDouble(7, utilidad);
-                pre.setDouble(8, utilidad_Por);
-                pre.setString(9, tipo);
-                pre.setString(10, seccion);
-                pre.setString(11, marca);
-                pre.setString(12, prov);
-                pre.setInt(13, Login.idUsuario);
-                pre.setDate(14, fecha_i_bd);
-                pre.setDate(15, fecha_v_bd);
-                pre.setDouble(16, (precio_C*cantidad));
-                pre.setInt(17, id);
-
-                pre.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Actualizacion exitoso");
-                jTextFieldCantidad.setText("");
-                jTextFieldCodigo.setText("");
-                jTextFieldCodigoB.setText("");
-                jTextFieldPrecio_C.setText("");
-                jTextFieldPrecio_V.setText("");
-                jTextFieldProducto.setText("");
-                jTextFieldUtilidad.setText("");
-                jTextFieldUtilidad_Por.setText("");
-                jTextFieldProducto.requestFocus();
-                Catalogo.inventario();
-                Catalogo.total();
-                cn.close();
-            } catch (SQLException e) {
-                System.err.println("Error al ingresar el producto " + e);
-                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
-            }
-        }
-}
-    public void agregar() {
-        String codigo;
-        codigo = jTextFieldCodigo.getText();
-        String codigo_B;
-        codigo_B = jTextFieldCodigoB.getText();
-        String product;
-        product = jTextFieldProducto.getText();
-        Double precio_C;
-        precio_C = Double.parseDouble(jTextFieldPrecio_C.getText());
-        Double precio_V;
-        precio_V = Double.parseDouble(jTextFieldPrecio_V.getText());
-        int cantidad;
-        cantidad = Integer.parseInt(jTextFieldCantidad.getText());
-        Double utilidad;
-        utilidad = Double.parseDouble(jTextFieldUtilidad.getText());
-        Double utilidad_Por;
-        utilidad_Por = Double.parseDouble(jTextFieldUtilidad_Por.getText());
-        String tipo;
-        tipo = jComboBoxTipo_Producto.getSelectedItem().toString();
-        String seccion;
-        seccion = jComboBoxSeccion.getSelectedItem().toString();
-        Date fecha_v = jDateChooser_fechav.getDate();
-        java.sql.Date fecha_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
-        java.sql.Date fecha_v_bd = new java.sql.Date(fecha_v.getTime());
-        String prov;
-        prov = jComboBoxProveedor.getSelectedItem().toString();
-        String marca;
-        marca = jComboBoxMarca.getSelectedItem().toString();
-
-        if (!("".equals(codigo + codigo_B + product + tipo + seccion) && precio_C + precio_V == 0)) {
-            try {
-                Connection cn = Conexion.Conexion();
-                PreparedStatement pre = cn.prepareStatement("INSERT INTO producto (idProducto,codigo,codigo_barras,producto,cantidad,precio_compra,"
-                        + "precio_venta,utilidad,porcentaje_utilidad,"
-                        + "idUsuario,fecha_ingreso,fecha_vencimiento,proveedor,marca,tipo,seccion,total_cost) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-                pre.setInt(1, 0);
-                pre.setString(2, codigo);
-                pre.setString(3, codigo_B);
-                pre.setString(4, product);
-                pre.setInt(5, cantidad);
-                pre.setDouble(6, precio_C);
-                pre.setDouble(7, precio_V);
-                pre.setDouble(8, utilidad);
-                pre.setDouble(9, utilidad_Por);
-
-                pre.setInt(10, Login.idUsuario);
-                pre.setDate(11, fecha_i_bd);
-                pre.setDate(12, fecha_v_bd);
-                pre.setString(13, prov);
-                pre.setString(14, marca);
-                pre.setString(15, tipo);
-                pre.setString(16, seccion);
-                pre.setDouble(17, precio_C*cantidad);
-
-                pre.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Registro exitoso");
-                jTextFieldCantidad.setText("");
-                jTextFieldCodigo.setText("");
-                jTextFieldCodigoB.setText("");
-                jTextFieldPrecio_C.setText("");
-                jTextFieldPrecio_V.setText("");
-                jTextFieldProducto.setText("");
-                jTextFieldUtilidad.setText("");
-                jTextFieldUtilidad_Por.setText("");
-                jTextFieldProducto.requestFocus();
-                Catalogo.inventario();
-                Catalogo.total();
-                cn.close();
-            } catch (SQLException e) {
-                System.err.println("Error al ingresar el producto " + e);
-                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo. \n" + e);
-            }
-        }else{
-            JOptionPane.showMessageDialog(this, "Llene Todos Los Campos");
-        }
-    }
-    public void cerra() {
-        try {
-            this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowClosing(WindowEvent e) {
-                    Catalogo.m=0;
-                }
-            });
-        } catch (Exception e) {
-            System.err.println(e);
-        }
-    }
-
-    public void utilidad() {
-        if (!(jTextFieldPrecio_C.getText().equals("") || jTextFieldPrecio_V.getText().equals(""))) {
-            double precio_v = Double.parseDouble(jTextFieldPrecio_V.getText());
-            double preico_c = Double.parseDouble(jTextFieldPrecio_C.getText());
-            double util = precio_v - preico_c;
-            double utilpo = ((precio_v / preico_c) - 1) * 100;
-            jTextFieldUtilidad.setText(String.valueOf((double) Math.round(util)));
-            jTextFieldUtilidad_Por.setText(String.valueOf((double) Math.round(utilpo * 100) / 100));
-        }
-
-    }
-
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private static javax.swing.JComboBox<String> jComboBoxMarca;
     private static javax.swing.JComboBox<String> jComboBoxProveedor;
     public static javax.swing.JComboBox<String> jComboBoxSeccion;
     public static javax.swing.JComboBox<String> jComboBoxTipo_Producto;
-    private static com.toedter.calendar.JDateChooser jDateChooser_fechav;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -747,7 +713,6 @@ public void actualizar(int id){
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelFecha;
     private static javax.swing.JLabel jLabelListo;

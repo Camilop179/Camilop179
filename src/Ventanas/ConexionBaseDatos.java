@@ -80,6 +80,16 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
         jLabelCerrarPrograma = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                formMouseDragged(evt);
+            }
+        });
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                formMousePressed(evt);
+            }
+        });
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Base de Datos:");
@@ -204,6 +214,19 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
             System.exit(0);
         }
     }//GEN-LAST:event_jLabelCerrarProgramaMouseClicked
+
+    int x;
+    int y;
+    private void formMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMousePressed
+        x = evt.getX();
+        y = evt.getY();
+    }//GEN-LAST:event_formMousePressed
+
+    private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
+        int xs = evt.getXOnScreen();
+        int ys = evt.getYOnScreen();
+        this.setLocation(xs-x, ys-y);
+    }//GEN-LAST:event_formMouseDragged
 
     
     /**
