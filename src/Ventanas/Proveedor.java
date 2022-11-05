@@ -54,6 +54,40 @@ public class Proveedor extends javax.swing.JFrame {
                 }
         
     }
+    
+    public void agregar (){
+        if(!jTextFieldCelular.getText().equals("")){
+            String nit = jTextFieldNit.getText();
+            String nombre = jTextFieldNombre.getText();
+            String celular = jTextFieldCelular.getText();
+            String correo = jTextFieldCorreo.getText();
+            String direccion = jTextFieldDireccion.getText();
+            String asesor = jTextFieldAsesor.getText();
+            try {
+
+                Connection cn = Conexion.Conexion();
+                PreparedStatement pre = cn.prepareStatement("INSERT INTO proveedor (idproveedor,Nit,Nombre,Celular,Direccion,Correo,Asesor) value(?,?,?,?,?,?,?)");
+                pre.setInt(1, 0);
+                pre.setString(2, nit);
+                pre.setString(3, nombre);
+                pre.setString(4, celular);
+                pre.setString(5, direccion);
+                pre.setString(6, correo);
+                pre.setString(7, asesor);
+                
+                pre.executeUpdate();
+                jTextFieldCelular.setText("");
+                jTextFieldNit.setText("");
+                jTextFieldNombre.setText("");
+                jTextFieldDireccion.setText("");
+                jTextFieldCorreo.setText("");
+                jTextFieldAsesor.setText("");
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+        }
+    }
+   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -271,39 +305,6 @@ public class Proveedor extends javax.swing.JFrame {
         dispose();
     }//GEN-LAST:event_jTable2MouseClicked
 
-    public void agregar (){
-        if(!jTextFieldCelular.getText().equals("")){
-            String nit = jTextFieldNit.getText();
-            String nombre = jTextFieldNombre.getText();
-            String celular = jTextFieldCelular.getText();
-            String correo = jTextFieldCorreo.getText();
-            String direccion = jTextFieldDireccion.getText();
-            String asesor = jTextFieldAsesor.getText();
-            try {
-
-                Connection cn = Conexion.Conexion();
-                PreparedStatement pre = cn.prepareStatement("INSERT INTO proveedor (idproveedor,Nit,Nombre,Celular,Direccion,Correo,Asesor) value(?,?,?,?,?,?,?)");
-                pre.setInt(1, 0);
-                pre.setString(2, nit);
-                pre.setString(3, nombre);
-                pre.setString(4, celular);
-                pre.setString(5, direccion);
-                pre.setString(6, correo);
-                pre.setString(7, asesor);
-                
-                pre.executeUpdate();
-                jTextFieldCelular.setText("");
-                jTextFieldNit.setText("");
-                jTextFieldNombre.setText("");
-                jTextFieldDireccion.setText("");
-                jTextFieldCorreo.setText("");
-                jTextFieldAsesor.setText("");
-            } catch (SQLException e) {
-                System.err.println(e);
-            }
-        }
-    }
-   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAgregar;

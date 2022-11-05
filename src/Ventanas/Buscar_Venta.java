@@ -29,6 +29,40 @@ public class Buscar_Venta extends javax.swing.JDialog {
         initComponents();
     }
 
+    
+    void limpiar() {
+        DefaultTableModel tabla = (DefaultTableModel) jTable1.getModel();
+        for (int i = 0; i < jTable1.getRowCount(); i++) {
+            tabla.removeRow(i);
+            i--;
+        }
+    }
+
+    public void buscar(String columna) {
+        limpiar();
+        DefaultTableModel tabla = (DefaultTableModel) jTable1.getModel();
+        String[] datos = new String[5];
+
+        try {
+            Connection cnn = Conexion.Conexion();
+
+            PreparedStatement pre = cnn.prepareStatement("select nroVentas,cliente,cedula_cliente,fecha,precio_Total from ventas"
+                    + " where " + columna + " like ?");
+            pre.setString(1, '%' + jTextField1.getText().trim() + '%');
+            ResultSet rs = pre.executeQuery();
+
+            while (rs.next()) {
+                for (int i = 0; i < 5; i++) {
+                    datos[i] = rs.getString(i + 1);
+                }
+                tabla.addRow(datos);
+            }
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -166,39 +200,6 @@ public class Buscar_Venta extends javax.swing.JDialog {
             this.dispose();
         }
     }//GEN-LAST:event_jTable1MouseClicked
-
-    void limpiar() {
-        DefaultTableModel tabla = (DefaultTableModel) jTable1.getModel();
-        for (int i = 0; i < jTable1.getRowCount(); i++) {
-            tabla.removeRow(i);
-            i--;
-        }
-    }
-
-    public void buscar(String columna) {
-        limpiar();
-        DefaultTableModel tabla = (DefaultTableModel) jTable1.getModel();
-        String[] datos = new String[5];
-
-        try {
-            Connection cnn = Conexion.Conexion();
-
-            PreparedStatement pre = cnn.prepareStatement("select nroVentas,cliente,cedula_cliente,fecha,precio_Total from ventas"
-                    + " where " + columna + " like ?");
-            pre.setString(1, '%' + jTextField1.getText().trim() + '%');
-            ResultSet rs = pre.executeQuery();
-
-            while (rs.next()) {
-                for (int i = 0; i < 5; i++) {
-                    datos[i] = rs.getString(i + 1);
-                }
-                tabla.addRow(datos);
-            }
-        } catch (SQLException e) {
-            System.err.println(e);
-        }
-
-    }
 
     /**
      * @param args the command line arguments

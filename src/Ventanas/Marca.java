@@ -29,6 +29,32 @@ public class Marca extends javax.swing.JFrame {
         marca();
     }
 
+       public static void marca() {
+        String[] datos = new String[2];
+        DefaultTableModel tabla = new DefaultTableModel();
+
+        tabla.addColumn("Id");
+        tabla.addColumn("Marca");
+        jTable1.setModel(tabla);
+        try {
+            Connection cnn = Conexion.Conexion();
+
+            PreparedStatement pre = cnn.prepareStatement("select * from marca");
+            ResultSet rs = pre.executeQuery();
+
+            while (rs.next()) {
+                for (int i = 0; i < 2; i++) {
+                    datos[i] = rs.getString(i + 1);
+                }
+                tabla.addRow(datos);
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+
+    }
+       
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -146,31 +172,7 @@ public class Marca extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonAgregarActionPerformed
 
-    public static void marca() {
-        String[] datos = new String[2];
-        DefaultTableModel tabla = new DefaultTableModel();
-
-        tabla.addColumn("Id");
-        tabla.addColumn("Marca");
-        jTable1.setModel(tabla);
-        try {
-            Connection cnn = Conexion.Conexion();
-
-            PreparedStatement pre = cnn.prepareStatement("select * from marca");
-            ResultSet rs = pre.executeQuery();
-
-            while (rs.next()) {
-                for (int i = 0; i < 2; i++) {
-                    datos[i] = rs.getString(i + 1);
-                }
-                tabla.addRow(datos);
-            }
-
-        } catch (SQLException e) {
-            System.err.println(e);
-        }
-
-    }
+ 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAgregar;

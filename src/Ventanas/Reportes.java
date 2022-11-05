@@ -312,6 +312,115 @@ public final class Reportes extends javax.swing.JFrame {
         }
     }
 
+    
+    public int totalNomina() {
+        totalNomina = 0;
+        for (int i = 0; i < jTableDevengado.getRowCount(); i++) {
+            double valor = Double.parseDouble(jTableDevengado.getValueAt(i, 3).toString());
+            totalNomina += (int) valor;
+        }
+        return totalNomina;
+    }
+
+    public void borrar() {
+        df = (DefaultTableModel) jTableDevengado.getModel();
+        int i = jTableDevengado.getSelectedRow();
+        df.removeRow(i);
+        jTextTotalNomina.setValue(totalNomina());
+    }
+
+    public void nroNomina() {
+        try ( Connection cn = Conexion.Conexion()) {
+            PreparedStatement pr = cn.prepareStatement("select max(NroNomina) from nomina");
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                int i = rs.getInt(1);
+                if (i == 0) {
+                    jLabelNroNomina.setText("1");
+                } else {
+                    i++;
+                    jLabelNroNomina.setText("" + i);
+                }
+            }
+
+            jTextTotalNomina.setValue(totalNomina);
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+    }
+
+    public static void abrirCMD(String disco_duro, String ruta) {
+        try {
+            ProcessBuilder p = new ProcessBuilder();
+            p.command("cmd.exe", disco_duro, ruta);
+            p.start();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+
+    }
+
+    public void limpiar(JTable x, DefaultTableModel y) {
+        for (int i = 0; i < x.getRowCount(); i++) {
+            y.removeRow(i);
+            i--;
+        }
+    }
+
+    public void total(JTable tabla, JTextField total, int columna) {
+        double t = 0;
+        double n;
+        for (int i = 0; i < tabla.getRowCount(); i++) {
+            n = Double.parseDouble(tabla.getValueAt(i, columna).toString().replace(",", ""));
+            t += n;
+        }
+        total.setText(dm1.format(t));
+    }
+
+    public void buscarT(String columna, int n) {
+        String[] datos = new String[9];
+        switch (n) {
+            case 1 -> {
+                try {
+                    Connection cnn = Conexion.Conexion();
+                    
+                    PreparedStatement pre = cnn.prepareStatement("select * from compra where " + columna + " like '%" + jTextFieldBuscar.getText().trim() + "%'");
+                    ResultSet rs = pre.executeQuery();
+                    
+                    while (rs.next()) {
+                        for (int i = 0; i < 9; i++) {
+                            datos[i] = rs.getString(i + 1);
+                        }
+                        tabla.addRow(datos);
+                    }
+
+                } catch (SQLException e) {
+                    System.err.println(e);
+                }
+            }
+            case 2 -> {
+                try {
+                    Connection cnn = Conexion.Conexion();
+                    
+                    PreparedStatement pre = cnn.prepareStatement("SELECT * FROM ventas WHERE fecha BETWEEN  ? and ?");
+                    pre.setDate(1, new java.sql.Date(jDateChooser1.getDate().getTime()));
+                    pre.setDate(2, new java.sql.Date(jDateChooser2.getDate().getTime()));
+                    ResultSet rs = pre.executeQuery();
+                    System.out.println(new java.sql.Date(jDateChooser1.getDate().getTime()));
+                    while (rs.next()) {
+                        for (int i = 0; i < 8; i++) {
+                            datos[i] = rs.getString(i + 1);
+                        }
+                        dm.addRow(datos);
+                    }
+
+                } catch (SQLException e) {
+                    System.err.println(e);
+                }
+            }
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1498,113 +1607,6 @@ public final class Reportes extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButtonBuscarActionPerformed
 
-    public int totalNomina() {
-        totalNomina = 0;
-        for (int i = 0; i < jTableDevengado.getRowCount(); i++) {
-            double valor = Double.parseDouble(jTableDevengado.getValueAt(i, 3).toString());
-            totalNomina += (int) valor;
-        }
-        return totalNomina;
-    }
-
-    public void borrar() {
-        df = (DefaultTableModel) jTableDevengado.getModel();
-        int i = jTableDevengado.getSelectedRow();
-        df.removeRow(i);
-        jTextTotalNomina.setValue(totalNomina());
-    }
-
-    public void nroNomina() {
-        try ( Connection cn = Conexion.Conexion()) {
-            PreparedStatement pr = cn.prepareStatement("select max(NroNomina) from nomina");
-            ResultSet rs = pr.executeQuery();
-            while (rs.next()) {
-                int i = rs.getInt(1);
-                if (i == 0) {
-                    jLabelNroNomina.setText("1");
-                } else {
-                    i++;
-                    jLabelNroNomina.setText("" + i);
-                }
-            }
-
-            jTextTotalNomina.setValue(totalNomina);
-        } catch (SQLException e) {
-            System.err.println(e);
-        }
-    }
-
-    public static void abrirCMD(String disco_duro, String ruta) {
-        try {
-            ProcessBuilder p = new ProcessBuilder();
-            p.command("cmd.exe", disco_duro, ruta);
-            p.start();
-        } catch (IOException e) {
-            System.err.println(e);
-        }
-
-    }
-
-    public void limpiar(JTable x, DefaultTableModel y) {
-        for (int i = 0; i < x.getRowCount(); i++) {
-            y.removeRow(i);
-            i--;
-        }
-    }
-
-    public void total(JTable tabla, JTextField total, int columna) {
-        double t = 0;
-        double n;
-        for (int i = 0; i < tabla.getRowCount(); i++) {
-            n = Double.parseDouble(tabla.getValueAt(i, columna).toString().replace(",", ""));
-            t += n;
-        }
-        total.setText(dm1.format(t));
-    }
-
-    public void buscarT(String columna, int n) {
-        String[] datos = new String[9];
-        switch (n) {
-            case 1 -> {
-                try {
-                    Connection cnn = Conexion.Conexion();
-                    
-                    PreparedStatement pre = cnn.prepareStatement("select * from compra where " + columna + " like '%" + jTextFieldBuscar.getText().trim() + "%'");
-                    ResultSet rs = pre.executeQuery();
-                    
-                    while (rs.next()) {
-                        for (int i = 0; i < 9; i++) {
-                            datos[i] = rs.getString(i + 1);
-                        }
-                        tabla.addRow(datos);
-                    }
-
-                } catch (SQLException e) {
-                    System.err.println(e);
-                }
-            }
-            case 2 -> {
-                try {
-                    Connection cnn = Conexion.Conexion();
-                    
-                    PreparedStatement pre = cnn.prepareStatement("SELECT * FROM ventas WHERE fecha BETWEEN  ? and ?");
-                    pre.setDate(1, new java.sql.Date(jDateChooser1.getDate().getTime()));
-                    pre.setDate(2, new java.sql.Date(jDateChooser2.getDate().getTime()));
-                    ResultSet rs = pre.executeQuery();
-                    System.out.println(new java.sql.Date(jDateChooser1.getDate().getTime()));
-                    while (rs.next()) {
-                        for (int i = 0; i < 8; i++) {
-                            datos[i] = rs.getString(i + 1);
-                        }
-                        dm.addRow(datos);
-                    }
-
-                } catch (SQLException e) {
-                    System.err.println(e);
-                }
-            }
-        }
-    }
 
     /**
      * @param args the command line arguments

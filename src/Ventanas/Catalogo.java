@@ -6,7 +6,6 @@ import Clases.TablaFondo;
 import Clases.Fondo;
 import Clases.Validaciones;
 import java.awt.HeadlessException;
-import java.math.BigInteger;
 import java.sql.*;
 import java.text.DecimalFormat;
 import javax.swing.JFrame;
@@ -45,7 +44,7 @@ public final class Catalogo extends javax.swing.JFrame {
     public static void total() {
         int t = 0;
         for (int i = 0; i < Table.getRowCount(); i++) {
-            t += Double.parseDouble(Table.getValueAt(i,5).toString());
+            t += Double.parseDouble(Table.getValueAt(i, 5).toString());
         }
 
         DecimalFormat dm = new DecimalFormat("###,###");
@@ -78,10 +77,9 @@ public final class Catalogo extends javax.swing.JFrame {
         } catch (SQLException e) {
             System.err.println(e);
         }
-        
 
     }
-   
+
     public static DefaultTableModel tabla() {
         DefaultTableModel tabla = new DefaultTableModel() {
             @Override
@@ -146,6 +144,56 @@ public final class Catalogo extends javax.swing.JFrame {
         columnModel.getColumn(15).setResizable(false);
 
         return tabla;
+    }
+
+    public void buscar() {
+        boolean[] c = new boolean[]{jCheckBoxCodigo.isSelected(), jCheckBoxCodigo_Barra.isSelected(), jCheckBoxNombre.isSelected()};
+        int x = 0;
+        String code = "";
+        for (int i = 0; i < 3; i++) {
+            if (c[i]) {
+                if (x > 0) {
+                    code += " or ";
+                }
+                x++;
+                switch (i) {
+                    case 0:
+                        code += "p.codigo like ?";
+                        break;
+                    case 1:
+                        code += "p.codigo_barras like ?";
+                        break;
+                    case 2:
+                        code += "p.producto like ?";
+                        break;
+                }
+            }
+
+        }
+        DefaultTableModel tabla = tabla();
+        String[] datos = new String[17];
+        try {
+            Connection cnn = Conexion.Conexion();
+            PreparedStatement pre = cnn.prepareStatement("select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_compra"
+                    + ",p.total_cost,p.precio_venta,p.cantidad,p.utilidad,p.porcentaje_utilidad,p.tipo,p.seccion"
+                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on u.idusuarios = p.idUsuario where " + code);
+            System.out.println(code);
+            for (int i = 1; i <= x; i++) {
+                pre.setString(i, '%' + jTextFieldBusqueda.getText().trim() + '%');
+            }
+            ResultSet rs = pre.executeQuery();
+
+            while (rs.next()) {
+                for (int i = 0; i < 17; i++) {
+                    datos[i] = rs.getString(i + 1);
+                }
+                tabla.addRow(datos);
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+
     }
 
     /**
@@ -214,6 +262,7 @@ public final class Catalogo extends javax.swing.JFrame {
 
         jCheckBoxNombre.setBackground(null);
         jCheckBoxNombre.setForeground(new java.awt.Color(255, 255, 255));
+        jCheckBoxNombre.setSelected(true);
         jCheckBoxNombre.setText("Nombre Producto");
         jCheckBoxNombre.setBorder(null);
         jCheckBoxNombre.addActionListener(new java.awt.event.ActionListener() {
@@ -224,6 +273,7 @@ public final class Catalogo extends javax.swing.JFrame {
 
         jCheckBoxCodigo_Barra.setBackground(null);
         jCheckBoxCodigo_Barra.setForeground(new java.awt.Color(255, 255, 255));
+        jCheckBoxCodigo_Barra.setSelected(true);
         jCheckBoxCodigo_Barra.setText("Codigo De Barras");
         jCheckBoxCodigo_Barra.setBorder(null);
         jCheckBoxCodigo_Barra.addActionListener(new java.awt.event.ActionListener() {
@@ -234,6 +284,7 @@ public final class Catalogo extends javax.swing.JFrame {
 
         jCheckBoxCodigo.setBackground(null);
         jCheckBoxCodigo.setForeground(new java.awt.Color(255, 255, 255));
+        jCheckBoxCodigo.setSelected(true);
         jCheckBoxCodigo.setText("Codigo");
         jCheckBoxCodigo.setBorder(null);
         jCheckBoxCodigo.addActionListener(new java.awt.event.ActionListener() {
@@ -336,39 +387,23 @@ public final class Catalogo extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelNPMouseClicked
 
     private void jTextFieldBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldBusquedaKeyReleased
-        
-
-        boolean codigo = jCheckBoxCodigo.isSelected();
-        boolean codigoBarra = jCheckBoxCodigo_Barra.isSelected();
-        boolean nombre = jCheckBoxNombre.isSelected();
-        String codigoS = "codigo";
-        String nombreS = "producto";
-        String codigoBarr = "codigo_barras";
-        if (codigo == true) {
-            buscar(codigoS);
-        }
-        if (codigoBarra == true) {
-            buscar(codigoBarr);
-        }
-        if (nombre == true) {
-            buscar(nombreS);
-        }
+        buscar();
     }//GEN-LAST:event_jTextFieldBusquedaKeyReleased
 
     private void TableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableMouseClicked
         String cod;
         int i = Table.getSelectedRow();
-        if(Ventas.m) {
+        if (Ventas.m) {
             cod = Table.getValueAt(i, 1).toString();
             Ventas.jTextFieldCodigo.setText(cod);
             this.dispose();
             Ventas.producto();
-        }else if(Compras.n){
+        } else if (Compras.n) {
             cod = Table.getValueAt(i, 1).toString();
             Compras.jTextFieldCodigo.setText(cod);
             this.dispose();
             Compras.producto();
-        }else if (Administrador.m) {
+        } else if (Administrador.m) {
             if (evt.getClickCount() == 2) {
                 if (Ventas.m == true) {
                     cod = Table.getValueAt(i, 1).toString();
@@ -383,7 +418,7 @@ public final class Catalogo extends javax.swing.JFrame {
                     Producto.idp = id;
                 }
             }
-        } 
+        }
 
 
     }//GEN-LAST:event_TableMouseClicked
@@ -409,44 +444,16 @@ public final class Catalogo extends javax.swing.JFrame {
     }//GEN-LAST:event_TableKeyPressed
 
     private void jCheckBoxCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxCodigoActionPerformed
-        jCheckBoxNombre.setSelected(false);
-        jCheckBoxCodigo_Barra.setSelected(false);
+        buscar();
     }//GEN-LAST:event_jCheckBoxCodigoActionPerformed
 
     private void jCheckBoxNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxNombreActionPerformed
-        jCheckBoxCodigo.setSelected(false);
-        jCheckBoxCodigo_Barra.setSelected(false);
-
+        buscar();
     }//GEN-LAST:event_jCheckBoxNombreActionPerformed
 
     private void jCheckBoxCodigo_BarraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxCodigo_BarraActionPerformed
-        jCheckBoxCodigo.setSelected(false);
-        jCheckBoxNombre.setSelected(false);
+        buscar();
     }//GEN-LAST:event_jCheckBoxCodigo_BarraActionPerformed
-    public void buscar(String columna) {
-        DefaultTableModel tabla = tabla();
-        String[] datos = new String[17];
-        try {
-            Connection cnn = Conexion.Conexion();
-
-            PreparedStatement pre = cnn.prepareStatement("select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_compra"
-                    + ",p.total_cost,p.precio_venta,p.cantidad,p.utilidad,p.porcentaje_utilidad,p.tipo,p.seccion"
-                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on u.idusuarios = p.idUsuario where p."+columna+" like ?");
-            pre.setString(1, '%'+jTextFieldBusqueda.getText().trim()+'%');
-            ResultSet rs = pre.executeQuery();
-
-            while (rs.next()) {
-                for (int i = 0; i < 17; i++) {
-                    datos[i] = rs.getString(i + 1);
-                }
-                tabla.addRow(datos);
-            }
-
-        } catch (SQLException e) {
-            System.err.println(e);
-        }
-
-    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -194,6 +194,126 @@ public class Compras extends javax.swing.JFrame {
         }
     }
 
+     public static void buscarProveedor() {
+        if (!jTextFieldNit.getText().equals("")) {
+            try {
+
+                String nit = jTextFieldNit.getText();
+                Connection cn = Conexion.Conexion();
+                PreparedStatement pr = cn.prepareStatement("select Nombre,Asesor from proveedor where Nit = " + nit + "");
+                ResultSet rs = pr.executeQuery();
+                if (rs.next()) {
+                    String nombre = rs.getString(1);
+                    String asesor = rs.getString(2);
+                    jTextFieldNombre.setText(nombre);
+                    jTextFieldAsesorr.setText(asesor);
+
+                    jTextFieldNombre.requestFocus();
+
+                }
+                cn.close();
+            } catch (SQLException e) {
+                System.out.println(e);
+            }
+        } else {
+            n = true;
+            new Proveedor().setVisible(true);
+        }
+    }
+
+    public void limpiar() {
+        for (int i = 0; i < jTableCompra.getRowCount(); i++) {
+            tabla.removeRow(i);
+        }
+
+        jTextFieldNit.setText("");
+        jTextFieldNombre.setText("");
+        jTextFieldTotal.setText("0");
+        jTextFieldEfectivo.setText("");
+        jTextFieldCambio.setText("");
+    }
+
+    public void detalleCompra() {
+        try {
+
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr = cn.prepareStatement("INSERT INTO detallescompra  (id,nro_compra,codigo,producto,precio,cantidad,total) values(?,?,?,?,?,?,?)");
+            for (int i = 0; i < jTableCompra.getRowCount(); i++) {
+                pr.setInt(1, 0);
+                pr.setString(2, jLabelNoCompra.getText());
+                pr.setString(3, jTableCompra.getValueAt(i, 0).toString());
+                pr.setString(4, jTableCompra.getValueAt(i, 1).toString());
+                pr.setDouble(5, Double.parseDouble(jTableCompra.getValueAt(i, 2).toString()));
+                pr.setInt(6, Integer.parseInt(jTableCompra.getValueAt(i, 3).toString()));
+                pr.setDouble(7, Double.parseDouble(jTableCompra.getValueAt(i, 4).toString()));
+                String codigo = jTableCompra.getValueAt(i, 0).toString();
+                int cantidad = Integer.parseInt(jTableCompra.getValueAt(i, 3).toString());
+                double precio = Double.parseDouble(jTableCompra.getValueAt(i, 2).toString());
+                ActualizarCantidad.aumentar(cantidad,precio, codigo);
+                pr.executeUpdate();
+            }
+            nroCompra();
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+    }
+
+    public static void total() {
+
+        int t = 0;
+        for (int i = 0; i < jTableCompra.getRowCount(); i++) {
+            t += Integer.parseInt(jTableCompra.getValueAt(i, 4).toString().replace(",", ""));
+        }
+        jTextFieldTotal.setText("" + t);
+    }
+
+    public void compra() {
+        try {
+            String fecha_i = Fechas.fechaActual();
+            String fecha_v = ((JTextField) jDateChooser_fechav.getDateEditor().getUiComponent()).getText();
+            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+            java.util.Date fecha_i_d = formato.parse(fecha_i);
+            java.util.Date fecha_v_d = formato.parse(fecha_v);
+            java.sql.Date fecho_i_bd = new java.sql.Date(fecha_i_d.getTime());
+
+            java.sql.Date fecho_V_bd = new java.sql.Date(fecha_v_d.getTime());
+
+            int i = jComboBox1.getSelectedIndex();
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr = cn.prepareStatement("INSERT INTO compra (idcompra,numero_factura,fecha_factura,fecha_vencimiento,precio_factura,forma_pago"
+                    + ",Nit,proveedor,estado) values(?,?,?,?,?,?,?,?,?)");
+            pr.setInt(1, 0);
+            pr.setString(2, jLabelNoCompra.getText());
+            pr.setDate(3, fecho_i_bd);
+            pr.setDate(4, fecho_V_bd);
+            pr.setDouble(5, Double.parseDouble(jTextFieldTotal.getText()));
+            pr.setString(6, jComboBox1.getSelectedItem().toString());
+            pr.setString(7, jTextFieldNit.getText());
+            pr.setString(8, jTextFieldNombre.getText());
+            if (i == 0) {
+                pr.setString(9, "Cancelado");
+                pr.executeUpdate();
+            } else {
+                pr.setString(9, "Pendiente");
+
+                pr.executeUpdate();
+            }
+
+        } catch (NumberFormatException | SQLException | ParseException e) {
+            JOptionPane.showMessageDialog(null, "Error al Conectar a la Base de Datos \n " + e);
+            System.err.println(e);
+        }
+    }
+
+    public void eliminarProducto() {
+        int row = jTableCompra.getSelectedRow();
+        double totald = Double.parseDouble(jTableCompra.getValueAt(row, 4).toString());
+        total -= totald;
+        jTextFieldTotal.setText("" + total);
+        double util = Utilidad.utilidad(jTableCompra.getValueAt(row, 0).toString());
+        tabla.removeRow(jTableCompra.getSelectedRow());
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -729,126 +849,7 @@ public class Compras extends javax.swing.JFrame {
             total();
         }// TODO add your handling code here:
     }//GEN-LAST:event_jTableCompraKeyReleased
-    public static void buscarProveedor() {
-        if (!jTextFieldNit.getText().equals("")) {
-            try {
-
-                String nit = jTextFieldNit.getText();
-                Connection cn = Conexion.Conexion();
-                PreparedStatement pr = cn.prepareStatement("select Nombre,Asesor from proveedor where Nit = " + nit + "");
-                ResultSet rs = pr.executeQuery();
-                if (rs.next()) {
-                    String nombre = rs.getString(1);
-                    String asesor = rs.getString(2);
-                    jTextFieldNombre.setText(nombre);
-                    jTextFieldAsesorr.setText(asesor);
-
-                    jTextFieldNombre.requestFocus();
-
-                }
-                cn.close();
-            } catch (SQLException e) {
-                System.out.println(e);
-            }
-        } else {
-            n = true;
-            new Proveedor().setVisible(true);
-        }
-    }
-
-    public void limpiar() {
-        for (int i = 0; i < jTableCompra.getRowCount(); i++) {
-            tabla.removeRow(i);
-        }
-
-        jTextFieldNit.setText("");
-        jTextFieldNombre.setText("");
-        jTextFieldTotal.setText("0");
-        jTextFieldEfectivo.setText("");
-        jTextFieldCambio.setText("");
-    }
-
-    public void detalleCompra() {
-        try {
-
-            Connection cn = Conexion.Conexion();
-            PreparedStatement pr = cn.prepareStatement("INSERT INTO detallescompra  (id,nro_compra,codigo,producto,precio,cantidad,total) values(?,?,?,?,?,?,?)");
-            for (int i = 0; i < jTableCompra.getRowCount(); i++) {
-                pr.setInt(1, 0);
-                pr.setString(2, jLabelNoCompra.getText());
-                pr.setString(3, jTableCompra.getValueAt(i, 0).toString());
-                pr.setString(4, jTableCompra.getValueAt(i, 1).toString());
-                pr.setDouble(5, Double.parseDouble(jTableCompra.getValueAt(i, 2).toString()));
-                pr.setInt(6, Integer.parseInt(jTableCompra.getValueAt(i, 3).toString()));
-                pr.setDouble(7, Double.parseDouble(jTableCompra.getValueAt(i, 4).toString()));
-                String codigo = jTableCompra.getValueAt(i, 0).toString();
-                int cantidad = Integer.parseInt(jTableCompra.getValueAt(i, 3).toString());
-                double precio = Double.parseDouble(jTableCompra.getValueAt(i, 2).toString());
-                ActualizarCantidad.aumentar(cantidad,precio, codigo);
-                pr.executeUpdate();
-            }
-            nroCompra();
-        } catch (SQLException e) {
-            System.err.println(e);
-        }
-    }
-
-    public static void total() {
-
-        int t = 0;
-        for (int i = 0; i < jTableCompra.getRowCount(); i++) {
-            t += Integer.parseInt(jTableCompra.getValueAt(i, 4).toString().replace(",", ""));
-        }
-        jTextFieldTotal.setText("" + t);
-    }
-
-    public void compra() {
-        try {
-            String fecha_i = Fechas.fechaActual();
-            String fecha_v = ((JTextField) jDateChooser_fechav.getDateEditor().getUiComponent()).getText();
-            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-            java.util.Date fecha_i_d = formato.parse(fecha_i);
-            java.util.Date fecha_v_d = formato.parse(fecha_v);
-            java.sql.Date fecho_i_bd = new java.sql.Date(fecha_i_d.getTime());
-
-            java.sql.Date fecho_V_bd = new java.sql.Date(fecha_v_d.getTime());
-
-            int i = jComboBox1.getSelectedIndex();
-            Connection cn = Conexion.Conexion();
-            PreparedStatement pr = cn.prepareStatement("INSERT INTO compra (idcompra,numero_factura,fecha_factura,fecha_vencimiento,precio_factura,forma_pago"
-                    + ",Nit,proveedor,estado) values(?,?,?,?,?,?,?,?,?)");
-            pr.setInt(1, 0);
-            pr.setString(2, jLabelNoCompra.getText());
-            pr.setDate(3, fecho_i_bd);
-            pr.setDate(4, fecho_V_bd);
-            pr.setDouble(5, Double.parseDouble(jTextFieldTotal.getText()));
-            pr.setString(6, jComboBox1.getSelectedItem().toString());
-            pr.setString(7, jTextFieldNit.getText());
-            pr.setString(8, jTextFieldNombre.getText());
-            if (i == 0) {
-                pr.setString(9, "Cancelado");
-                pr.executeUpdate();
-            } else {
-                pr.setString(9, "Pendiente");
-
-                pr.executeUpdate();
-            }
-
-        } catch (NumberFormatException | SQLException | ParseException e) {
-            JOptionPane.showMessageDialog(null, "Error al Conectar a la Base de Datos \n " + e);
-            System.err.println(e);
-        }
-    }
-
-    public void eliminarProducto() {
-        int row = jTableCompra.getSelectedRow();
-        double totald = Double.parseDouble(jTableCompra.getValueAt(row, 4).toString());
-        total -= totald;
-        jTextFieldTotal.setText("" + total);
-        double util = Utilidad.utilidad(jTableCompra.getValueAt(row, 0).toString());
-        tabla.removeRow(jTableCompra.getSelectedRow());
-    }
-
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonVender;

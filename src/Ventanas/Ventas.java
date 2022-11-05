@@ -232,6 +232,232 @@ public final class Ventas extends javax.swing.JFrame {
             System.out.println(e);
         }
     }
+      public void vender() {
+        new FormaPago(this, true).setVisible(true);
+        if (FormaPago.m) {
+            int n = JOptionPane.showConfirmDialog(null, "¿Desea imprimir Factura?", "Venta Exitosa", JOptionPane.YES_NO_OPTION);
+            if (n == 0) {
+                imprimir1();
+            }
+            jTextFieldCedula.setText("");
+            jTextFieldNombre.setText("");
+            jTextFieldTotal.setText("0");
+            limpiar();
+            utilidaTotal.clear();
+            nroVenta();
+            Administrador.ventas();
+        }
+    }
+
+    public static void total() {
+        DecimalFormatSymbols sm = new DecimalFormatSymbols();
+        sm.setDecimalSeparator('.');
+        sm.setGroupingSeparator(',');
+        DecimalFormat dm = new DecimalFormat("###,###",sm);
+        int t = 0;
+        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+            t += Integer.parseInt(jTableVenta.getValueAt(i, 4).toString().replace(",", ""));
+        }
+        jTextFieldTotal.setText(dm.format(t));
+    }
+
+    public static void producto() {
+        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        DecimalFormatSymbols sm = new DecimalFormatSymbols();
+        sm.setDecimalSeparator('.');
+        sm.setGroupingSeparator(',');
+        DecimalFormat dm = new DecimalFormat("###,###",sm);
+        try {
+            String codigo = jTextFieldCodigo.getText().trim();
+            Connection cnn = Conexion.Conexion();
+            PreparedStatement pre = cnn.prepareStatement("select codigo,producto,precio_venta,precio_compra from producto where codigo = ? or codigo_barras = ?");
+            pre.setString(1, codigo);
+            pre.setString(2, codigo);
+            ResultSet rs = pre.executeQuery();
+            if (rs.next()) {
+                int i = tabla(rs.getString(1));
+                if (i >= 0) {
+                    int cant = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
+                    int precio = Integer.parseInt(jTableVenta.getValueAt(i, 2).toString().replaceAll("[\\D]", ""));
+                    cant++;
+                    int totalV = precio * cant;
+                    jTableVenta.setValueAt(cant, i, 3);
+                    jTableVenta.setValueAt(dm.format(totalV), i, 4);
+                    utilidaTotal.set(i, (precio-rs.getDouble(4))* cant);
+                    System.out.println(utilidaTotal);
+                    total();
+                } else {
+                    String[] datos = new String[5];
+                    datos[0] = rs.getString(1);
+                    datos[1] = rs.getString(2);
+                    datos[2] = dm.format(rs.getInt(3));
+                    datos[3] = "1";
+                    datos[4] = dm.format(rs.getInt(3));
+                    tabla.addRow(datos);
+                    Object obg = rs.getDouble(3)-rs.getDouble(4);
+                    utilidaTotal.add(obg);
+                    System.out.println(utilidaTotal);
+                    total();
+                }
+                jTextFieldCodigo.setText("");
+            } else {
+                m = true;
+                new Catalogo().setVisible(true);
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e);
+            Errores.Errores("Error al Agregar Producto: " + e);
+        }
+    }
+
+    public void buscarcl() {
+        if (!jTextFieldCedula.getText().equals("")) {
+            try ( Connection cn = Conexion.Conexion()) {
+
+                String cedula = jTextFieldCedula.getText();
+                PreparedStatement pr = cn.prepareStatement("select nombres from clientes where cedula = ?");
+                pr.setString(1, cedula);
+                ResultSet rs = pr.executeQuery();
+                if (rs.next()) {
+                    String nombre = rs.getString(1);
+                    jTextFieldNombre.setText(nombre);
+
+                    jTextFieldNombre.requestFocus();
+
+                } else {
+
+                    int i = JOptionPane.showConfirmDialog(null, "No se encuentra cliente", "¿desea ingresar el cliente?", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println(i);
+                    if (i == 0) {
+
+                        IngresarClientes cliente = new IngresarClientes(this, true);
+                        IngresarClientes.jTextFieldCedula.setText(cedula);
+                        cliente.setVisible(true);
+                        buscarcl();
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println(e);
+                Errores.Errores("Error al Buscar CLiente: " + e);
+            }
+        }
+    }
+
+    public static void limpiar() {
+        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+            tabla.removeRow(i);
+            i--;
+            jTextFieldCedula.setText("");
+            jTextFieldNombre.setText("");
+            jTextFieldTotal.setText("0");
+            jTextFieldMoto.setText("");
+            jTextFieldPlaca.setText("");
+            jTextFieldColor.setText("");
+
+        }
+    }
+
+    public static void detalleVenta() {
+        try {
+
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr = cn.prepareStatement("INSERT INTO detallesventa (iddetallesVenta,nro_venta,codigo,producto,precioUnitario,cantidad,utilidad,precioTotal) values(?,?,?,?,?,?,?,?)");
+            for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+                pr.setInt(1, 0);
+                pr.setInt(2, Integer.parseInt(jLabelNoVenta.getText()));
+                pr.setString(3, jTableVenta.getValueAt(i, 0).toString());
+                pr.setString(4, jTableVenta.getValueAt(i, 1).toString());
+                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString().replace(",", "")));
+                pr.setInt(6, Integer.parseInt(jTableVenta.getValueAt(i, 3).toString()));
+                pr.setDouble(7, (double) utilidaTotal.get(i));
+                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString().replace(",", "")));
+                pr.executeUpdate();
+                String codigo = jTableVenta.getValueAt(i, 0).toString();
+                int cantidad = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
+                ActualizarCantidad.restar(cantidad, codigo);
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e);
+            JOptionPane.showMessageDialog(null, "Error al subir detalles venta: "+e);
+            Errores.Errores("Error al Subir Detalles de venta: " + e);
+        }
+    }
+
+    public static void venta(String FormaPago, double cambio, double efectivo) {
+        try {
+            double utilidad = 0;
+            for (int i = 0; i < utilidaTotal.size(); i++) {
+                utilidad += Double.parseDouble(utilidaTotal.get(i).toString());
+            }
+            int nro = nroVenta();
+            java.sql.Date fecho_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr = cn.prepareStatement("INSERT INTO ventas (idventas,nroVentas,cliente,cedula_cliente,idUsuario,utilidad,fecha,precio_Total,Efectivo,Cambio,FormaPago,moto,placa,color) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            pr.setInt(1, 0);
+            pr.setInt(2, nro);
+            pr.setString(3, jTextFieldNombre.getText());
+            if (jTextFieldCedula.getText().equals("")) {
+                pr.setInt(4, 0);
+            } else {
+                pr.setInt(4, Integer.parseInt(jTextFieldCedula.getText().trim()));
+            }
+            pr.setInt(5, Login.idUsuario);
+            pr.setDouble(6, utilidad);
+            pr.setDate(7, fecho_i_bd);
+            pr.setDouble(8, Double.parseDouble(jTextFieldTotal.getText().replace(",", "")));
+            pr.setDouble(9, efectivo);
+            pr.setDouble(10, cambio);
+            pr.setString(11, FormaPago);
+            pr.setString(12, jTextFieldMoto.getText().trim());
+            pr.setString(13, jTextFieldPlaca.getText().trim());
+            pr.setString(14, jTextFieldColor.getText().trim());
+
+            pr.executeUpdate();
+
+        } catch (SQLException e) {
+            System.err.println(e);
+            JOptionPane.showMessageDialog(null, "Error al subir Venta: "+e);
+            Errores.Errores("Error al subir venta: " + e);
+        }
+    }
+
+    public void eliminarProducto() {
+        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        int row = jTableVenta.getSelectedRow();
+        utilidaTotal.remove(row);
+        tabla.removeRow(jTableVenta.getSelectedRow());
+        total();
+    }
+
+    public void cambiarCant() {
+        DecimalFormatSymbols sm = new DecimalFormatSymbols();
+        sm.setDecimalSeparator('.');
+        sm.setGroupingSeparator(',');
+        DecimalFormat dm = new DecimalFormat("###,###",sm);
+        int row = jTableVenta.getSelectedRow();
+        String codigo = jTableVenta.getValueAt(row, 0).toString();
+        int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
+        int precio = Integer.parseInt(jTableVenta.getValueAt(row, 2).toString().replace(",", ""));
+        int total1 = cant * precio;
+        double util = (precio - Utilidad.costo(codigo))*cant;
+        utilidaTotal.set(row, util);
+        jTableVenta.setValueAt(dm.format(total1), row, 4);
+    }
+
+    public static int tabla(String codigo) {
+        int l = -1;
+        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+            if (jTableVenta.getValueAt(i, 0).toString().equals(codigo)) {
+                l = i;
+            }
+        }
+        return l;
+    }
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -724,232 +950,7 @@ public final class Ventas extends javax.swing.JFrame {
         new Buscar_Venta(this, true).setVisible(true);
     }//GEN-LAST:event_jButtonBuscandoActionPerformed
 
-    public void vender() {
-        new FormaPago(this, true).setVisible(true);
-        if (FormaPago.m) {
-            int n = JOptionPane.showConfirmDialog(null, "¿Desea imprimir Factura?", "Venta Exitosa", JOptionPane.YES_NO_OPTION);
-            if (n == 0) {
-                imprimir1();
-            }
-            jTextFieldCedula.setText("");
-            jTextFieldNombre.setText("");
-            jTextFieldTotal.setText("0");
-            limpiar();
-            utilidaTotal.clear();
-            nroVenta();
-            Administrador.ventas();
-        }
-    }
-
-    public static void total() {
-        DecimalFormatSymbols sm = new DecimalFormatSymbols();
-        sm.setDecimalSeparator('.');
-        sm.setGroupingSeparator(',');
-        DecimalFormat dm = new DecimalFormat("###,###",sm);
-        int t = 0;
-        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
-            t += Integer.parseInt(jTableVenta.getValueAt(i, 4).toString().replace(",", ""));
-        }
-        jTextFieldTotal.setText(dm.format(t));
-    }
-
-    public static void producto() {
-        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
-        DecimalFormatSymbols sm = new DecimalFormatSymbols();
-        sm.setDecimalSeparator('.');
-        sm.setGroupingSeparator(',');
-        DecimalFormat dm = new DecimalFormat("###,###",sm);
-        try {
-            String codigo = jTextFieldCodigo.getText().trim();
-            Connection cnn = Conexion.Conexion();
-            PreparedStatement pre = cnn.prepareStatement("select codigo,producto,precio_venta,precio_compra from producto where codigo = ? or codigo_barras = ?");
-            pre.setString(1, codigo);
-            pre.setString(2, codigo);
-            ResultSet rs = pre.executeQuery();
-            if (rs.next()) {
-                int i = tabla(rs.getString(1));
-                if (i >= 0) {
-                    int cant = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
-                    int precio = Integer.parseInt(jTableVenta.getValueAt(i, 2).toString().replaceAll("[\\D]", ""));
-                    cant++;
-                    int totalV = precio * cant;
-                    jTableVenta.setValueAt(cant, i, 3);
-                    jTableVenta.setValueAt(dm.format(totalV), i, 4);
-                    utilidaTotal.set(i, (precio-rs.getDouble(4))* cant);
-                    System.out.println(utilidaTotal);
-                    total();
-                } else {
-                    String[] datos = new String[5];
-                    datos[0] = rs.getString(1);
-                    datos[1] = rs.getString(2);
-                    datos[2] = dm.format(rs.getInt(3));
-                    datos[3] = "1";
-                    datos[4] = dm.format(rs.getInt(3));
-                    tabla.addRow(datos);
-                    Object obg = rs.getDouble(3)-rs.getDouble(4);
-                    utilidaTotal.add(obg);
-                    System.out.println(utilidaTotal);
-                    total();
-                }
-                jTextFieldCodigo.setText("");
-            } else {
-                m = true;
-                new Catalogo().setVisible(true);
-            }
-
-        } catch (SQLException e) {
-            System.err.println(e);
-            Errores.Errores("Error al Agregar Producto: " + e);
-        }
-    }
-
-    public void buscarcl() {
-        if (!jTextFieldCedula.getText().equals("")) {
-            try ( Connection cn = Conexion.Conexion()) {
-
-                String cedula = jTextFieldCedula.getText();
-                PreparedStatement pr = cn.prepareStatement("select nombres from clientes where cedula = ?");
-                pr.setString(1, cedula);
-                ResultSet rs = pr.executeQuery();
-                if (rs.next()) {
-                    String nombre = rs.getString(1);
-                    jTextFieldNombre.setText(nombre);
-
-                    jTextFieldNombre.requestFocus();
-
-                } else {
-
-                    int i = JOptionPane.showConfirmDialog(null, "No se encuentra cliente", "¿desea ingresar el cliente?", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println(i);
-                    if (i == 0) {
-
-                        IngresarClientes cliente = new IngresarClientes(this, true);
-                        IngresarClientes.jTextFieldCedula.setText(cedula);
-                        cliente.setVisible(true);
-                        buscarcl();
-                    }
-                }
-            } catch (SQLException e) {
-                System.out.println(e);
-                Errores.Errores("Error al Buscar CLiente: " + e);
-            }
-        }
-    }
-
-    public static void limpiar() {
-        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
-        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
-            tabla.removeRow(i);
-            i--;
-            jTextFieldCedula.setText("");
-            jTextFieldNombre.setText("");
-            jTextFieldTotal.setText("0");
-            jTextFieldMoto.setText("");
-            jTextFieldPlaca.setText("");
-            jTextFieldColor.setText("");
-
-        }
-    }
-
-    public static void detalleVenta() {
-        try {
-
-            Connection cn = Conexion.Conexion();
-            PreparedStatement pr = cn.prepareStatement("INSERT INTO detallesventa (iddetallesVenta,nro_venta,codigo,producto,precioUnitario,cantidad,utilidad,precioTotal) values(?,?,?,?,?,?,?,?)");
-            for (int i = 0; i < jTableVenta.getRowCount(); i++) {
-                pr.setInt(1, 0);
-                pr.setInt(2, Integer.parseInt(jLabelNoVenta.getText()));
-                pr.setString(3, jTableVenta.getValueAt(i, 0).toString());
-                pr.setString(4, jTableVenta.getValueAt(i, 1).toString());
-                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString().replace(",", "")));
-                pr.setInt(6, Integer.parseInt(jTableVenta.getValueAt(i, 3).toString()));
-                pr.setDouble(7, (double) utilidaTotal.get(i));
-                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString().replace(",", "")));
-                pr.executeUpdate();
-                String codigo = jTableVenta.getValueAt(i, 0).toString();
-                int cantidad = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
-                ActualizarCantidad.restar(cantidad, codigo);
-            }
-
-        } catch (SQLException e) {
-            System.err.println(e);
-            JOptionPane.showMessageDialog(null, "Error al subir detalles venta: "+e);
-            Errores.Errores("Error al Subir Detalles de venta: " + e);
-        }
-    }
-
-    public static void venta(String FormaPago, double cambio, double efectivo) {
-        try {
-            double utilidad = 0;
-            for (int i = 0; i < utilidaTotal.size(); i++) {
-                utilidad += Double.parseDouble(utilidaTotal.get(i).toString());
-            }
-            int nro = nroVenta();
-            java.sql.Date fecho_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
-            Connection cn = Conexion.Conexion();
-            PreparedStatement pr = cn.prepareStatement("INSERT INTO ventas (idventas,nroVentas,cliente,cedula_cliente,idUsuario,utilidad,fecha,precio_Total,Efectivo,Cambio,FormaPago,moto,placa,color) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-            pr.setInt(1, 0);
-            pr.setInt(2, nro);
-            pr.setString(3, jTextFieldNombre.getText());
-            if (jTextFieldCedula.getText().equals("")) {
-                pr.setInt(4, 0);
-            } else {
-                pr.setInt(4, Integer.parseInt(jTextFieldCedula.getText().trim()));
-            }
-            pr.setInt(5, Login.idUsuario);
-            pr.setDouble(6, utilidad);
-            pr.setDate(7, fecho_i_bd);
-            pr.setDouble(8, Double.parseDouble(jTextFieldTotal.getText().replace(",", "")));
-            pr.setDouble(9, efectivo);
-            pr.setDouble(10, cambio);
-            pr.setString(11, FormaPago);
-            pr.setString(12, jTextFieldMoto.getText().trim());
-            pr.setString(13, jTextFieldPlaca.getText().trim());
-            pr.setString(14, jTextFieldColor.getText().trim());
-
-            pr.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println(e);
-            JOptionPane.showMessageDialog(null, "Error al subir Venta: "+e);
-            Errores.Errores("Error al subir venta: " + e);
-        }
-    }
-
-    public void eliminarProducto() {
-        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
-        int row = jTableVenta.getSelectedRow();
-        utilidaTotal.remove(row);
-        tabla.removeRow(jTableVenta.getSelectedRow());
-        total();
-    }
-
-    public void cambiarCant() {
-        DecimalFormatSymbols sm = new DecimalFormatSymbols();
-        sm.setDecimalSeparator('.');
-        sm.setGroupingSeparator(',');
-        DecimalFormat dm = new DecimalFormat("###,###",sm);
-        int row = jTableVenta.getSelectedRow();
-        String codigo = jTableVenta.getValueAt(row, 0).toString();
-        int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
-        int precio = Integer.parseInt(jTableVenta.getValueAt(row, 2).toString().replace(",", ""));
-        int total1 = cant * precio;
-        double util = (precio - Utilidad.costo(codigo))*cant;
-        utilidaTotal.set(row, util);
-        jTableVenta.setValueAt(dm.format(total1), row, 4);
-    }
-
-    public static int tabla(String codigo) {
-        int l = -1;
-        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
-            if (jTableVenta.getValueAt(i, 0).toString().equals(codigo)) {
-                l = i;
-            }
-        }
-        return l;
-    }
-
-
+  
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonBuscando;
     private javax.swing.JButton jButtonVender;

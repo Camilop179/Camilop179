@@ -40,6 +40,37 @@ public class AgregarProveedor extends javax.swing.JDialog {
 
     }
 
+     public void agregar() {
+
+        if (!((jTextFieldNit.getText() + jTextFieldCelular.getText() + jTextFieldNombre.getText()).equals(""))) {
+            try {
+                Connection cn = Conexion.Conexion();
+                PreparedStatement pre = cn.prepareStatement("INSERT INTO proveedor (idproveedor,Nit,Nombre,Celular,Direccion,Correo,Asesor) values(?,?,?,?,?,?,?)");
+                pre.setInt(1, 0);
+                pre.setString(2, jTextFieldNit.getText());
+                pre.setString(3, jTextFieldNombre.getText());
+                pre.setString(4, jTextFieldCelular.getText());
+                pre.setString(5, jTextFieldDireccion.getText());
+                pre.setString(6, jTextFieldCorreo.getText());
+                pre.setString(7, jTextFieldAsesor.getText());
+
+                pre.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Registro exitoso");
+                jTextFieldNit.setText("");
+                jTextFieldCelular.setText("");
+                jTextFieldNombre.setText("");
+                jTextFieldDireccion.setText("");
+                jTextFieldAsesor.setText("");
+                jTextFieldCorreo.setText("");
+                dispose();
+                Producto.llenarProveedor();
+
+            } catch (HeadlessException | SQLException e) {
+                System.err.println("Error al ingresar el producto " + e);
+                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
+            }
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -224,37 +255,7 @@ public class AgregarProveedor extends javax.swing.JDialog {
         this.setLocation(x-xm, y-ym);
     }//GEN-LAST:event_formMouseDragged
 
-    public void agregar() {
-
-        if (!((jTextFieldNit.getText() + jTextFieldCelular.getText() + jTextFieldNombre.getText()).equals(""))) {
-            try {
-                Connection cn = Conexion.Conexion();
-                PreparedStatement pre = cn.prepareStatement("INSERT INTO proveedor (idproveedor,Nit,Nombre,Celular,Direccion,Correo,Asesor) values(?,?,?,?,?,?,?)");
-                pre.setInt(1, 0);
-                pre.setString(2, jTextFieldNit.getText());
-                pre.setString(3, jTextFieldNombre.getText());
-                pre.setString(4, jTextFieldCelular.getText());
-                pre.setString(5, jTextFieldDireccion.getText());
-                pre.setString(6, jTextFieldCorreo.getText());
-                pre.setString(7, jTextFieldAsesor.getText());
-
-                pre.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Registro exitoso");
-                jTextFieldNit.setText("");
-                jTextFieldCelular.setText("");
-                jTextFieldNombre.setText("");
-                jTextFieldDireccion.setText("");
-                jTextFieldAsesor.setText("");
-                jTextFieldCorreo.setText("");
-                dispose();
-                Producto.llenarProveedor();
-
-            } catch (HeadlessException | SQLException e) {
-                System.err.println("Error al ingresar el producto " + e);
-                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
-            }
-        }
-    }
+   
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

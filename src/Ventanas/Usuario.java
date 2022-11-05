@@ -68,7 +68,7 @@ public class Usuario extends javax.swing.JFrame {
         tabla.addColumn("Cedula");
         tabla.addColumn("Celular");
         tabla.addColumn("Correo");
-        
+
         jTableUsuarios.setModel(tabla);
         TableColumnModel columnModel = jTableUsuarios.getColumnModel();
         columnModel.getColumn(0).setResizable(false);
@@ -104,6 +104,118 @@ public class Usuario extends javax.swing.JFrame {
             System.err.println(e);
         }
 
+    }
+
+    public boolean confirmarcontraseña(String contraseña) {
+
+        boolean b = false;
+        try {
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pre = cn.prepareStatement("select contraseña from usuarios where contraseña = ?");
+            pre.setString(1, contraseña);
+            ResultSet rs = pre.executeQuery();
+            while (rs.next()) {
+                b = true;
+            }
+        } catch (SQLException e) {
+        }
+        return b;
+    }
+
+    public void modificar() {
+        if (validacionUsuario() || jTableUsuarios.getValueAt(i, 1).toString().equals(jTextFieldUsuario.getText())) {
+            try {
+                Connection cn = Conexion.Conexion();
+                PreparedStatement pre = cn.prepareStatement("update usuarios set usuario = ?,contraseña=?,nombre =?,cargo = ?,cedula = ?,celular =?,correo =? where idusuarios = ?");
+                pre.setString(1, jTextFieldUsuario.getText());
+                if (!confirmarcontraseña(jTextFieldContraseña.getText())) {
+                    pre.setString(2, Hash.hash24(jTextFieldContraseña.getText()));
+                } else {
+                    pre.setString(2, jTextFieldContraseña.getText());
+                }
+                pre.setString(3, jTextFieldNombre.getText());
+                pre.setString(4, jComboBoxCargo.getSelectedItem().toString());
+                pre.setString(5, jTextFieldCedula.getText());
+                pre.setString(6, jTextFieldCelular.getText());
+                pre.setString(7, jTextFieldCorrea.getText());
+                pre.setInt(8, Integer.parseInt(jTableUsuarios.getValueAt(i, 0).toString()));
+                pre.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Actualizacion exitosa");
+
+            } catch (HeadlessException | SQLException e) {
+                System.err.println("Error al ingresar el producto " + e);
+                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "el usuario ya existe, por favor digite oto usuario difrente");
+        }
+    }
+
+    public void agregar() {
+        if (validacionUsuario() && jTextFieldContraseña.getText().length() < 13 && jTextFieldContraseña.getText().length() > 7) {
+            try {
+                Connection cn = Conexion.Conexion();
+                PreparedStatement pre = cn.prepareStatement("INSERT INTO usuarios (idusuarios,usuario,contraseña,nombre,cargo,"
+                        + "cedula,celular,correo) values(?,?,?,?,?,?,?,?)");
+
+                pre.setInt(1, 0);
+                pre.setString(2, jTextFieldUsuario.getText());
+                pre.setString(3, Hash.hash24(jTextFieldContraseña.getText()));
+                pre.setString(4, jTextFieldNombre.getText());
+                pre.setString(5, jComboBoxCargo.getSelectedItem().toString());
+                pre.setString(6, jTextFieldCedula.getText());
+                pre.setString(7, jTextFieldCelular.getText());
+                pre.setString(8, jTextFieldCorrea.getText());
+
+                pre.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Registro exitoso");
+            } catch (HeadlessException | SQLException e) {
+                System.err.println("Error al ingresar el producto " + e);
+                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
+            }
+        } else {
+            if (!validacionUsuario()) {
+                JOptionPane.showMessageDialog(null, "el usuario ya existe, por favor digite oto usuario difrente");
+            } else {
+                JOptionPane.showMessageDialog(null, "la contraseña debe contener mas de 8 y menos de 12 caracteres");
+            }
+        }
+    }
+
+    public void eliminar() {
+        int i = jTableUsuarios.getSelectedRow();
+        int id = Integer.parseInt(jTableUsuarios.getValueAt(i, 0).toString());
+        try {
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr = cn.prepareStatement("delete from usuarios where idusuarios = " + id);
+            pr.executeUpdate();
+            usuariotabla();
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+
+    }
+
+    public boolean validacionUsuario() {
+
+        boolean b = true;
+        try {
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr = cn.prepareStatement("select usuario from usuarios");
+            ResultSet rs = pr.executeQuery();
+            String user;
+            while (rs.next()) {
+                user = rs.getString(1);
+                if (user.equals(jTextFieldUsuario.getText())) {
+                    b = false;
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al ingresar el producto " + e);
+            JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
+        }
+
+        return b;
     }
 
     /**
@@ -375,10 +487,9 @@ public class Usuario extends javax.swing.JFrame {
         String contraseña = jTableUsuarios.getValueAt(i, 2).toString();
         String nombre = jTableUsuarios.getValueAt(i, 3).toString();
         String cargo = jTableUsuarios.getValueAt(i, 4).toString();
-        String cedula = jTableUsuarios.getValueAt(i,5).toString();
-        String celular = jTableUsuarios.getValueAt(i,6).toString();
+        String cedula = jTableUsuarios.getValueAt(i, 5).toString();
+        String celular = jTableUsuarios.getValueAt(i, 6).toString();
         String correo = jTableUsuarios.getValueAt(i, 7).toString();
-
 
         jTextFieldCedula.setText(cedula);
         jTextFieldCelular.setText(celular);
@@ -390,124 +501,13 @@ public class Usuario extends javax.swing.JFrame {
     }//GEN-LAST:event_jTableUsuariosMouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if ((jTextFieldContraseña.getText().length() > 7 && jTextFieldContraseña.getText().length() < 13)||confirmarcontraseña(jTextFieldContraseña.getText())) {
+        if ((jTextFieldContraseña.getText().length() > 7 && jTextFieldContraseña.getText().length() < 13) || confirmarcontraseña(jTextFieldContraseña.getText())) {
             modificar();
             usuariotabla();
-        }else{
+        } else {
             JOptionPane.showMessageDialog(this, "La contraseña debe tener entre 8 a 12 caracteres!!");
         }
     }//GEN-LAST:event_jButton2ActionPerformed
-    public boolean confirmarcontraseña(String contraseña) {
-
-        boolean b = false;
-        try {
-            Connection cn = Conexion.Conexion();
-            PreparedStatement pre = cn.prepareStatement("select contraseña from usuarios where contraseña = ?");
-            pre.setString(1, contraseña);
-            ResultSet rs = pre.executeQuery();
-            while (rs.next()) {
-                b = true;
-            }
-        } catch (SQLException e) {
-        }
-        return b;
-    }
-
-    public void modificar() {
-        if (validacionUsuario() || jTableUsuarios.getValueAt(i, 1).toString().equals(jTextFieldUsuario.getText())) {
-            try {
-                Connection cn = Conexion.Conexion();
-                PreparedStatement pre = cn.prepareStatement("update usuarios set usuario = ?,contraseña=?,nombre =?,cargo = ?,cedula = ?,celular =?,correo =? where idusuarios = ?");
-                pre.setString(1, jTextFieldUsuario.getText());
-                if (!confirmarcontraseña(jTextFieldContraseña.getText())) {
-                    pre.setString(2, Hash.hash24(jTextFieldContraseña.getText()));
-                } else {
-                    pre.setString(2, jTextFieldContraseña.getText());
-                }
-                pre.setString(3, jTextFieldNombre.getText());
-                pre.setString(4, jComboBoxCargo.getSelectedItem().toString());
-                pre.setString(5, jTextFieldCedula.getText());
-                pre.setString(6, jTextFieldCelular.getText());
-                pre.setString(7, jTextFieldCorrea.getText());
-                pre.setInt(8, Integer.parseInt(jTableUsuarios.getValueAt(i, 0).toString()));
-                pre.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Actualizacion exitosa");
-
-            } catch (HeadlessException | SQLException e) {
-                System.err.println("Error al ingresar el producto " + e);
-                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "el usuario ya existe, por favor digite oto usuario difrente");
-        }
-    }
-
-    public void agregar() {
-        if (validacionUsuario() && jTextFieldContraseña.getText().length() < 13 && jTextFieldContraseña.getText().length() > 7) {
-            try {
-                Connection cn = Conexion.Conexion();
-                PreparedStatement pre = cn.prepareStatement("INSERT INTO usuarios (idusuarios,usuario,contraseña,nombre,cargo,"
-                        + "cedula,celular,correo) values(?,?,?,?,?,?,?,?)");
-
-                pre.setInt(1, 0);
-                pre.setString(2, jTextFieldUsuario.getText());
-                pre.setString(3, Hash.hash24(jTextFieldContraseña.getText()));
-                pre.setString(4, jTextFieldNombre.getText());
-                pre.setString(5, jComboBoxCargo.getSelectedItem().toString());
-                pre.setString(6, jTextFieldCedula.getText());
-                pre.setString(7, jTextFieldCelular.getText());
-                pre.setString(8, jTextFieldCorrea.getText());
-
-                pre.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Registro exitoso");
-            } catch (HeadlessException | SQLException e) {
-                System.err.println("Error al ingresar el producto " + e);
-                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
-            }
-        } else {
-            if (!validacionUsuario()) {
-                JOptionPane.showMessageDialog(null, "el usuario ya existe, por favor digite oto usuario difrente");
-            } else {
-                JOptionPane.showMessageDialog(null, "la contraseña debe contener mas de 8 y menos de 12 caracteres");
-            }
-        }
-    }
-
-    public void eliminar() {
-        int i = jTableUsuarios.getSelectedRow();
-        int id = Integer.parseInt(jTableUsuarios.getValueAt(i, 0).toString());
-        try {
-            Connection cn = Conexion.Conexion();
-            PreparedStatement pr = cn.prepareStatement("delete from usuarios where idusuarios = " + id);
-            pr.executeUpdate();
-            usuariotabla();
-        } catch (SQLException e) {
-            System.err.println(e);
-        }
-
-    }
-
-    public boolean validacionUsuario() {
-
-        boolean b = true;
-        try {
-            Connection cn = Conexion.Conexion();
-            PreparedStatement pr = cn.prepareStatement("select usuario from usuarios");
-            ResultSet rs = pr.executeQuery();
-            String user;
-            while (rs.next()) {
-                user = rs.getString(1);
-                if (user.equals(jTextFieldUsuario.getText())) {
-                    b = false;
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("Error al ingresar el producto " + e);
-            JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
-        }
-
-        return b;
-    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

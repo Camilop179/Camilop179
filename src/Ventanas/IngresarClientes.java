@@ -33,6 +33,32 @@ public class IngresarClientes extends javax.swing.JDialog {
         
         
     }
+       public void agregar(){
+        
+        if (!((jTextFieldCedula.getText()+jTextFieldCelular.getText()+jTextFieldNombre.getText()).equals(""))) {
+            try {
+                Connection cn = Conexion.Conexion();
+                PreparedStatement pre = cn.prepareStatement("INSERT INTO clientes (idclientes,cedula,nombres,celular) values(?,?,?,?)");
+                pre.setInt(1, 0);
+                pre.setString(2,jTextFieldCedula.getText());
+                pre.setString(3, jTextFieldNombre.getText());
+                pre.setString(4, jTextFieldCelular.getText());
+
+                pre.executeUpdate();
+                JOptionPane.showMessageDialog(null, "Registro exitoso");
+                jTextFieldCedula.setText("");
+                jTextFieldCelular.setText("");
+                jTextFieldNombre.setText("");
+                dispose();
+
+            } catch (Exception e) {
+                System.err.println("Error al ingresar el producto " + e);
+                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
+            }
+        }
+    }
+   
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -173,32 +199,7 @@ public class IngresarClientes extends javax.swing.JDialog {
     }//GEN-LAST:event_jTextFieldCelularKeyPressed
 
     
-    public void agregar(){
-        
-        if (!((jTextFieldCedula.getText()+jTextFieldCelular.getText()+jTextFieldNombre.getText()).equals(""))) {
-            try {
-                Connection cn = Conexion.Conexion();
-                PreparedStatement pre = cn.prepareStatement("INSERT INTO clientes (idclientes,cedula,nombres,celular) values(?,?,?,?)");
-                pre.setInt(1, 0);
-                pre.setString(2,jTextFieldCedula.getText());
-                pre.setString(3, jTextFieldNombre.getText());
-                pre.setString(4, jTextFieldCelular.getText());
-
-                pre.executeUpdate();
-                JOptionPane.showMessageDialog(null, "Registro exitoso");
-                jTextFieldCedula.setText("");
-                jTextFieldCelular.setText("");
-                jTextFieldNombre.setText("");
-                dispose();
-
-            } catch (Exception e) {
-                System.err.println("Error al ingresar el producto " + e);
-                JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
-            }
-        }
-    }
-   
-    
+ 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
