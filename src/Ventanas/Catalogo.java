@@ -8,6 +8,7 @@ import Clases.Validaciones;
 import java.awt.HeadlessException;
 import java.sql.*;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -19,7 +20,9 @@ import javax.swing.table.TableColumnModel;
  */
 public final class Catalogo extends javax.swing.JFrame {
 
-    public static int m = 0;
+    static String sql;
+    public static int vent = 0;
+    static int column=0;
 
     public Catalogo() {
         Fondo fondo = new Fondo("FondoMenu.jpg");
@@ -33,7 +36,7 @@ public final class Catalogo extends javax.swing.JFrame {
         setLocationRelativeTo(null);
 
         new Imagenes("Agregar.gif", jLabelNP);
-
+        jTextFieldBusqueda.requestFocus();
         inventario();
         total();
     }
@@ -55,21 +58,42 @@ public final class Catalogo extends javax.swing.JFrame {
     /**
      * Consulatar Base de Datos para los Productos
      */
+    static String Numero_sin_punto(double m){
+        String num="";
+        DecimalFormatSymbols sm = new DecimalFormatSymbols();
+        sm.setDecimalSeparator('.');
+        sm.setGroupingSeparator(',');
+        DecimalFormat dm = new DecimalFormat("###,###",sm);
+        num=dm.format(m);
+        return num;
+    } 
     public static void inventario() {
-        DefaultTableModel tabla = tabla();
+        if (Ventas.m) {
+            sql = "select p.idProducto,p.codigo,p.codigo_barras,p.producto"
+                    + ",p.precio_venta,p.cantidad,p.tipo,p.seccion"
+                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on p.idUsuario = u.idusuarios";
+            column = 13;
+        } else {
+            sql = "select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_compra"
+                    + ",total_cost,p.precio_venta,p.cantidad,p.utilidad,p.porcentaje_utilidad,p.tipo,p.seccion"
+                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on p.idUsuario = u.idusuarios";
+            column = 17;
+        }
+        DefaultTableModel tabla = tabla(column);
 
-        String[] datos = new String[17];
+        String[] datos = new String[column];
         try {
             Connection cnn = Conexion.Conexion();
 
-            PreparedStatement pre = cnn.prepareStatement("select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_compra"
-                    + ",total_cost,p.precio_venta,p.cantidad,p.utilidad,p.porcentaje_utilidad,p.tipo,p.seccion"
-                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on p.idUsuario = u.idusuarios");
+            PreparedStatement pre = cnn.prepareStatement(sql);
             ResultSet rs = pre.executeQuery();
 
             while (rs.next()) {
-                for (int i = 0; i < 17; i++) {
+                for (int i = 0; i < column; i++) {
                     datos[i] = rs.getString(i + 1);
+                }
+                if(Ventas.m){
+                    datos[4]=Numero_sin_punto(rs.getDouble(5));
                 }
                 tabla.addRow(datos);
             }
@@ -80,7 +104,7 @@ public final class Catalogo extends javax.swing.JFrame {
 
     }
 
-    public static DefaultTableModel tabla() {
+    public static DefaultTableModel tabla(int column) {
         DefaultTableModel tabla = new DefaultTableModel() {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -91,12 +115,16 @@ public final class Catalogo extends javax.swing.JFrame {
         tabla.addColumn("Codigo");
         tabla.addColumn("Codigo Barra");
         tabla.addColumn("Producto");
-        tabla.addColumn("Precio Costo");
-        tabla.addColumn("Total");
+        if (!Ventas.m) {
+            tabla.addColumn("Precio Costo");
+            tabla.addColumn("Total");
+        }
         tabla.addColumn("Precio Venta");
         tabla.addColumn("Cantidad");
+        if (!Ventas.m) {
         tabla.addColumn("Utilidad");
         tabla.addColumn("Utilida %");
+        }
         tabla.addColumn("Tipo");
         tabla.addColumn("Seccion");
         tabla.addColumn("Marca");
@@ -109,39 +137,19 @@ public final class Catalogo extends javax.swing.JFrame {
 
         TableColumnModel columnModel = Table.getColumnModel();
 
+        for (int i = 0; i < column; i++) {
+            columnModel.getColumn(i).setPreferredWidth(150);
+        }
         columnModel.getColumn(0).setPreferredWidth(50);
-        columnModel.getColumn(1).setPreferredWidth(100);
-        columnModel.getColumn(2).setPreferredWidth(100);
-        columnModel.getColumn(3).setPreferredWidth(300);
-        columnModel.getColumn(4).setPreferredWidth(100);
-        columnModel.getColumn(5).setPreferredWidth(100);
-        columnModel.getColumn(6).setPreferredWidth(100);
-        columnModel.getColumn(7).setPreferredWidth(100);
-        columnModel.getColumn(8).setPreferredWidth(100);
-        columnModel.getColumn(9).setPreferredWidth(100);
-        columnModel.getColumn(10).setPreferredWidth(100);
-        columnModel.getColumn(11).setPreferredWidth(100);
-        columnModel.getColumn(12).setPreferredWidth(100);
-        columnModel.getColumn(13).setPreferredWidth(150);
-        columnModel.getColumn(14).setPreferredWidth(150);
-        columnModel.getColumn(15).setPreferredWidth(150);
+        columnModel.getColumn(3).setPreferredWidth(400);
+        if (!Ventas.m) {
+            columnModel.getColumn(14).setPreferredWidth(150);
+            columnModel.getColumn(15).setPreferredWidth(150);
+        }
 
-        columnModel.getColumn(0).setResizable(false);
-        columnModel.getColumn(1).setResizable(false);
-        columnModel.getColumn(2).setResizable(false);
-        columnModel.getColumn(3).setResizable(false);
-        columnModel.getColumn(4).setResizable(false);
-        columnModel.getColumn(5).setResizable(false);
-        columnModel.getColumn(6).setResizable(false);
-        columnModel.getColumn(7).setResizable(false);
-        columnModel.getColumn(8).setResizable(false);
-        columnModel.getColumn(9).setResizable(false);
-        columnModel.getColumn(10).setResizable(false);
-        columnModel.getColumn(11).setResizable(false);
-        columnModel.getColumn(12).setResizable(false);
-        columnModel.getColumn(13).setResizable(false);
-        columnModel.getColumn(14).setResizable(false);
-        columnModel.getColumn(15).setResizable(false);
+        for (int i = 0; i < column; i++) {
+            columnModel.getColumn(i).setResizable(false);
+        }
 
         return tabla;
     }
@@ -170,13 +178,11 @@ public final class Catalogo extends javax.swing.JFrame {
             }
 
         }
-        DefaultTableModel tabla = tabla();
-        String[] datos = new String[17];
+        DefaultTableModel tabla = tabla(column);
+        String[] datos = new String[column];
         try {
             Connection cnn = Conexion.Conexion();
-            PreparedStatement pre = cnn.prepareStatement("select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_compra"
-                    + ",p.total_cost,p.precio_venta,p.cantidad,p.utilidad,p.porcentaje_utilidad,p.tipo,p.seccion"
-                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on u.idusuarios = p.idUsuario where " + code);
+            PreparedStatement pre = cnn.prepareStatement(sql+" where " + code);
             System.out.println(code);
             for (int i = 1; i <= x; i++) {
                 pre.setString(i, '%' + jTextFieldBusqueda.getText().trim() + '%');
@@ -184,7 +190,7 @@ public final class Catalogo extends javax.swing.JFrame {
             ResultSet rs = pre.executeQuery();
 
             while (rs.next()) {
-                for (int i = 0; i < 17; i++) {
+                for (int i = 0; i < column; i++) {
                     datos[i] = rs.getString(i + 1);
                 }
                 tabla.addRow(datos);
@@ -228,7 +234,7 @@ public final class Catalogo extends javax.swing.JFrame {
         Table.setAutoCreateRowSorter(true);
         Table.setBackground(new java.awt.Color(51, 153, 255));
         Table.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 204, 204)));
-        Table.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        Table.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         Table.setForeground(new java.awt.Color(0, 51, 51));
         Table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -411,7 +417,7 @@ public final class Catalogo extends javax.swing.JFrame {
                     this.dispose();
                     Ventas.producto();
                 } else {
-                    m = 1;
+                    vent = 1;
                     int id = Integer.parseInt(Table.getValueAt(i, 0).toString());
                     new Producto().setVisible(true);
                     Producto.modificar(id);

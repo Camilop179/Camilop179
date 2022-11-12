@@ -240,7 +240,7 @@ public final class Producto extends javax.swing.JFrame {
             addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    Catalogo.m=0;
+                    Catalogo.vent=0;
                 }
             });
         } catch (Exception e) {
@@ -600,11 +600,11 @@ public final class Producto extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldCantidadActionPerformed
 
     private void jLabelListoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelListoMouseClicked
-        if(Catalogo.m==0){
+        if(Catalogo.vent==0){
             agregar();
         }else{
             actualizar(idp);
-            Catalogo.m=0;
+            Catalogo.vent=0;
             dispose();
         }
     }//GEN-LAST:event_jLabelListoMouseClicked
