@@ -8,12 +8,10 @@ import Clases.Conexion;
 import Clases.Fechas;
 import Clases.Fondo;
 import Clases.FormatoPesos;
+import Clases.Validaciones;
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.*;
-import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.text.MaskFormatter;
 
 /**
@@ -37,10 +35,7 @@ public class Caja_Dia extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
-        try {
-            mascara = new MaskFormatter("$###,###");
-        } catch (Exception e) {
-        }
+
     }
 
     /**
@@ -131,11 +126,15 @@ public class Caja_Dia extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextFieldEfectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldEfectivoKeyReleased
-        jTextFieldEfectivo.setText(FormatoPesos.formato(Double.parseDouble(jTextFieldEfectivo.getText().trim().replace(",", ""))));
+        if (!Validaciones.validarString(evt)) {
+            jTextFieldEfectivo.setText(FormatoPesos.formato(Double.parseDouble(jTextFieldEfectivo.getText().trim().replace(",", ""))));
+        }
     }//GEN-LAST:event_jTextFieldEfectivoKeyReleased
 
     private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
-        jTextField2.setText(FormatoPesos.formato(Double.parseDouble(jTextField2.getText().trim().replace(",", ""))));
+        if (!Validaciones.validarString(evt)) {
+            jTextField2.setText(FormatoPesos.formato(Double.parseDouble(jTextField2.getText().trim().replace(",", ""))));
+        }
     }//GEN-LAST:event_jTextField2KeyReleased
 
     void ingresarCaja() {
