@@ -58,23 +58,24 @@ public final class Administrador extends javax.swing.JFrame {
     public void caja() {
         try ( Connection cn = Conexion.Conexion()) {
 
-            PreparedStatement pr1 = cn.prepareStatement("select max(id) from caja");
+            PreparedStatement pr1 = cn.prepareStatement("select max(id) from caja where fecha =?");
+            pr1.setDate(1, new java.sql.Date(Fechas.fechaActualDate().getTime()));
             ResultSet rs1 = pr1.executeQuery();
             while (rs1.next()) {
-                PreparedStatement ps = cn.prepareStatement("select total from caja where fecha =? and id =?");
-                ps.setDate(1, new java.sql.Date(Fechas.fechaActualDate().getTime()));
-                ps.setInt(2, rs1.getInt(1));
-                ResultSet rs = ps.executeQuery();
-                
-                while (rs.next()) {
-                    if (rs.getInt(1) != 0) {
+                if (rs1.getInt(1) != 0) {
+                    PreparedStatement ps = cn.prepareStatement("select total from caja where fecha =? and id =?");
+                    ps.setDate(1, new java.sql.Date(Fechas.fechaActualDate().getTime()));
+                    ps.setInt(2, rs1.getInt(1));
+                    ResultSet rs = ps.executeQuery();
+
+                    while (rs.next()) {
                         jLabelCaja.setText(FormatoPesos.formato(rs.getDouble(1)));
-                    } else {
-                        new Caja_Dia(this, true).setVisible(true);
                     }
+                } else {
+                    new Caja_Dia(this, true).setVisible(true);
+                    caja();
                 }
             }
-
             cn.close();
         } catch (SQLException ex) {
             Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
@@ -90,12 +91,11 @@ public final class Administrador extends javax.swing.JFrame {
                 ps.setDate(1, new java.sql.Date(Fechas.fechaActualDate().getTime()));
                 ps.setInt(2, rs1.getInt(1));
                 ResultSet rs = ps.executeQuery();
-                
+
                 while (rs.next()) {
                     jLabelPtm.setText(FormatoPesos.formato(rs.getDouble(1)));
                 }
             }
-
             cn.close();
         } catch (SQLException ex) {
             Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);

@@ -58,7 +58,7 @@ public final class Ventas extends javax.swing.JFrame {
         new Imagenes("Adelante.png", jLabelRegresar1);
         new Imagenes("Atras.png", jLabelRegresar);
         new Imagenes("imprimir.png", jLabelImprimir);
-        new ImagenBoton("buscando.png", jButtonBuscando, 38 , 38);
+        new ImagenBoton("buscando.png", jButtonBuscando, 38, 38);
         new ImageIcon(imagen1.getImage().getScaledInstance(45, 45, Image.SCALE_DEFAULT));
         jLabelFecha.setText(Fechas.fechaActual());
         this.setLocationRelativeTo(null);
@@ -218,8 +218,8 @@ public final class Ventas extends javax.swing.JFrame {
         try {
             Connection cn = Conexion.Conexion();
             Map parametro = new HashMap();
-            URL url = getClass().getResource("/imagenes/LOGO.jpg");
-            parametro.put("NroVentas", Integer.parseInt(jLabelNoVenta.getText()));
+            URL url = getClass().getResource("/imagenes/logo.jpg");
+            parametro.put("NroVentas", Integer.valueOf(jLabelNoVenta.getText()));
             parametro.put("url", url);
             jr = (JasperReport) JRLoader.loadObject(file);
             JasperPrint jp = JasperFillManager.fillReport(jr, parametro, cn);
@@ -230,7 +230,8 @@ public final class Ventas extends javax.swing.JFrame {
             System.out.println(e);
         }
     }
-      public void vender() {
+
+    public void vender() {
         new FormaPago(this, true).setVisible(true);
         if (FormaPago.m) {
             int n = JOptionPane.showConfirmDialog(null, "¿Desea imprimir Factura?", "Venta Exitosa", JOptionPane.YES_NO_OPTION);
@@ -258,7 +259,7 @@ public final class Ventas extends javax.swing.JFrame {
 
     public static void producto() {
         DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
-        
+
         try {
             String codigo = jTextFieldCodigo.getText().trim();
             Connection cnn = Conexion.Conexion();
@@ -275,7 +276,7 @@ public final class Ventas extends javax.swing.JFrame {
                     int totalV = precio * cant;
                     jTableVenta.setValueAt(cant, i, 3);
                     jTableVenta.setValueAt(FormatoPesos.formato(totalV), i, 4);
-                    utilidaTotal.set(i, (precio-rs.getDouble(4))* cant);
+                    utilidaTotal.set(i, (precio - rs.getDouble(4)) * cant);
                     System.out.println(utilidaTotal);
                     total();
                 } else {
@@ -286,7 +287,7 @@ public final class Ventas extends javax.swing.JFrame {
                     datos[3] = "1";
                     datos[4] = FormatoPesos.formato(rs.getInt(3));
                     tabla.addRow(datos);
-                    Object obg = rs.getDouble(3)-rs.getDouble(4);
+                    Object obg = rs.getDouble(3) - rs.getDouble(4);
                     utilidaTotal.add(obg);
                     System.out.println(utilidaTotal);
                     total();
@@ -373,7 +374,7 @@ public final class Ventas extends javax.swing.JFrame {
 
         } catch (SQLException e) {
             System.err.println(e);
-            JOptionPane.showMessageDialog(null, "Error al subir detalles venta: "+e);
+            JOptionPane.showMessageDialog(null, "Error al subir detalles venta: " + e);
             Errores.Errores("Error al Subir Detalles de venta: " + e);
         }
     }
@@ -411,7 +412,7 @@ public final class Ventas extends javax.swing.JFrame {
 
         } catch (SQLException e) {
             System.err.println(e);
-            JOptionPane.showMessageDialog(null, "Error al subir Venta: "+e);
+            JOptionPane.showMessageDialog(null, "Error al subir Venta: " + e);
             Errores.Errores("Error al subir venta: " + e);
         }
     }
@@ -430,7 +431,7 @@ public final class Ventas extends javax.swing.JFrame {
         int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
         int precio = Integer.parseInt(jTableVenta.getValueAt(row, 2).toString().replace(",", ""));
         int total1 = cant * precio;
-        double util = (precio - Utilidad.costo(codigo))*cant;
+        double util = (precio - Utilidad.costo(codigo)) * cant;
         utilidaTotal.set(row, util);
         jTableVenta.setValueAt(FormatoPesos.formato(total1), row, 4);
     }
@@ -445,22 +446,22 @@ public final class Ventas extends javax.swing.JFrame {
         return l;
     }
 
-    void SumarCaja(){
+    void SumarCaja() {
         try {
             double valor = Double.parseDouble(jTextFieldTotal.getText().replace(",", ""));
-            double total = Double.parseDouble(Administrador.jLabelCaja.getText().replace(",", ""))+valor;
+            double total = Double.parseDouble(Administrador.jLabelCaja.getText().replace(",", "")) + valor;
             Connection cn = Conexion.Conexion();
             PreparedStatement ps = cn.prepareStatement("insert into caja (id,concepto,valor,total,fecha,hora) values (?,?,?,?,?,?)");
             ps.setInt(1, 0);
-            ps.setString(2, "factura #"+jLabelNoVenta.getText());
+            ps.setString(2, "factura #" + jLabelNoVenta.getText());
             ps.setDouble(3, valor);
             ps.setDouble(4, total);
             ps.setDate(5, new Date(Fechas.fechaActualDate().getTime()));
             ps.setTime(6, new Time(Fechas.fechaActualDate().getTime()));
             ps.executeUpdate();
             Administrador.jLabelCaja.setText(FormatoPesos.formato(total));
-        } catch (Exception e) {
-            System.err.println("Error al Sumar Caja: " +e);
+        } catch (NumberFormatException | SQLException e) {
+            System.err.println("Error al Sumar Caja: " + e);
         }
     }
 
@@ -919,11 +920,13 @@ public final class Ventas extends javax.swing.JFrame {
     }//GEN-LAST:event_jTableVentaKeyPressed
 
     private void jTableVentaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableVentaKeyReleased
-        
-        
+
         int fila = jTableVenta.getSelectedRow();
-        int precio = Integer.parseInt(jTableVenta.getValueAt(fila,2).toString().replace(",", ""));
-        jTableVenta.setValueAt(FormatoPesos.formato(precio), fila, 2);
+        int column = jTableVenta.getSelectedColumn();
+        if (column == 2 && !Validaciones.validarString(evt)) {
+            int precio = Integer.parseInt(jTableVenta.getValueAt(fila, 2).toString().replace(",", ""));
+            jTableVenta.setValueAt(FormatoPesos.formato(precio), fila, 2);
+        }
         if (!Validaciones.validarEnter(evt)) {
             cambiarCant();
             total();
@@ -931,19 +934,19 @@ public final class Ventas extends javax.swing.JFrame {
     }//GEN-LAST:event_jTableVentaKeyReleased
 
     private void jTextFieldMotoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldMotoKeyPressed
-        if(!Validaciones.validarEnter(evt)){
+        if (!Validaciones.validarEnter(evt)) {
             jTextFieldColor.requestFocus();
         }
     }//GEN-LAST:event_jTextFieldMotoKeyPressed
 
     private void jTextFieldColorKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldColorKeyPressed
-        if(!Validaciones.validarEnter(evt)){
+        if (!Validaciones.validarEnter(evt)) {
             jTextFieldPlaca.requestFocus();
         }
     }//GEN-LAST:event_jTextFieldColorKeyPressed
 
     private void jTextFieldPlacaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPlacaKeyPressed
-        if(!Validaciones.validarEnter(evt)){
+        if (!Validaciones.validarEnter(evt)) {
             jTextFieldCodigo.requestFocus();
         }
     }//GEN-LAST:event_jTextFieldPlacaKeyPressed
@@ -952,7 +955,7 @@ public final class Ventas extends javax.swing.JFrame {
         new Buscar_Venta(this, true).setVisible(true);
     }//GEN-LAST:event_jButtonBuscandoActionPerformed
 
-  
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonBuscando;
     private javax.swing.JButton jButtonVender;
