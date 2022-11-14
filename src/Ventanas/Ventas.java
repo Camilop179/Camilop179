@@ -5,6 +5,7 @@ import Clases.Conexion;
 import Clases.Errores;
 import Clases.Fechas;
 import Clases.Fondo;
+import Clases.FormatoPesos;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Validaciones;
@@ -20,8 +21,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +42,6 @@ import net.sf.jasperreports.view.JasperViewer;
  */
 public final class Ventas extends javax.swing.JFrame {
 
-    static int total = 0;
     public static boolean m = false;
     static ArrayList utilidaTotal = new ArrayList();
 
@@ -61,7 +59,7 @@ public final class Ventas extends javax.swing.JFrame {
         new Imagenes("Atras.png", jLabelRegresar);
         new Imagenes("imprimir.png", jLabelImprimir);
         new ImagenBoton("buscando.png", jButtonBuscando, 38 , 38);
-        Icon icono = new ImageIcon(imagen1.getImage().getScaledInstance(45, 45, Image.SCALE_DEFAULT));
+        new ImageIcon(imagen1.getImage().getScaledInstance(45, 45, Image.SCALE_DEFAULT));
         jLabelFecha.setText(Fechas.fechaActual());
         this.setLocationRelativeTo(null);
         m = true;
@@ -239,6 +237,7 @@ public final class Ventas extends javax.swing.JFrame {
             if (n == 0) {
                 imprimir1();
             }
+            SumarCaja();
             jTextFieldCedula.setText("");
             jTextFieldNombre.setText("");
             jTextFieldTotal.setText("0");
@@ -250,23 +249,16 @@ public final class Ventas extends javax.swing.JFrame {
     }
 
     public static void total() {
-        DecimalFormatSymbols sm = new DecimalFormatSymbols();
-        sm.setDecimalSeparator('.');
-        sm.setGroupingSeparator(',');
-        DecimalFormat dm = new DecimalFormat("###,###",sm);
         int t = 0;
         for (int i = 0; i < jTableVenta.getRowCount(); i++) {
             t += Integer.parseInt(jTableVenta.getValueAt(i, 4).toString().replace(",", ""));
         }
-        jTextFieldTotal.setText(dm.format(t));
+        jTextFieldTotal.setText(FormatoPesos.formato(t));
     }
 
     public static void producto() {
         DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
-        DecimalFormatSymbols sm = new DecimalFormatSymbols();
-        sm.setDecimalSeparator('.');
-        sm.setGroupingSeparator(',');
-        DecimalFormat dm = new DecimalFormat("###,###",sm);
+        
         try {
             String codigo = jTextFieldCodigo.getText().trim();
             Connection cnn = Conexion.Conexion();
@@ -282,7 +274,7 @@ public final class Ventas extends javax.swing.JFrame {
                     cant++;
                     int totalV = precio * cant;
                     jTableVenta.setValueAt(cant, i, 3);
-                    jTableVenta.setValueAt(dm.format(totalV), i, 4);
+                    jTableVenta.setValueAt(FormatoPesos.formato(totalV), i, 4);
                     utilidaTotal.set(i, (precio-rs.getDouble(4))* cant);
                     System.out.println(utilidaTotal);
                     total();
@@ -290,9 +282,9 @@ public final class Ventas extends javax.swing.JFrame {
                     String[] datos = new String[5];
                     datos[0] = rs.getString(1);
                     datos[1] = rs.getString(2);
-                    datos[2] = dm.format(rs.getInt(3));
+                    datos[2] = FormatoPesos.formato(rs.getInt(3));
                     datos[3] = "1";
-                    datos[4] = dm.format(rs.getInt(3));
+                    datos[4] = FormatoPesos.formato(rs.getInt(3));
                     tabla.addRow(datos);
                     Object obg = rs.getDouble(3)-rs.getDouble(4);
                     utilidaTotal.add(obg);
@@ -433,10 +425,6 @@ public final class Ventas extends javax.swing.JFrame {
     }
 
     public void cambiarCant() {
-        DecimalFormatSymbols sm = new DecimalFormatSymbols();
-        sm.setDecimalSeparator('.');
-        sm.setGroupingSeparator(',');
-        DecimalFormat dm = new DecimalFormat("###,###",sm);
         int row = jTableVenta.getSelectedRow();
         String codigo = jTableVenta.getValueAt(row, 0).toString();
         int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
@@ -444,7 +432,7 @@ public final class Ventas extends javax.swing.JFrame {
         int total1 = cant * precio;
         double util = (precio - Utilidad.costo(codigo))*cant;
         utilidaTotal.set(row, util);
-        jTableVenta.setValueAt(dm.format(total1), row, 4);
+        jTableVenta.setValueAt(FormatoPesos.formato(total1), row, 4);
     }
 
     public static int tabla(String codigo) {
@@ -457,7 +445,24 @@ public final class Ventas extends javax.swing.JFrame {
         return l;
     }
 
-
+    void SumarCaja(){
+        try {
+            double valor = Double.parseDouble(jTextFieldTotal.getText().replace(",", ""));
+            double total = Double.parseDouble(Administrador.jLabelCaja.getText().replace(",", ""))+valor;
+            Connection cn = Conexion.Conexion();
+            PreparedStatement ps = cn.prepareStatement("insert into caja (id,concepto,valor,total,fecha,hora) values (?,?,?,?,?,?)");
+            ps.setInt(1, 0);
+            ps.setString(2, "factura #"+jLabelNoVenta.getText());
+            ps.setDouble(3, valor);
+            ps.setDouble(4, total);
+            ps.setDate(5, new Date(Fechas.fechaActualDate().getTime()));
+            ps.setTime(6, new Time(Fechas.fechaActualDate().getTime()));
+            ps.executeUpdate();
+            Administrador.jLabelCaja.setText(FormatoPesos.formato(total));
+        } catch (Exception e) {
+            System.err.println("Error al Sumar Caja: " +e);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -914,14 +919,11 @@ public final class Ventas extends javax.swing.JFrame {
     }//GEN-LAST:event_jTableVentaKeyPressed
 
     private void jTableVentaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableVentaKeyReleased
-        DecimalFormatSymbols dfs = new DecimalFormatSymbols();
-        dfs.setDecimalSeparator('.');
-        dfs.setGroupingSeparator(',');
-        DecimalFormat df = new DecimalFormat("###,###",dfs);
+        
         
         int fila = jTableVenta.getSelectedRow();
         int precio = Integer.parseInt(jTableVenta.getValueAt(fila,2).toString().replace(",", ""));
-        jTableVenta.setValueAt(df.format(precio), fila, 2);
+        jTableVenta.setValueAt(FormatoPesos.formato(precio), fila, 2);
         if (!Validaciones.validarEnter(evt)) {
             cambiarCant();
             total();

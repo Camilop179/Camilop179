@@ -82,7 +82,7 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Ingrese los datos, porfavor.");
         }
     }
-     
+   
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

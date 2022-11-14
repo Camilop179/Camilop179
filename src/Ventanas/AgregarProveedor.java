@@ -7,12 +7,10 @@ import Clases.Validaciones;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
-import Ventanas.Producto;
 import java.awt.HeadlessException;
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.SQLException;
-import java.util.Locale;
 
 /**
  *

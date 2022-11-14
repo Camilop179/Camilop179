@@ -29,6 +29,7 @@ public class Fechas {
          Date fecha_a = new Date();
         return fecha_a;
     }
+     
     public static LocalTime horaActual(){
         LocalTime hora = LocalTime.now();
         return hora;

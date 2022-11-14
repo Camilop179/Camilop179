@@ -1,4 +1,3 @@
-
 package Ventanas;
 
 import Clases.Conexion;
@@ -20,7 +19,7 @@ import javax.swing.JOptionPane;
 public final class Producto extends javax.swing.JFrame {
 
     public static int idp;
-    
+
     public Producto() {
         Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
@@ -40,7 +39,7 @@ public final class Producto extends javax.swing.JFrame {
     }
 
     public static void modificar(int id) {
-        try { 
+        try {
             Connection cn;
             cn = Conexion.Conexion();
             PreparedStatement pr;
@@ -60,6 +59,7 @@ public final class Producto extends javax.swing.JFrame {
                 jComboBoxMarca.setSelectedItem(rs.getString(15));
                 jComboBoxTipo_Producto.setSelectedItem(rs.getString(16));
                 jComboBoxSeccion.setSelectedItem(rs.getString(17));
+                jDateChooser_fechav.setDate(new java.util.Date(rs.getDate(13).getTime()));
             }
             cn.close();
         } catch (SQLException e) {
@@ -73,7 +73,7 @@ public final class Producto extends javax.swing.JFrame {
 
     public static void llenarSeccion() {
         String col = "Seccion";
-       llenarCombo(jComboBoxSeccion, "seccion", col);
+        llenarCombo(jComboBoxSeccion, "seccion", col);
     }
 
     public static void llenarProveedor() {
@@ -83,14 +83,15 @@ public final class Producto extends javax.swing.JFrame {
 
     public static void llenarMarca() {
         String col = "Marca";
-        llenarCombo(jComboBoxMarca, col,"marca");
+        llenarCombo(jComboBoxMarca, col, "marca");
     }
-    public static void llenarCombo(JComboBox jCom, String columna,String tabla) {
+
+    public static void llenarCombo(JComboBox jCom, String columna, String tabla) {
         try {
             Connection cn;
             cn = Conexion.Conexion();
             PreparedStatement pr;
-            pr = cn.prepareStatement("select "+columna +" from "+tabla);
+            pr = cn.prepareStatement("select " + columna + " from " + tabla);
             ResultSet rs = pr.executeQuery();
             jCom.addItem("Selecciona");
             while (rs.next()) {
@@ -104,7 +105,8 @@ public final class Producto extends javax.swing.JFrame {
             System.err.println(e);
         }
     }
-    public void actualizar(int id){
+
+    public void actualizar(int id) {
         String codigo = jTextFieldCodigo.getText();
         String codigo_B = jTextFieldCodigoB.getText();
         String product = jTextFieldProducto.getText();
@@ -117,14 +119,16 @@ public final class Producto extends javax.swing.JFrame {
         String seccion = jComboBoxSeccion.getSelectedItem().toString();
         String prov = jComboBoxProveedor.getSelectedItem().toString();
         String marca = jComboBoxMarca.getSelectedItem().toString();
-
+        java.util.Date fecha_v = jDateChooser_fechav.getDate();
+        java.sql.Date fecha_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
+        java.sql.Date fecha_v_bd = new java.sql.Date(fecha_v.getTime());
         if (!("".equals(codigo + codigo_B + product + tipo + seccion) && precio_C + precio_V == 0)) {
             try {
                 Connection cn = Conexion.Conexion();
                 PreparedStatement pre = cn.prepareStatement("Update producto set codigo = ?, codigo_barras=?, producto=?, precio_compra=?, precio_venta=?, "
                         + "cantidad=?, utilidad=?, porcentaje_utilidad=?, tipo=?, seccion=?, marca=?, proveedor=?, idUsuario=?, fecha_ingreso=?,"
                         + "fecha_vencimiento=?,total_cost=? where idProducto=?");
-             
+
                 pre.setString(1, codigo);
                 pre.setString(2, codigo_B);
                 pre.setString(3, product);
@@ -138,7 +142,9 @@ public final class Producto extends javax.swing.JFrame {
                 pre.setString(11, marca);
                 pre.setString(12, prov);
                 pre.setInt(13, Login.idUsuario);
-                pre.setDouble(16, (precio_C*cantidad));
+                pre.setDate(14, fecha_i_bd);
+                pre.setDate(15, fecha_v_bd);
+                pre.setDouble(16, (precio_C * cantidad));
                 pre.setInt(17, id);
 
                 pre.executeUpdate();
@@ -160,28 +166,32 @@ public final class Producto extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
             }
         }
-}
+    }
+
     public void agregar() {
         String codigo = jTextFieldCodigo.getText();
-        
+
         String codigo_B = jTextFieldCodigoB.getText();
-        
+
         String product = jTextFieldProducto.getText();
-        
+
         Double precio_C = Double.parseDouble(jTextFieldPrecio_C.getText());
-        
+
         Double precio_V = Double.parseDouble(jTextFieldPrecio_V.getText());
-        
+
         int cantidad = Integer.parseInt(jTextFieldCantidad.getText());
-        
+
         Double utilidad = Double.parseDouble(jTextFieldUtilidad.getText());
-        
+
         Double utilidad_Por = Double.parseDouble(jTextFieldUtilidad_Por.getText());
-        
-        String tipo= jComboBoxTipo_Producto.getSelectedItem().toString();
-        
+
+        String tipo = jComboBoxTipo_Producto.getSelectedItem().toString();
+
+        java.util.Date fecha_v = jDateChooser_fechav.getDate();
+        java.sql.Date fecha_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
+        java.sql.Date fecha_v_bd = new java.sql.Date(fecha_v.getTime());
         String seccion = jComboBoxSeccion.getSelectedItem().toString();
-        
+
         String prov = jComboBoxProveedor.getSelectedItem().toString();
         String marca = jComboBoxMarca.getSelectedItem().toString();
 
@@ -202,11 +212,13 @@ public final class Producto extends javax.swing.JFrame {
                 pre.setDouble(9, utilidad_Por);
 
                 pre.setInt(10, Login.idUsuario);
+                pre.setDate(11, fecha_i_bd);
+                pre.setDate(12, fecha_v_bd);
                 pre.setString(13, prov);
                 pre.setString(14, marca);
                 pre.setString(15, tipo);
                 pre.setString(16, seccion);
-                pre.setDouble(17, precio_C*cantidad);
+                pre.setDouble(17, precio_C * cantidad);
 
                 pre.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Registro exitoso");
@@ -230,17 +242,18 @@ public final class Producto extends javax.swing.JFrame {
                 System.err.println("Error al ingresar el producto " + e);
                 JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo. \n" + e);
             }
-        }else{
+        } else {
             JOptionPane.showMessageDialog(this, "Llene Todos Los Campos");
         }
     }
+
     public void cerra() {
         try {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosing(WindowEvent e) {
-                    Catalogo.vent=0;
+                    Catalogo.vent = 0;
                 }
             });
         } catch (Exception e) {
@@ -259,7 +272,6 @@ public final class Producto extends javax.swing.JFrame {
         }
 
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -298,6 +310,8 @@ public final class Producto extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jComboBoxProveedor = new javax.swing.JComboBox<>();
+        jDateChooser_fechav = new com.toedter.calendar.JDateChooser();
+        jLabel16 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -450,6 +464,9 @@ public final class Producto extends javax.swing.JFrame {
             }
         });
 
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setText("Fecha Vencimiento");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -466,12 +483,13 @@ public final class Producto extends javax.swing.JFrame {
                         .addGap(10, 10, 10)
                         .addComponent(jLabelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(56, 56, 56)
+                        .addGap(37, 37, 37)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel6)
                             .addComponent(jLabel4)
                             .addComponent(jLabel1)
-                            .addComponent(jLabel3))
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel16))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
@@ -493,8 +511,13 @@ public final class Producto extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jLabel11))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(jDateChooser_fechav, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addGap(19, 19, 19)))
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING))))
@@ -574,14 +597,18 @@ public final class Producto extends javax.swing.JFrame {
                                     .addComponent(jLabel14)
                                     .addComponent(jComboBoxMarca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(layout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addComponent(jLabel9))
+                            .addGroup(layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel15)
-                                    .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(28, 28, 28)
-                                .addComponent(jLabel9)))))
-                .addGap(46, 46, 46)
+                                    .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel16)
+                                    .addComponent(jDateChooser_fechav, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelListo, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12))
@@ -600,11 +627,11 @@ public final class Producto extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldCantidadActionPerformed
 
     private void jLabelListoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelListoMouseClicked
-        if(Catalogo.vent==0){
+        if (Catalogo.vent == 0) {
             agregar();
-        }else{
+        } else {
             actualizar(idp);
-            Catalogo.vent=0;
+            Catalogo.vent = 0;
             dispose();
         }
     }//GEN-LAST:event_jLabelListoMouseClicked
@@ -633,7 +660,7 @@ public final class Producto extends javax.swing.JFrame {
         if (Validaciones.validarString(evt)) {
             getToolkit().beep();
             evt.consume();
-        } 
+        }
     }//GEN-LAST:event_jTextFieldPrecio_CKeyTyped
 
     private void jTextFieldUtilidad_PorKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldUtilidad_PorKeyTyped
@@ -661,18 +688,18 @@ public final class Producto extends javax.swing.JFrame {
 
         if (index.equals("Agregar")) {
             jComboBoxTipo_Producto.removeAllItems();
-            new Tipo().setVisible(true);       
+            new Tipo().setVisible(true);
         }
     }//GEN-LAST:event_jComboBoxTipo_ProductoActionPerformed
 
     private void jComboBoxSeccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxSeccionActionPerformed
         String index = jComboBoxSeccion.getSelectedItem().toString();
-        
+
         if (index.equals("Agregar")) {
             jComboBoxSeccion.removeAllItems();
             new Seccion().setVisible(true);
         }
-        
+
     }//GEN-LAST:event_jComboBoxSeccionActionPerformed
 
     private void jComboBoxMarcaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBoxMarcaActionPerformed
@@ -700,6 +727,7 @@ public final class Producto extends javax.swing.JFrame {
     private static javax.swing.JComboBox<String> jComboBoxProveedor;
     public static javax.swing.JComboBox<String> jComboBoxSeccion;
     public static javax.swing.JComboBox<String> jComboBoxTipo_Producto;
+    private static com.toedter.calendar.JDateChooser jDateChooser_fechav;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -707,6 +735,7 @@ public final class Producto extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

@@ -2,6 +2,9 @@ package Ventanas;
 
 import Clases.Fondo;
 import Clases.Imagenes;
+import Clases.Conexion;
+import Clases.Fechas;
+import Clases.FormatoPesos;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
@@ -10,6 +13,9 @@ import Clases.ImagenBoton;
 import Clases.TotalVentas;
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
+import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -42,16 +48,66 @@ public final class Administrador extends javax.swing.JFrame {
         new Imagenes("Administrador.png", jLabelAdministrador);
         new Imagenes("icons8_agregar_usuario.png", jLabelAgregarUsuario);
 
-        
         invisible();
         cerra();
         ventas();
+        caja();
+        ptm();
     }
-    public static void ventas(){
+
+    public void caja() {
+        try ( Connection cn = Conexion.Conexion()) {
+
+            PreparedStatement pr1 = cn.prepareStatement("select max(id) from caja");
+            ResultSet rs1 = pr1.executeQuery();
+            while (rs1.next()) {
+                PreparedStatement ps = cn.prepareStatement("select total from caja where fecha =? and id =?");
+                ps.setDate(1, new java.sql.Date(Fechas.fechaActualDate().getTime()));
+                ps.setInt(2, rs1.getInt(1));
+                ResultSet rs = ps.executeQuery();
+                
+                while (rs.next()) {
+                    if (rs.getInt(1) != 0) {
+                        jLabelCaja.setText(FormatoPesos.formato(rs.getDouble(1)));
+                    } else {
+                        new Caja_Dia(this, true).setVisible(true);
+                    }
+                }
+            }
+
+            cn.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void ptm() {
+        try ( Connection cn = Conexion.Conexion()) {
+            PreparedStatement pr1 = cn.prepareStatement("select max(id) from ptm");
+            ResultSet rs1 = pr1.executeQuery();
+            while (rs1.next()) {
+                PreparedStatement ps = cn.prepareStatement("select total from ptm where fecha =? and id =?");
+                ps.setDate(1, new java.sql.Date(Fechas.fechaActualDate().getTime()));
+                ps.setInt(2, rs1.getInt(1));
+                ResultSet rs = ps.executeQuery();
+                
+                while (rs.next()) {
+                    jLabelPtm.setText(FormatoPesos.formato(rs.getDouble(1)));
+                }
+            }
+
+            cn.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public static void ventas() {
         jLabelVentasHoy.setText(TotalVentas.VentaDia());
         jLabelVentaSemana.setText(TotalVentas.VentaSemana());
         VentaMEs.setText(TotalVentas.VentaMes());
     }
+
     public void cerra() {
 
         try {
@@ -88,7 +144,6 @@ public final class Administrador extends javax.swing.JFrame {
         jLabelAgregarUsuario.setVisible(false);
     }
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -119,6 +174,13 @@ public final class Administrador extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         JBotonCerrar = new javax.swing.JButton();
         Minimizar = new javax.swing.JButton();
+        jLabel11 = new javax.swing.JLabel();
+        jLabelCaja = new javax.swing.JLabel();
+        jLabelPtm = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        jTextFieldPtm = new javax.swing.JTextField();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Administrador");
@@ -355,11 +417,43 @@ public final class Administrador extends javax.swing.JFrame {
         });
         getContentPane().add(Minimizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(844, 19, 25, 25));
 
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setText("CAJA");
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 390, -1, -1));
+
+        jLabelCaja.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabelCaja.setForeground(new java.awt.Color(204, 204, 204));
+        jLabelCaja.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelCaja.setText("jLabel5");
+        jLabelCaja.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        getContentPane().add(jLabelCaja, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 420, 240, 50));
+
+        jLabelPtm.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelPtm.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelPtm.setText("jLabel5");
+        getContentPane().add(jLabelPtm, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 480, 190, 30));
+
+        jLabel12.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel12.setText("PTM");
+        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 460, -1, -1));
+        getContentPane().add(jTextFieldPtm, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 430, 190, 30));
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Retirar", "Consignar" }));
+        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 390, -1, -1));
+
+        jButton2.setText("jButton1");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 430, 30, 30));
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
-       
+
         if (!Ventas.m) {
             new Ventas().setVisible(true);
         } else {
@@ -394,7 +488,7 @@ public final class Administrador extends javax.swing.JFrame {
     private void jLabelCerrarSesionMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelCerrarSesionMouseClicked
         int i = JOptionPane.showConfirmDialog(null, "¿Esta seguro de Salir?", "Cerrar Sesion", JOptionPane.YES_NO_OPTION);
         if (i == 0) {
-            m=false;
+            m = false;
             this.dispose();
             new Login().setVisible(true);
         }
@@ -442,7 +536,7 @@ public final class Administrador extends javax.swing.JFrame {
         Object[] opc = new Object[]{"SI", "NO"};
         int i = JOptionPane.showOptionDialog(null, "¿Desea salir?", "salir", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opc, opc[0]);
         if (i == 0) {
-            m=false;
+            m = false;
             System.exit(0);
         }
     }//GEN-LAST:event_JBotonCerrarActionPerformed
@@ -451,12 +545,61 @@ public final class Administrador extends javax.swing.JFrame {
         this.setState(ICONIFIED);
     }//GEN-LAST:event_MinimizarActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        double valor = Double.parseDouble(jTextFieldPtm.getText().trim().replace(",", ""));
+        if (jComboBox1.getSelectedItem() == "Retirar") {
+            CambioCaja(-valor, "Retiro Ptm");
+            Cambioptm(valor, "Retiro Ptm");
+            jTextFieldPtm.setText("0");
+        } else {
+            CambioCaja(valor, "Recarga Ptm");
+            Cambioptm(-valor, "Recatga Ptm");
+            jTextFieldPtm.setText("0");
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
+    void Cambioptm(double valor, String concepto) {
+        try ( Connection cn = Conexion.Conexion()) {
+            double total = Double.parseDouble(jLabelPtm.getText().trim().replace(",", "")) + (valor);
+            PreparedStatement ps = cn.prepareStatement("insert into ptm (id,Concepto,Valor,Total,Hora,Fecha) values(?,?,?,?,?,?)");
+            ps.setInt(1, 0);
+            ps.setString(2, concepto);
+            ps.setDouble(3, valor);
+            ps.setDouble(4, total);
+            ps.setTime(5, new Time(Fechas.fechaActualDate().getTime()));
+            ps.setDate(6, new Date(Fechas.fechaActualDate().getTime()));
+            ps.execute();
+            jLabelPtm.setText(String.valueOf(total));
+        } catch (SQLException ex) {
+            System.err.println(ex);
+        }
+    }
+
+    void CambioCaja(double valor, String concepto) {
+        try ( Connection cn = Conexion.Conexion()) {
+            double total = Double.parseDouble(jLabelCaja.getText().trim().replace(",", "")) + (valor);
+            PreparedStatement ps = cn.prepareStatement("insert into caja (id,Concepto,Valor,Total,Hora,Fecha) values(?,?,?,?,?,?)");
+            ps.setInt(1, 0);
+            ps.setString(2, concepto);
+            ps.setDouble(3, valor);
+            ps.setDouble(4, total);
+            ps.setTime(5, new Time(Fechas.fechaActualDate().getTime()));
+            ps.setDate(6, new Date(Fechas.fechaActualDate().getTime()));
+            ps.execute();
+            jLabelCaja.setText(String.valueOf(total));
+        } catch (SQLException ex) {
+            System.err.println(ex);
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JBotonCerrar;
     private javax.swing.JButton Minimizar;
     private static javax.swing.JLabel VentaMEs;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -465,7 +608,9 @@ public final class Administrador extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabelAdministrador;
     private javax.swing.JLabel jLabelAgregarUsuario;
+    protected static javax.swing.JLabel jLabelCaja;
     private javax.swing.JLabel jLabelCerrarSesion;
+    private javax.swing.JLabel jLabelPtm;
     public static javax.swing.JLabel jLabelVentaSemana;
     private static javax.swing.JLabel jLabelVentasHoy;
     private javax.swing.JLabel jLabelbarra;
@@ -474,5 +619,6 @@ public final class Administrador extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelreportes;
     private javax.swing.JLabel jLabelventas;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JTextField jTextFieldPtm;
     // End of variables declaration//GEN-END:variables
 }
