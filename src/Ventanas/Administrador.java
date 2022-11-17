@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import Clases.ImagenBoton;
 import Clases.TotalVentas;
+import Clases.Validaciones;
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.*;
@@ -436,6 +437,15 @@ public final class Administrador extends javax.swing.JFrame {
         jLabel12.setForeground(new java.awt.Color(255, 255, 255));
         jLabel12.setText("PTM");
         getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 460, -1, -1));
+
+        jTextFieldPtm.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldPtmKeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextFieldPtmKeyTyped(evt);
+            }
+        });
         getContentPane().add(jTextFieldPtm, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 430, 190, 30));
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Retirar", "Consignar" }));
@@ -557,6 +567,19 @@ public final class Administrador extends javax.swing.JFrame {
             jTextFieldPtm.setText("0");
         }
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTextFieldPtmKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPtmKeyReleased
+        if(!jTextFieldPtm.getText().equals("") && !Validaciones.validarString(evt)){
+            jTextFieldPtm.setText(FormatoPesos.formato(Double.valueOf(jTextFieldPtm.getText().replace(",", ""))));
+            evt.consume();
+        }
+    }//GEN-LAST:event_jTextFieldPtmKeyReleased
+
+    private void jTextFieldPtmKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPtmKeyTyped
+        if(Validaciones.validarString(evt)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_jTextFieldPtmKeyTyped
 
     void Cambioptm(double valor, String concepto) {
         try ( Connection cn = Conexion.Conexion()) {

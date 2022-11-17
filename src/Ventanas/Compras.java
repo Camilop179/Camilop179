@@ -8,6 +8,7 @@ import Clases.ActualizarCantidad;
 import Clases.Conexion;
 import Clases.Fechas;
 import Clases.Fondo;
+import Clases.FormatoPesos;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Utilidad;
@@ -194,13 +195,14 @@ public class Compras extends javax.swing.JFrame {
         }
     }
 
-     public static void buscarProveedor() {
+    public static void buscarProveedor() {
         if (!jTextFieldNit.getText().equals("")) {
             try {
 
                 String nit = jTextFieldNit.getText();
                 Connection cn = Conexion.Conexion();
-                PreparedStatement pr = cn.prepareStatement("select Nombre,Asesor from proveedor where Nit = " + nit + "");
+                PreparedStatement pr = cn.prepareStatement("select Nombre,Asesor from proveedor where Nit = ?");
+                pr.setString(1, nit);
                 ResultSet rs = pr.executeQuery();
                 if (rs.next()) {
                     String nombre = rs.getString(1);
@@ -222,10 +224,9 @@ public class Compras extends javax.swing.JFrame {
     }
 
     public void limpiar() {
-        for (int i = 0; i < jTableCompra.getRowCount(); i++) {
+        for (int i = jTableCompra.getRowCount(); i > 0; i--) {
             tabla.removeRow(i);
         }
-
         jTextFieldNit.setText("");
         jTextFieldNombre.setText("");
         jTextFieldTotal.setText("0");
@@ -249,7 +250,7 @@ public class Compras extends javax.swing.JFrame {
                 String codigo = jTableCompra.getValueAt(i, 0).toString();
                 int cantidad = Integer.parseInt(jTableCompra.getValueAt(i, 3).toString());
                 double precio = Double.parseDouble(jTableCompra.getValueAt(i, 2).toString());
-                ActualizarCantidad.aumentar(cantidad,precio, codigo);
+                ActualizarCantidad.aumentar(cantidad, precio, codigo);
                 pr.executeUpdate();
             }
             nroCompra();
@@ -265,6 +266,25 @@ public class Compras extends javax.swing.JFrame {
             t += Integer.parseInt(jTableCompra.getValueAt(i, 4).toString().replace(",", ""));
         }
         jTextFieldTotal.setText("" + t);
+    }
+
+    void caja() {
+        try {
+            double total = Double.parseDouble(Administrador.jLabelCaja.getText().replace(",", ""))
+                    - Double.valueOf(jTextFieldTotal.getText().replace(",", ""));
+            Connection cn = Conexion.Conexion();
+            PreparedStatement ps = cn.prepareStatement("insert into caja(Concepto,Valor,Total,Fecha,Hora) values(?,?,?,?,?)");
+            ps.setString(1, "FC #" + jLabelNoCompra.getText());
+            ps.setDouble(2, -Double.valueOf(jTextFieldTotal.getText().replace(",", "")));
+            ps.setDouble(3, total);
+            ps.setDate(4, new java.sql.Date(Fechas.fechaActualDate().getTime()));
+            ps.setTime(5, new Time(Fechas.fechaActualDate().getTime()));
+            ps.execute();
+            Administrador.jLabelCaja.setText(FormatoPesos.formato(total));
+            cn.close();
+        } catch (NumberFormatException | SQLException e) {
+            System.out.println(e);
+        }
     }
 
     public void compra() {
@@ -292,6 +312,7 @@ public class Compras extends javax.swing.JFrame {
             pr.setString(8, jTextFieldNombre.getText());
             if (i == 0) {
                 pr.setString(9, "Cancelado");
+                caja();
                 pr.executeUpdate();
             } else {
                 pr.setString(9, "Pendiente");
@@ -789,7 +810,7 @@ public class Compras extends javax.swing.JFrame {
         total = 0;
         limpiar();
     }//GEN-LAST:event_jButtonVenderActionPerformed
-    
+
     private void jTextFieldNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldNombreActionPerformed
 
     }//GEN-LAST:event_jTextFieldNombreActionPerformed
@@ -840,7 +861,7 @@ public class Compras extends javax.swing.JFrame {
         int precio = Integer.parseInt(jTableCompra.getValueAt(row, 2).toString());
         int total1 = cant * precio;
         double util = Utilidad.costo(codigo) - precio;
-        
+
         jTableCompra.setValueAt(total1, row, 4);
     }
     private void jTableCompraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableCompraKeyReleased
@@ -849,7 +870,7 @@ public class Compras extends javax.swing.JFrame {
             total();
         }// TODO add your handling code here:
     }//GEN-LAST:event_jTableCompraKeyReleased
-   
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonVender;
