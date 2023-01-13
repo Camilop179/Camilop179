@@ -30,8 +30,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -101,6 +99,28 @@ public final class Reportes extends javax.swing.JFrame {
         jTextFieldTotalInv1.setEditable(false);
         resumenEgresos();
         administracion();
+        creditos();
+    }
+    public void creditos(){
+        limpiar(jTable4, (DefaultTableModel) jTable4.getModel());
+        try ( Connection cn = Conexion.Conexion()) {
+                PreparedStatement pr = cn.prepareStatement("select * from ventas where FormaPago='Credito'");
+                ResultSet rs = pr.executeQuery();
+                while (rs.next()) {
+                    String[] datos = new String[5];
+                    datos[0] = rs.getString(2);
+                    datos[1] = rs.getString(4);
+                    datos[2] = rs.getString(8);
+                    datos[3] = rs.getString(7);
+                    datos[4] = rs.getString(15);
+                    DefaultTableModel df = (DefaultTableModel) jTable4.getModel();
+                    df.addRow(datos);
+                    jTable4.setModel(df);
+                }
+                total(jTable4, jTextField10, 2);
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
     }
 
     public void egreso(String concepto, double Valor) {
@@ -115,10 +135,11 @@ public final class Reportes extends javax.swing.JFrame {
             ps.execute();
             cn.close();
             DefaultTableModel tabal = (DefaultTableModel) jTable3.getModel();
-            String[] datos = new String[3];
+            String[] datos = new String[4];
             datos[0] = concepto;
             datos[1] = String.valueOf(Valor);
             datos[2] = String.valueOf(Double.parseDouble(Administrador.jLabelCaja.getText().replace(",", "")) - Valor);
+            datos[3] = String.valueOf(new Time(Fechas.fechaActualDate().getTime()));
             tabal.addRow(datos);
             jTable3.setModel(tabal);
             resta(Valor, concepto);
@@ -275,7 +296,6 @@ public final class Reportes extends javax.swing.JFrame {
         }
 
     }
-    
 
     public void tabla(JTable j) {
         df = new DefaultTableModel();
@@ -630,8 +650,16 @@ public final class Reportes extends javax.swing.JFrame {
         jTextTotalNomina = new javax.swing.JFormattedTextField();
         jPanel7 = new Fondo("FondoMenu.jpg");
         jTabbedPane3 = new javax.swing.JTabbedPane();
-        jPanel9 = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        jTextFieldCedulaCredito = new javax.swing.JTextField();
+        jLabelNombre = new javax.swing.JLabel();
+        jLabelTelefono = new javax.swing.JLabel();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        jTable4 = new javax.swing.JTable();
+        jTextField10 = new javax.swing.JTextField();
+        jTextField14 = new javax.swing.JTextField();
+        jPanel9 = new javax.swing.JPanel();
         jPanel1 = new Fondo("FondoMenu.jpg");
         jTextField1 = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
@@ -1398,35 +1426,126 @@ public final class Reportes extends javax.swing.JFrame {
         jTabbedPane3.setTabPlacement(javax.swing.JTabbedPane.LEFT);
         jTabbedPane3.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
-        jPanel9.setLayout(jPanel9Layout);
-        jPanel9Layout.setHorizontalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 982, Short.MAX_VALUE)
-        );
-        jPanel9Layout.setVerticalGroup(
-            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 482, Short.MAX_VALUE)
-        );
-
-        jTabbedPane3.addTab("Mis Creditos", jPanel9);
-
         jPanel10.setBackground(null);
         jPanel10.setForeground(null);
         jPanel10.setOpaque(false);
+
+        jLabel16.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel16.setText("CC:");
+
+        jTextFieldCedulaCredito.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextFieldCedulaCreditoKeyPressed(evt);
+            }
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldCedulaCreditoKeyReleased(evt);
+            }
+        });
+
+        jLabelNombre.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabelTelefono.setForeground(new java.awt.Color(255, 255, 255));
+
+        jTable4.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jTable4.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Nro Factura", "CC", "Valor", "Fecha", "Saldo"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable4.setRowHeight(26);
+        jTable4.setRowMargin(3);
+        jTable4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable4MouseClicked(evt);
+            }
+        });
+        jScrollPane6.setViewportView(jTable4);
+        if (jTable4.getColumnModel().getColumnCount() > 0) {
+            jTable4.getColumnModel().getColumn(0).setResizable(false);
+            jTable4.getColumnModel().getColumn(0).setPreferredWidth(100);
+            jTable4.getColumnModel().getColumn(1).setResizable(false);
+            jTable4.getColumnModel().getColumn(1).setPreferredWidth(300);
+            jTable4.getColumnModel().getColumn(2).setResizable(false);
+            jTable4.getColumnModel().getColumn(2).setPreferredWidth(400);
+            jTable4.getColumnModel().getColumn(3).setResizable(false);
+            jTable4.getColumnModel().getColumn(3).setPreferredWidth(250);
+            jTable4.getColumnModel().getColumn(4).setResizable(false);
+            jTable4.getColumnModel().getColumn(4).setPreferredWidth(150);
+        }
+
+        jTextField10.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        jTextField10.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        jTextField10.setText("$0");
 
         javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
         jPanel10.setLayout(jPanel10Layout);
         jPanel10Layout.setHorizontalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 982, Short.MAX_VALUE)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.PREFERRED_SIZE, 749, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel10Layout.createSequentialGroup()
+                            .addComponent(jLabel16)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jTextFieldCedulaCredito, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(18, 18, 18)
+                            .addComponent(jLabelNombre)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(jLabelTelefono))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(36, Short.MAX_VALUE))
         );
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 482, Short.MAX_VALUE)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel16)
+                    .addComponent(jTextFieldCedulaCredito, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelNombre)
+                    .addComponent(jLabelTelefono))
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel10Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 393, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                    .addGroup(jPanel10Layout.createSequentialGroup()
+                        .addGap(57, 57, 57)
+                        .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jTabbedPane3.addTab("Credito Cliente", jPanel10);
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+
+        jTabbedPane3.addTab("Mis Creditos", jPanel9);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
@@ -1436,9 +1555,10 @@ public final class Reportes extends javax.swing.JFrame {
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addGap(0, 145, Short.MAX_VALUE)
-                .addComponent(jTabbedPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addGap(145, 145, 145)
+                .addComponent(jTabbedPane3)
+                .addContainerGap())
         );
 
         jTabbedPane2.addTab("Creditos", jPanel7);
@@ -1812,6 +1932,11 @@ public final class Reportes extends javax.swing.JFrame {
         if (!Concepto.equals("Seleccionar") && !jTextField3.getText().equals("Valor")) {
             double valor = Double.valueOf(jTextField3.getText().trim().replace(",", ""));
             egreso(Concepto, valor);
+            jTextField3.setText("");
+            jComboBox4.setSelectedIndex(0);
+
+            jTextField3.requestFocus();
+            jComboBox4.requestFocus();
         } else if (jTextField3.getText().equals("Valor")) {
             JOptionPane.showMessageDialog(this, "No ingreso un precio");
             jTextField3.setBackground(Color.red);
@@ -1843,6 +1968,12 @@ public final class Reportes extends javax.swing.JFrame {
 
             double valor = Double.valueOf(jTextField4.getText().trim().replace(",", ""));
             egreso(Concepto, valor);
+
+            jTextField8.setText("");
+            jTextField4.setText("");
+
+            jTextField4.requestFocus();
+            jTextField8.requestFocus();
         } else if (jTextField4.getText().equals("Valor")) {
             JOptionPane.showMessageDialog(this, "No ingreso un precio");
             jTextField4.setBackground(Color.red);
@@ -1858,6 +1989,11 @@ public final class Reportes extends javax.swing.JFrame {
 
             double valor = Double.valueOf(jTextField5.getText().trim().replace(",", ""));
             egreso(Concepto, valor);
+            jTextField22.setText("");
+            jTextField5.setText("");
+
+            jTextField5.requestFocus();
+            jTextField22.requestFocus();
         } else if (jTextField5.getText().equals("Valor")) {
             JOptionPane.showMessageDialog(this, "No ingreso un precio");
             jTextField5.setBackground(Color.red);
@@ -1870,9 +2006,12 @@ public final class Reportes extends javax.swing.JFrame {
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         String Concepto = jTextField9.getText();
         if (!Concepto.equals("Concepto") && !jTextField7.getText().equals("Valor")) {
-
             double valor = Double.valueOf(jTextField7.getText().trim().replace(",", ""));
             egreso(Concepto, valor);
+            jTextField9.setText("");
+            jTextField7.setText("");
+            jTextField7.requestFocus();
+            jTextField9.requestFocus();
         } else if (jTextField7.getText().equals("Valor")) {
             JOptionPane.showMessageDialog(this, "No ingreso un precio");
             jTextField7.setBackground(Color.red);
@@ -1881,6 +2020,44 @@ public final class Reportes extends javax.swing.JFrame {
             jTextField9.setBackground(Color.red);
         }
     }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jTextFieldCedulaCreditoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCedulaCreditoKeyPressed
+
+            
+    }//GEN-LAST:event_jTextFieldCedulaCreditoKeyPressed
+
+    private void jTable4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable4MouseClicked
+        if(evt.getClickCount()==2){
+            
+            
+        }
+    }//GEN-LAST:event_jTable4MouseClicked
+
+    private void jTextFieldCedulaCreditoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCedulaCreditoKeyReleased
+        limpiar(jTable4, (DefaultTableModel) jTable4.getModel());
+            try ( Connection cn = Conexion.Conexion()) {
+                PreparedStatement pr = cn.prepareStatement("select c.nombres,c.celular,c.saldo,v.nroVentas,v.precio_Total,v.fecha,v.saldo,v.cedula_cliente from clientes c join ventas v on "
+                        + "c.cedula=v.cedula_cliente where v.FormaPago='Credito' and c.cedula like ?");
+                pr.setString(1, "%"+jTextFieldCedulaCredito.getText()+"%");
+                ResultSet rs = pr.executeQuery();
+                while (rs.next()) {
+                    jLabelNombre.setText(rs.getString(1));
+                    jLabelTelefono.setText(rs.getString(2));
+                    String[] datos = new String[5];
+                    datos[0] = rs.getString(4);
+                    datos[1] = rs.getString(8);
+                    datos[2] = rs.getString(5);
+                    datos[3]=rs.getString(6);
+                    datos[4]=rs.getString(7);
+                    DefaultTableModel df = (DefaultTableModel) jTable4.getModel();
+                    df.addRow(datos);
+                    jTable4.setModel(df);
+                }
+                total(jTable4, jTextField10, 2);
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
+    }//GEN-LAST:event_jTextFieldCedulaCreditoKeyReleased
     //validar si se tipea un numero
     void numero(KeyEvent evt) {
         if (Validaciones.validarString(evt)) {
@@ -1922,6 +2099,7 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
@@ -1948,9 +2126,11 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelNombre;
     private javax.swing.JLabel jLabelNombreE;
     private javax.swing.JLabel jLabelNombreN;
     private javax.swing.JLabel jLabelNroNomina;
+    private javax.swing.JLabel jLabelTelefono;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
@@ -1966,17 +2146,21 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
     private static javax.swing.JTable jTable1;
     public static javax.swing.JTable jTable2;
     private javax.swing.JTable jTable3;
+    private javax.swing.JTable jTable4;
     private static javax.swing.JTable jTableDeduccion;
     private javax.swing.JTable jTableDevengado;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField12;
     private javax.swing.JTextField jTextField13;
+    private javax.swing.JTextField jTextField14;
     private javax.swing.JTextField jTextField18;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField22;
@@ -1989,6 +2173,7 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField9;
     private javax.swing.JTextField jTextFieldBuscar;
     private javax.swing.JTextField jTextFieldCCN;
+    private javax.swing.JTextField jTextFieldCedulaCredito;
     private javax.swing.JTextField jTextFieldEmpleado;
     private javax.swing.JTextField jTextFieldNovedad;
     private javax.swing.JTextField jTextFieldNovedad1;

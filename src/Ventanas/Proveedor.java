@@ -11,7 +11,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author harol
  */
-public class Proveedor extends javax.swing.JFrame {
+public class Proveedor extends javax.swing.JDialog {
 
     /**
      * Creates new form Proveedor
@@ -64,7 +64,6 @@ public class Proveedor extends javax.swing.JFrame {
             String direccion = jTextFieldDireccion.getText();
             String asesor = jTextFieldAsesor.getText();
             try {
-
                 Connection cn = Conexion.Conexion();
                 PreparedStatement pre = cn.prepareStatement("INSERT INTO proveedor (idproveedor,Nit,Nombre,Celular,Direccion,Correo,Asesor) value(?,?,?,?,?,?,?)");
                 pre.setInt(1, 0);

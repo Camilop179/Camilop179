@@ -17,8 +17,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
 import java.text.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
@@ -43,7 +41,6 @@ public class Compras extends javax.swing.JFrame {
         Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
         initComponents();
-        n = true;
         new ImagenBoton("vender.png", jButtonVender, 45, 45);
 
         new Imagenes("Adelante.png", jLabelRegresar1);
@@ -120,7 +117,7 @@ public class Compras extends javax.swing.JFrame {
 
             while (rs.next()) {
                 jLabelFecha.setText(rs.getString(3));
-                jDateChooser_fechav.setDateFormatString(rs.getString(4));
+                jDateChooser_fechav.setDate(new java.util.Date(rs.getDate(4).getTime()));
                 jTextFieldTotal.setText(rs.getString(5));
                 jComboBox1.setSelectedItem(rs.getString(6));
                 jTextFieldNit.setText(rs.getString(7));
@@ -198,7 +195,6 @@ public class Compras extends javax.swing.JFrame {
     public static void buscarProveedor() {
         if (!jTextFieldNit.getText().equals("")) {
             try {
-
                 String nit = jTextFieldNit.getText();
                 Connection cn = Conexion.Conexion();
                 PreparedStatement pr = cn.prepareStatement("select Nombre,Asesor from proveedor where Nit = ?");
@@ -209,9 +205,14 @@ public class Compras extends javax.swing.JFrame {
                     String asesor = rs.getString(2);
                     jTextFieldNombre.setText(nombre);
                     jTextFieldAsesorr.setText(asesor);
-
                     jTextFieldNombre.requestFocus();
-
+                } else {
+                    int i = JOptionPane.showConfirmDialog(null, "No se encuentra cliente", "¿desea ingresar el cliente?", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println(i);
+                    if (i == 0) {
+                        n = true;
+                        new Proveedor().setVisible(true);
+                    }
                 }
                 cn.close();
             } catch (SQLException e) {
@@ -225,7 +226,7 @@ public class Compras extends javax.swing.JFrame {
 
     public void limpiar() {
         for (int i = jTableCompra.getRowCount(); i > 0; i--) {
-            tabla.removeRow(i);
+            tabla.removeRow(i - 1);
         }
         jTextFieldNit.setText("");
         jTextFieldNombre.setText("");
@@ -287,7 +288,7 @@ public class Compras extends javax.swing.JFrame {
         }
     }
 
-    public void compra() {
+    public void compra(String FormaPago) {
         try {
             String fecha_i = Fechas.fechaActual();
             String fecha_v = ((JTextField) jDateChooser_fechav.getDateEditor().getUiComponent()).getText();
@@ -298,7 +299,6 @@ public class Compras extends javax.swing.JFrame {
 
             java.sql.Date fecho_V_bd = new java.sql.Date(fecha_v_d.getTime());
 
-            int i = jComboBox1.getSelectedIndex();
             Connection cn = Conexion.Conexion();
             PreparedStatement pr = cn.prepareStatement("INSERT INTO compra (idcompra,numero_factura,fecha_factura,fecha_vencimiento,precio_factura,forma_pago"
                     + ",Nit,proveedor,estado) values(?,?,?,?,?,?,?,?,?)");
@@ -310,15 +310,8 @@ public class Compras extends javax.swing.JFrame {
             pr.setString(6, jComboBox1.getSelectedItem().toString());
             pr.setString(7, jTextFieldNit.getText());
             pr.setString(8, jTextFieldNombre.getText());
-            if (i == 0) {
-                pr.setString(9, "Cancelado");
-                caja();
-                pr.executeUpdate();
-            } else {
-                pr.setString(9, "Pendiente");
-
-                pr.executeUpdate();
-            }
+            pr.setString(9, FormaPago);
+            pr.executeUpdate();
 
         } catch (NumberFormatException | SQLException | ParseException e) {
             JOptionPane.showMessageDialog(null, "Error al Conectar a la Base de Datos \n " + e);
@@ -331,8 +324,7 @@ public class Compras extends javax.swing.JFrame {
         double totald = Double.parseDouble(jTableCompra.getValueAt(row, 4).toString());
         total -= totald;
         jTextFieldTotal.setText("" + total);
-        double util = Utilidad.utilidad(jTableCompra.getValueAt(row, 0).toString());
-        tabla.removeRow(jTableCompra.getSelectedRow());
+        tabla.removeRow(row);
     }
 
     /**
@@ -772,6 +764,7 @@ public class Compras extends javax.swing.JFrame {
                 jTextFieldCodigo.setText("");
 
             } else {
+                n = true;
                 new Catalogo().setVisible(true);
             }
 
@@ -803,9 +796,22 @@ public class Compras extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldNitKeyPressed
 
     private void jButtonVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVenderActionPerformed
-        compra();
-        detalleCompra();
-        JOptionPane.showMessageDialog(null, "Compra exitosa");
+
+        int i = jComboBox1.getSelectedIndex();
+        String FormaPago;
+        if (i == 0) {
+            FormaPago = "Cancelado";
+            compra(FormaPago);
+            detalleCompra();
+            caja();
+            JOptionPane.showMessageDialog(null, "Compra exitosa");
+        } else {
+            FormaPago = "Pendiente";
+            
+            compra(FormaPago);
+            detalleCompra();
+            JOptionPane.showMessageDialog(null, "Compra exitosa");
+        }
 
         total = 0;
         limpiar();
@@ -834,12 +840,16 @@ public class Compras extends javax.swing.JFrame {
             ResultSet rs = pr.executeQuery();
             while (rs.next()) {
                 int nur = rs.getInt(1);
-                if (nur < nro) {
+
+                if (nur <= nro) {
+                    jTextFieldCodigo.setEditable(true);
+                    jTextFieldNit.setEditable(true);
+                    limpiar();
                     nroCompra();
                 } else {
                     limpiar();
-                    nur++;
-                    jLabelNoCompra.setText("" + nur);
+                    nro++;
+                    jLabelNoCompra.setText("" + nro);
                     buscarCompra();
                     buscarDetalle();
                 }

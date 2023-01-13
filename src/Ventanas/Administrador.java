@@ -12,11 +12,24 @@ import javax.swing.JOptionPane;
 import Clases.ImagenBoton;
 import Clases.TotalVentas;
 import Clases.Validaciones;
+import Clases.Utilidad;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.*;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
+import java.time.ZoneId;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JComponent;
+import javax.swing.plaf.basic.BasicProgressBarUI;
 
 /**
  *
@@ -38,22 +51,84 @@ public final class Administrador extends javax.swing.JFrame {
         Minimizar.setContentAreaFilled(false);
         setLocationRelativeTo(null);
         setTitle("Menu");
+        this.setSize(910, 587);
         Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
 
         new Imagenes("Cerrar_Sesion.png", jLabelCerrarSesion);
         new Imagenes("ventas.png", jLabelventas);
+        new Imagenes("ventas.png", jLabelComprobante);
         new Imagenes("Factura.png", jLabelfacturas);
         new Imagenes("Inventario.png", jLabelinventario);
         new Imagenes("Reportes.png", jLabelreportes);
         new Imagenes("Administrador.png", jLabelAdministrador);
         new Imagenes("icons8_agregar_usuario.png", jLabelAgregarUsuario);
 
+        jProgressBar1.setStringPainted(true);
         invisible();
         cerra();
         ventas();
         caja();
         ptm();
+        progesoUtilidad();
+    }
+
+    public void progesoUtilidad() {
+        jProgressBar1.setUI(new BasicProgressBarUI(){
+            @Override
+            protected void paintDeterminate(Graphics g, JComponent c) {
+                Graphics2D g2 = (Graphics2D) g;
+                int ancho = jProgressBar1.getWidth();
+                int alto = jProgressBar1.getHeight();
+                
+                double por = jProgressBar1.getPercentComplete();
+                
+                ancho = (int) (ancho*por);
+                g2.setColor(Color.RED);
+                Rectangle progreso = new Rectangle(0,0,ancho,alto);
+                g2.fill(progreso);
+                
+            }
+            
+        });
+        try ( Connection cn = Conexion.Conexion()) {
+            int utilidad = 0;
+            LocalDate fecha = LocalDate.now();
+            int mesNum = fecha.getMonthValue();
+            int añoNum = 0;
+            if (mesNum == 1) {
+                mesNum = 12;
+                añoNum = fecha.getYear() - 1;
+            } else {
+                mesNum--;
+                añoNum = fecha.getYear();
+            }
+            Month mes = Month.of(mesNum);
+            LocalDate fecha1 = LocalDate.of(añoNum, mes.getValue(), 1);
+            LocalDate fecha2 = LocalDate.of(añoNum, mes.getValue(), Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH));
+            PreparedStatement pr1 = cn.prepareStatement("select utilidad from ventas where fecha between ? and ?");
+            pr1.setDate(1, new java.sql.Date(java.util.Date.from(fecha1.atStartOfDay(ZoneId.systemDefault()).toInstant()).getTime()));
+            pr1.setDate(2, new java.sql.Date(java.util.Date.from(fecha2.atStartOfDay(ZoneId.systemDefault()).toInstant()).getTime()));
+            ResultSet rs1 = pr1.executeQuery();
+            while (rs1.next()) {
+                utilidad += rs1.getDouble(1);
+            }
+            jProgressBar1.setMaximum(utilidad);
+            jProgressBar1.setValue(Utilidad.utilidadMes());
+            utilidadPor();
+            cn.close();
+        } catch (SQLException ex) {
+            System.err.println(ex);
+        }
+    }
+
+    public static void utilidadPor() {
+        String por;
+        double porsentaje = (Double.valueOf(Utilidad.utilidadMes()) / Double.valueOf(jProgressBar1.getMaximum())) * 100;
+        por = "%" + new DecimalFormat("###,###.##").format(porsentaje);
+        jLabel9.setText(FormatoPesos.formato(Utilidad.utilidadMes()));
+        jLabel13.setText(FormatoPesos.formato(jProgressBar1.getMaximum()));
+        jProgressBar1.setString(por);
     }
 
     public void caja() {
@@ -173,6 +248,11 @@ public final class Administrador extends javax.swing.JFrame {
         jLabelVentaSemana = new javax.swing.JLabel();
         VentaMEs = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        jProgressBar1 = new javax.swing.JProgressBar();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jLabel14 = new javax.swing.JLabel();
+        jLabel15 = new javax.swing.JLabel();
         JBotonCerrar = new javax.swing.JButton();
         Minimizar = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
@@ -182,6 +262,8 @@ public final class Administrador extends javax.swing.JFrame {
         jTextFieldPtm = new javax.swing.JTextField();
         jComboBox1 = new javax.swing.JComboBox<>();
         jButton2 = new javax.swing.JButton();
+        jLabelComprobante = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Administrador");
@@ -261,7 +343,7 @@ public final class Administrador extends javax.swing.JFrame {
                 jLabelbarraMouseExited(evt);
             }
         });
-        getContentPane().add(jLabelbarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(796, 308, 110, 220));
+        getContentPane().add(jLabelbarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 340, 110, 220));
 
         jLabelAdministrador.setText("          0");
         jLabelAdministrador.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -290,7 +372,7 @@ public final class Administrador extends javax.swing.JFrame {
                 jLabel1MouseClicked(evt);
             }
         });
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 186, 90, -1));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 186, 140, -1));
 
         jLabel2.setBackground(new java.awt.Color(204, 0, 51));
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -307,7 +389,7 @@ public final class Administrador extends javax.swing.JFrame {
                 jLabel2KeyPressed(evt);
             }
         });
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 296, 80, -1));
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 296, 140, -1));
 
         jLabel3.setBackground(new java.awt.Color(204, 0, 51));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -319,7 +401,7 @@ public final class Administrador extends javax.swing.JFrame {
                 jLabel3MouseClicked(evt);
             }
         });
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 396, 80, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 396, 140, -1));
 
         jLabel6.setBackground(new java.awt.Color(204, 0, 51));
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -331,75 +413,122 @@ public final class Administrador extends javax.swing.JFrame {
                 jLabel6MouseClicked(evt);
             }
         });
-        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 86, 70, -1));
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 86, 140, -1));
 
         jPanel1.setBackground(new java.awt.Color(0, 102, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(153, 0, 153)));
 
         jLabelVentasHoy.setBackground(new java.awt.Color(255, 255, 255));
-        jLabelVentasHoy.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabelVentasHoy.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabelVentasHoy.setText("jLabel4");
 
         jLabel7.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel7.setText("                   VENTA HOY:");
 
         jLabel8.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel8.setText("              VENTA SEMANA:");
 
         jLabelVentaSemana.setBackground(new java.awt.Color(255, 255, 255));
-        jLabelVentaSemana.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabelVentaSemana.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabelVentaSemana.setText("jLabel4");
 
         VentaMEs.setBackground(new java.awt.Color(255, 255, 255));
-        VentaMEs.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        VentaMEs.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         VentaMEs.setText("jLabel4");
 
         jLabel4.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel4.setText("                      VENTA MES:");
+
+        jProgressBar1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jProgressBar1.setMaximum(0);
+        jProgressBar1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("jLabel9");
+        jLabel9.setToolTipText("");
+
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel13.setText("jLabel9");
+        jLabel13.setToolTipText("");
+
+        jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel14.setText("Este mes:");
+        jLabel14.setToolTipText("");
+
+        jLabel15.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        jLabel15.setText("Anterior mes:");
+        jLabel15.setToolTipText("");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(VentaMEs))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel7))
+                        .addGap(15, 15, 15)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabelVentasHoy, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabelVentaSemana))))
-                .addContainerGap(230, Short.MAX_VALUE))
+                            .addComponent(VentaMEs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelVentaSemana, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelVentasHoy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(14, 14, 14)
+                                .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addGap(155, 155, 155))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(27, 27, 27)
+                .addGap(22, 22, 22)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(jLabelVentasHoy))
-                .addGap(73, 73, 73)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel8)
                     .addComponent(jLabelVentaSemana))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 74, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(VentaMEs)
+                    .addComponent(jLabel4))
+                .addGap(30, 30, 30)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(VentaMEs))
-                .addGap(20, 20, 20))
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel14))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel15))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 123, -1, -1));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 120, -1, 290));
 
         JBotonCerrar.setBorder(null);
         JBotonCerrar.addActionListener(new java.awt.event.ActionListener() {
@@ -420,23 +549,23 @@ public final class Administrador extends javax.swing.JFrame {
 
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("CAJA");
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 390, -1, -1));
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 420, -1, -1));
 
         jLabelCaja.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabelCaja.setForeground(new java.awt.Color(204, 204, 204));
         jLabelCaja.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelCaja.setText("jLabel5");
         jLabelCaja.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        getContentPane().add(jLabelCaja, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 420, 240, 50));
+        getContentPane().add(jLabelCaja, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 450, 240, 50));
 
         jLabelPtm.setForeground(new java.awt.Color(255, 255, 255));
         jLabelPtm.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelPtm.setText("jLabel5");
-        getContentPane().add(jLabelPtm, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 480, 190, 30));
+        getContentPane().add(jLabelPtm, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 510, 190, 30));
 
         jLabel12.setForeground(new java.awt.Color(255, 255, 255));
         jLabel12.setText("PTM");
-        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 460, -1, -1));
+        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 490, -1, -1));
 
         jTextFieldPtm.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -446,10 +575,10 @@ public final class Administrador extends javax.swing.JFrame {
                 jTextFieldPtmKeyTyped(evt);
             }
         });
-        getContentPane().add(jTextFieldPtm, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 430, 190, 30));
+        getContentPane().add(jTextFieldPtm, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 460, 190, 30));
 
         jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Retirar", "Consignar" }));
-        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 390, -1, -1));
+        getContentPane().add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 420, -1, -1));
 
         jButton2.setText("jButton1");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -457,7 +586,28 @@ public final class Administrador extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 430, 30, 30));
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 460, 30, 30));
+
+        jLabelComprobante.setBackground(new java.awt.Color(153, 153, 153));
+        jLabelComprobante.setText("jLabel1");
+        jLabelComprobante.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        jLabelComprobante.setDebugGraphicsOptions(javax.swing.DebugGraphics.NONE_OPTION);
+        jLabelComprobante.setMaximumSize(new java.awt.Dimension(35, 35));
+        jLabelComprobante.setMinimumSize(new java.awt.Dimension(35, 35));
+        jLabelComprobante.setPreferredSize(new java.awt.Dimension(60, 60));
+        getContentPane().add(jLabelComprobante, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 480, -1, -1));
+
+        jLabel5.setBackground(new java.awt.Color(204, 0, 51));
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("Comprobante");
+        jLabel5.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jLabel5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel5MouseClicked(evt);
+            }
+        });
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 490, 140, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -569,17 +719,21 @@ public final class Administrador extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jTextFieldPtmKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPtmKeyReleased
-        if(!jTextFieldPtm.getText().equals("") && !Validaciones.validarString(evt)){
+        if (!jTextFieldPtm.getText().equals("") && !Validaciones.validarString(evt)) {
             jTextFieldPtm.setText(FormatoPesos.formato(Double.valueOf(jTextFieldPtm.getText().replace(",", ""))));
             evt.consume();
         }
     }//GEN-LAST:event_jTextFieldPtmKeyReleased
 
     private void jTextFieldPtmKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPtmKeyTyped
-        if(Validaciones.validarString(evt)){
+        if (Validaciones.validarString(evt)) {
             evt.consume();
         }
     }//GEN-LAST:event_jTextFieldPtmKeyTyped
+
+    private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
+        new Comprobante_Ingreso().setVisible(true);
+    }//GEN-LAST:event_jLabel5MouseClicked
 
     void Cambioptm(double valor, String concepto) {
         try ( Connection cn = Conexion.Conexion()) {
@@ -623,16 +777,22 @@ public final class Administrador extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private static javax.swing.JLabel jLabel13;
+    private static javax.swing.JLabel jLabel14;
+    private static javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private static javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelAdministrador;
     private javax.swing.JLabel jLabelAgregarUsuario;
     protected static javax.swing.JLabel jLabelCaja;
     private javax.swing.JLabel jLabelCerrarSesion;
+    private javax.swing.JLabel jLabelComprobante;
     private javax.swing.JLabel jLabelPtm;
     public static javax.swing.JLabel jLabelVentaSemana;
     private static javax.swing.JLabel jLabelVentasHoy;
@@ -642,6 +802,7 @@ public final class Administrador extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelreportes;
     private javax.swing.JLabel jLabelventas;
     private javax.swing.JPanel jPanel1;
+    public static javax.swing.JProgressBar jProgressBar1;
     private javax.swing.JTextField jTextFieldPtm;
     // End of variables declaration//GEN-END:variables
 }

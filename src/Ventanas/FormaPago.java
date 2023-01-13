@@ -4,13 +4,22 @@
  */
 package Ventanas;
 
+import Clases.Conexion;
+import Clases.Fechas;
 import Clases.Fondo;
+import Clases.FormatoPesos;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Validaciones;
+import static Ventanas.Ventas.jLabelNoVenta;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Time;
 import javax.swing.JOptionPane;
 
 /**
@@ -218,11 +227,22 @@ public class FormaPago extends javax.swing.JDialog {
     }//GEN-LAST:event_efectivoMouseExited
 
     private void creditoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditoActionPerformed
-        Ventas.venta("Credito", Double.parseDouble(jTextFieldCambio.getText()), Double.parseDouble(jTextFieldEfectivo.getText()));
+        Ventas.venta("Credito", Double.parseDouble(jTextFieldCambio.getText()), Double.parseDouble(jTextFieldEfectivo.getText()),Double.valueOf(Ventas.jTextFieldTotal.getText().replace(",", "")));
         Ventas.detalleVenta();
+        SaldoCliente();
         dispose();
     }//GEN-LAST:event_creditoActionPerformed
 
+    public void SaldoCliente() {
+        try ( Connection cn = Conexion.Conexion()) {
+            PreparedStatement ps = cn.prepareStatement("UPDATE clientes SET Saldo = ? WHERE (Cedula = ?)");
+            ps.setDouble(1, Double.valueOf(Ventas.jLabelSaldo.getText().replace(",", ""))-Double.valueOf(Ventas.jTextFieldTotal.getText().replace(",", "")));
+            ps.setString(2, Ventas.jTextFieldCedula.getText());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
     private void creditoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_creditoMouseEntered
         credito.setBackground(Color.green);
     }//GEN-LAST:event_creditoMouseEntered
@@ -242,13 +262,14 @@ public class FormaPago extends javax.swing.JDialog {
     private void efectivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_efectivoActionPerformed
         double cambio = Double.parseDouble(jTextFieldCambio.getText());
         double efecty = Double.parseDouble(jTextFieldEfectivo.getText());
-        Ventas.venta("Efectivo", cambio, efecty);
+        Ventas.venta("Efectivo", cambio, efecty,0);
         Ventas.detalleVenta();
+        SumarCaja();
         dispose();
     }//GEN-LAST:event_efectivoActionPerformed
 
     private void QRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_QRActionPerformed
-        Ventas.venta("Pago Qr", Double.parseDouble(jTextFieldCambio.getText()), Double.parseDouble(jTextFieldEfectivo.getText()));
+        Ventas.venta("Pago Qr", Double.parseDouble(jTextFieldCambio.getText()), Double.parseDouble(jTextFieldEfectivo.getText()),0);
         Ventas.detalleVenta();
         dispose();
     }//GEN-LAST:event_QRActionPerformed
@@ -263,7 +284,7 @@ public class FormaPago extends javax.swing.JDialog {
     }//GEN-LAST:event_JBotonCerrarActionPerformed
 
     private void jTextFieldEfectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldEfectivoKeyReleased
-        if (!"".equals(jTextFieldEfectivo.getText())&&!Validaciones.validarString(evt)) {
+        if (!"".equals(jTextFieldEfectivo.getText()) && !Validaciones.validarString(evt)) {
             double efectiv;
             efectiv = Double.parseDouble(jTextFieldEfectivo.getText());
             double total = Double.parseDouble(Ventas.jTextFieldTotal.getText().replaceAll("[\\D]", ""));
@@ -274,6 +295,24 @@ public class FormaPago extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_jTextFieldEfectivoKeyReleased
 
+    void SumarCaja() {
+        try {
+            double valor = Double.parseDouble(Ventas.jTextFieldTotal.getText().replace(",", ""));
+            double total = Double.parseDouble(Administrador.jLabelCaja.getText().replace(",", "")) + valor;
+            Connection cn = Conexion.Conexion();
+            PreparedStatement ps = cn.prepareStatement("insert into caja (id,concepto,valor,total,fecha,hora) values (?,?,?,?,?,?)");
+            ps.setInt(1, 0);
+            ps.setString(2, "factura #" + jLabelNoVenta.getText());
+            ps.setDouble(3, valor);
+            ps.setDouble(4, total);
+            ps.setDate(5, new Date(Fechas.fechaActualDate().getTime()));
+            ps.setTime(6, new Time(Fechas.fechaActualDate().getTime()));
+            ps.executeUpdate();
+            Administrador.jLabelCaja.setText(FormatoPesos.formato(total));
+        } catch (NumberFormatException | SQLException e) {
+            System.err.println("Error al Sumar Caja: " + e);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JBotonCerrar;

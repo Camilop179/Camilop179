@@ -5,9 +5,6 @@
 package Clases;
 
 import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import javax.swing.JTextField;
 
 /**
@@ -24,7 +21,7 @@ public class TextoFondo {
         this.mensaje = mensaje;
         this.textField = jt;
         colorMensaje(mensaje, textField);
-        gainFucos(textField, mensaje);
+        gainFucos(textField, this.mensaje);
     }
 
     private static void colorMensaje(String mensaje, JTextField textField) {
