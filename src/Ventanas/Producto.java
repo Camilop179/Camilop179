@@ -225,8 +225,8 @@ public final class Producto extends javax.swing.JFrame {
                 jTextFieldCantidad.setText("");
                 jTextFieldCodigo.setText("");
                 jTextFieldCodigoB.setText("");
-                jTextFieldPrecio_C.setText("");
-                jTextFieldPrecio_V.setText("");
+                jTextFieldPrecio_C.setText("0");
+                jTextFieldPrecio_V.setText("0");
                 jTextFieldProducto.setText("");
                 jTextFieldUtilidad.setText("");
                 jTextFieldUtilidad_Por.setText("");

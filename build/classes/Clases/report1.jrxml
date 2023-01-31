@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="141" pageHeight="5669" columnWidth="125" leftMargin="8" rightMargin="8" topMargin="20" bottomMargin="20" uuid="d83149d6-3f30-4437-a9b6-3808e47a6f79">
-	<property name="ireport.zoom" value="4.132231404958677"/>
+	<property name="ireport.zoom" value="2.332536901048669"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="912"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -74,6 +73,15 @@
 	<field name="color" class="java.lang.String">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
+	<field name="Saldo" class="java.lang.Double">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Comentario" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="hora" class="java.sql.Time">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
 	<field name="iddetallesVenta" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
@@ -105,7 +113,7 @@
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="152" splitType="Stretch">
+		<band height="168" splitType="Stretch">
 			<staticText>
 				<reportElement x="26" y="94" width="16" height="12" uuid="ac1fa65b-4cf5-43b6-a665-c1374700ecb2"/>
 				<textElement>
@@ -128,7 +136,7 @@
 				<text><![CDATA[Direccion:]]></text>
 			</staticText>
 			<line>
-				<reportElement x="0" y="142" width="125" height="1" uuid="a347e3e5-d877-410f-92ff-939177565a04"/>
+				<reportElement x="0" y="157" width="125" height="1" uuid="a347e3e5-d877-410f-92ff-939177565a04"/>
 				<graphicElement>
 					<pen lineWidth="1.5" lineStyle="Dashed"/>
 				</graphicElement>
@@ -148,11 +156,11 @@
 				<textFieldExpression><![CDATA["3108403107\n3178535003"]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="42" y="127" width="83" height="12" uuid="660bcd9b-ca7d-444b-840c-c5ba5607b82f"/>
+				<reportElement x="42" y="127" width="83" height="30" uuid="660bcd9b-ca7d-444b-840c-c5ba5607b82f"/>
 				<textElement>
 					<font size="7"/>
 				</textElement>
-				<text><![CDATA[cll3 Cr7 Barrio Comercio]]></text>
+				<text><![CDATA[cll3 Cr7 Barrio Comercio,\n El Tambo Nariño.]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="74" width="124" height="20" uuid="e9bd535b-3b36-448e-87f9-6c096ba54bc8"/>
@@ -225,13 +233,6 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cedula_cliente}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="41" y="15" width="84" height="11" uuid="cc5b6f36-6f19-4771-828d-782e2445e4fc"/>
-				<textElement>
-					<font size="8" isBold="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
-			</textField>
 			<staticText>
 				<reportElement x="1" y="89" width="38" height="11" uuid="3bdb8286-4056-4007-8af4-119208bad002"/>
 				<textElement textAlignment="Right">
@@ -300,6 +301,13 @@
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{color}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Auto">
+				<reportElement x="42" y="15" width="81" height="11" uuid="3a12d166-8b93-4993-ae89-696460fb1d73"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{hora}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -424,7 +432,7 @@
 		</band>
 	</detail>
 	<summary>
-		<band height="259">
+		<band height="358">
 			<staticText>
 				<reportElement x="0" y="13" width="26" height="36" uuid="e4577297-a5ce-4686-a31f-8ea118681d2f"/>
 				<textElement>
@@ -453,19 +461,19 @@
 				<textFieldExpression><![CDATA['$'+$F{precio_Total}.intValue()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="49" width="39" height="20" uuid="403c6842-5ca2-450e-93d0-483e76c80f17"/>
+				<reportElement x="0" y="69" width="39" height="20" uuid="403c6842-5ca2-450e-93d0-483e76c80f17"/>
 				<text><![CDATA[Efectivo:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="41" y="49" width="83" height="20" uuid="29eaba81-6ea8-4a40-9309-e9fb5da9f3d8"/>
+				<reportElement x="41" y="69" width="83" height="20" uuid="29eaba81-6ea8-4a40-9309-e9fb5da9f3d8"/>
 				<textFieldExpression><![CDATA['$'+$F{Efectivo}.intValue()]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="69" width="39" height="20" uuid="e7e1c782-ed47-478b-a160-4811c14ed455"/>
+				<reportElement x="0" y="89" width="39" height="20" uuid="e7e1c782-ed47-478b-a160-4811c14ed455"/>
 				<text><![CDATA[Cambio:]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="41" y="69" width="83" height="20" uuid="0f7d3d57-58b2-44d4-bdf5-192c1d695f6f"/>
+				<reportElement x="41" y="89" width="83" height="20" uuid="0f7d3d57-58b2-44d4-bdf5-192c1d695f6f"/>
 				<box>
 					<pen lineWidth="0.0" lineStyle="Solid"/>
 					<topPen lineWidth="0.0" lineStyle="Solid"/>
@@ -476,7 +484,7 @@
 				<textFieldExpression><![CDATA['$'+$F{Cambio}.intValue()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="-1" y="220" width="125" height="33" uuid="af63f07f-892c-4754-88b7-776cae1fc05a"/>
+				<reportElement x="1" y="297" width="125" height="33" uuid="af63f07f-892c-4754-88b7-776cae1fc05a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="7"/>
 				</textElement>
@@ -484,9 +492,28 @@
 "Tel 3178535003-3108403107"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="94" width="124" height="126" uuid="71bf4bc9-e511-4151-8466-10f99858be2a"/>
-				<textElement textAlignment="Center"/>
+				<reportElement x="3" y="200" width="124" height="82" uuid="71bf4bc9-e511-4151-8466-10f99858be2a"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
 				<textFieldExpression><![CDATA["Estimado cliente los \n accesorios elecricos \n no tienen garantia ni cambio.\n Los cilindros rectificados \n no tienen garantia por mal despegue,\n por favor siga las instrucciones del tecnico"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="49" width="78" height="20" uuid="4564c573-679c-43a5-8aba-bd05874a4ba0"/>
+				<textElement markup="none"/>
+				<text><![CDATA[Forma de Pago:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="78" y="49" width="46" height="20" uuid="e97954ca-eff1-4512-b374-a54f4ab7ebba"/>
+				<textFieldExpression><![CDATA[$F{FormaPago}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="109" width="59" height="20" uuid="6f08c181-9aa8-454b-8c54-2484af2fda1a"/>
+				<text><![CDATA[Nota:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="0" y="129" width="124" height="55" uuid="6b00d3ef-6f36-4424-ad6b-a107d562844e"/>
+				<textFieldExpression><![CDATA[$F{Comentario}]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>

@@ -404,11 +404,13 @@ public final class Catalogo extends javax.swing.JFrame {
             Ventas.jTextFieldCodigo.setText(cod);
             this.dispose();
             Ventas.producto();
+            Ventas.m=false;
         } else if (Compras.n) {
             cod = Table.getValueAt(i, 1).toString();
             Compras.jTextFieldCodigo.setText(cod);
             this.dispose();
             Compras.producto();
+            Compras.n=false;
         } else if (Administrador.m) {
             if (evt.getClickCount() == 2) {
                 if (Ventas.m == true) {

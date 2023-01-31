@@ -1,1 +1,1 @@
-No se puedo conectar Base de Datos: java.sql.SQLException: Access denied for user 'root'@'localhost' (using password: YES)
+Error al Subir Detalles de venta: java.sql.SQLIntegrityConstraintViolationException: Cannot add or update a child row: a foreign key constraint fails (`admportillo`.`detallesventa`, CONSTRAINT `nro` FOREIGN KEY (`nro_Venta`) REFERENCES `ventas` (`nroVentas`))

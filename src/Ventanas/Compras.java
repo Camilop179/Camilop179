@@ -29,7 +29,6 @@ import javax.swing.table.TableColumnModel;
  */
 public class Compras extends javax.swing.JFrame {
 
-    double total = 0;
     static boolean n = false;
 
     static DefaultTableModel tabla;
@@ -321,10 +320,8 @@ public class Compras extends javax.swing.JFrame {
 
     public void eliminarProducto() {
         int row = jTableCompra.getSelectedRow();
-        double totald = Double.parseDouble(jTableCompra.getValueAt(row, 4).toString());
-        total -= totald;
-        jTextFieldTotal.setText("" + total);
         tabla.removeRow(row);
+        total();
     }
 
     /**
@@ -790,8 +787,6 @@ public class Compras extends javax.swing.JFrame {
 
         if (!Validaciones.validarEnter(evt)) {
             buscarProveedor();
-            jTextFieldNombre.setEditable(true);
-            jTextFieldNombre.requestFocus();
         }
     }//GEN-LAST:event_jTextFieldNitKeyPressed
 
@@ -812,8 +807,6 @@ public class Compras extends javax.swing.JFrame {
             detalleCompra();
             JOptionPane.showMessageDialog(null, "Compra exitosa");
         }
-
-        total = 0;
         limpiar();
     }//GEN-LAST:event_jButtonVenderActionPerformed
 
