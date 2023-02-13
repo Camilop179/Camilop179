@@ -763,7 +763,7 @@ public final class Administrador extends javax.swing.JFrame {
             ps.setTime(5, new Time(Fechas.fechaActualDate().getTime()));
             ps.setDate(6, new Date(Fechas.fechaActualDate().getTime()));
             ps.execute();
-            jLabelCaja.setText(String.valueOf(total));
+            jLabelCaja.setText(FormatoPesos.formato(total));
         } catch (SQLException ex) {
             System.err.println(ex);
         }

@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="141" pageHeight="5669" columnWidth="125" leftMargin="8" rightMargin="8" topMargin="20" bottomMargin="20" uuid="d83149d6-3f30-4437-a9b6-3808e47a6f79">
 	<property name="ireport.zoom" value="2.332536901048669"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="912"/>
+	<property name="ireport.y" value="365"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -302,12 +302,19 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{color}]]></textFieldExpression>
 			</textField>
-			<textField evaluationTime="Auto">
-				<reportElement x="42" y="15" width="81" height="11" uuid="3a12d166-8b93-4993-ae89-696460fb1d73"/>
+			<textField evaluationTime="Auto" pattern="h:mm:a">
+				<reportElement x="87" y="15" width="36" height="11" uuid="3a12d166-8b93-4993-ae89-696460fb1d73"/>
 				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{hora}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="41" y="15" width="47" height="11" uuid="de8a2496-0f63-4108-b546-79babbd2d7f8"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
@@ -372,9 +379,9 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="28" splitType="Stretch">
-			<textField>
-				<reportElement x="0" y="0" width="26" height="28" uuid="f81a4e65-0c89-40c3-99f9-69506628f6f8"/>
+		<band height="25" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="0" y="0" width="26" height="25" isRemoveLineWhenBlank="true" uuid="f81a4e65-0c89-40c3-99f9-69506628f6f8"/>
 				<box>
 					<pen lineStyle="Dotted"/>
 					<topPen lineStyle="Dotted"/>
@@ -382,13 +389,13 @@
 					<bottomPen lineStyle="Dotted"/>
 					<rightPen lineWidth="0.5" lineStyle="Dotted"/>
 				</box>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="94" y="0" width="31" height="28" uuid="09004b66-cf46-4d17-9e12-08b36aeac280"/>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="94" y="0" width="31" height="25" isRemoveLineWhenBlank="true" uuid="09004b66-cf46-4d17-9e12-08b36aeac280"/>
 				<box>
 					<pen lineStyle="Dotted"/>
 					<topPen lineStyle="Dotted"/>
@@ -396,13 +403,13 @@
 					<bottomPen lineStyle="Dotted"/>
 					<rightPen lineWidth="0.5" lineStyle="Dotted"/>
 				</box>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{precioTotal}.intValue()]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="78" y="0" width="16" height="28" uuid="3dfffc1f-c9e6-483a-8cd2-6dad4fdfb3fe"/>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="78" y="0" width="16" height="25" isRemoveLineWhenBlank="true" uuid="3dfffc1f-c9e6-483a-8cd2-6dad4fdfb3fe"/>
 				<box>
 					<pen lineStyle="Dotted"/>
 					<topPen lineStyle="Dotted"/>
@@ -410,13 +417,13 @@
 					<bottomPen lineStyle="Dotted"/>
 					<rightPen lineWidth="0.5" lineStyle="Dotted"/>
 				</box>
-				<textElement textAlignment="Center" verticalAlignment="Top">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement stretchType="RelativeToBandHeight" x="26" y="0" width="52" height="28" uuid="8110d766-ec5c-4e12-b476-e5d3f72a0f13"/>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" mode="Transparent" x="26" y="0" width="52" height="25" isRemoveLineWhenBlank="true" uuid="8110d766-ec5c-4e12-b476-e5d3f72a0f13"/>
 				<box leftPadding="2" rightPadding="2">
 					<pen lineStyle="Dotted"/>
 					<topPen lineStyle="Dotted"/>
@@ -424,7 +431,7 @@
 					<bottomPen lineStyle="Dotted"/>
 					<rightPen lineWidth="0.5" lineStyle="Dotted"/>
 				</box>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
@@ -484,7 +491,7 @@
 				<textFieldExpression><![CDATA['$'+$F{Cambio}.intValue()]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1" y="297" width="125" height="33" uuid="af63f07f-892c-4754-88b7-776cae1fc05a"/>
+				<reportElement x="1" y="309" width="125" height="33" uuid="af63f07f-892c-4754-88b7-776cae1fc05a"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
 					<font size="7"/>
 				</textElement>
@@ -492,7 +499,7 @@
 "Tel 3178535003-3108403107"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="3" y="200" width="124" height="82" uuid="71bf4bc9-e511-4151-8466-10f99858be2a"/>
+				<reportElement x="1" y="213" width="124" height="82" uuid="71bf4bc9-e511-4151-8466-10f99858be2a"/>
 				<textElement textAlignment="Center">
 					<font size="8"/>
 				</textElement>
@@ -511,8 +518,8 @@
 				<reportElement x="0" y="109" width="59" height="20" uuid="6f08c181-9aa8-454b-8c54-2484af2fda1a"/>
 				<text><![CDATA[Nota:]]></text>
 			</staticText>
-			<textField>
-				<reportElement x="0" y="129" width="124" height="55" uuid="6b00d3ef-6f36-4424-ad6b-a107d562844e"/>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="129" width="124" height="71" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" uuid="6b00d3ef-6f36-4424-ad6b-a107d562844e"/>
 				<textFieldExpression><![CDATA[$F{Comentario}]]></textFieldExpression>
 			</textField>
 		</band>

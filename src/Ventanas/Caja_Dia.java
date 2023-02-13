@@ -73,11 +73,17 @@ public class Caja_Dia extends javax.swing.JDialog {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextFieldEfectivoKeyReleased(evt);
             }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextFieldEfectivoKeyTyped(evt);
+            }
         });
 
         jTextField2.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField2KeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextField2KeyTyped(evt);
             }
         });
 
@@ -126,16 +132,28 @@ public class Caja_Dia extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextFieldEfectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldEfectivoKeyReleased
-        if (!Validaciones.validarString(evt)) {
+        if (!Validaciones.validarString(evt)&& !jTextFieldEfectivo.getText().equals("")&&Validaciones.validarSuprimir(evt)) {
             jTextFieldEfectivo.setText(FormatoPesos.formato(Double.parseDouble(jTextFieldEfectivo.getText().trim().replace(",", ""))));
         }
     }//GEN-LAST:event_jTextFieldEfectivoKeyReleased
 
     private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
-        if (!Validaciones.validarString(evt)) {
+        if (!Validaciones.validarString(evt)&&!jTextField2.getText().equals("")) {
             jTextField2.setText(FormatoPesos.formato(Double.parseDouble(jTextField2.getText().trim().replace(",", ""))));
         }
     }//GEN-LAST:event_jTextField2KeyReleased
+
+    private void jTextFieldEfectivoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldEfectivoKeyTyped
+        if(Validaciones.validarString(evt)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_jTextFieldEfectivoKeyTyped
+
+    private void jTextField2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyTyped
+        if(Validaciones.validarString(evt)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_jTextField2KeyTyped
 
     void ingresarCaja() {
         try ( Connection cn = Conexion.Conexion()) {
