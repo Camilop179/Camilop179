@@ -103,9 +103,11 @@ public final class Administrador extends javax.swing.JFrame {
                 mesNum--;
                 añoNum = fecha.getYear();
             }
+            Calendar dia = Calendar.getInstance();
+            dia.set(Calendar.MONTH, dia.get(Calendar.MONTH)-1);
             Month mes = Month.of(mesNum);
             LocalDate fecha1 = LocalDate.of(añoNum, mes.getValue(), 1);
-            LocalDate fecha2 = LocalDate.of(añoNum, mes.getValue(), Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH));
+            LocalDate fecha2 = LocalDate.of(añoNum, mes.getValue(), dia.getActualMaximum(Calendar.DAY_OF_MONTH));
             PreparedStatement pr1 = cn.prepareStatement("select utilidad from ventas where fecha between ? and ?");
             pr1.setDate(1, new java.sql.Date(java.util.Date.from(fecha1.atStartOfDay(ZoneId.systemDefault()).toInstant()).getTime()));
             pr1.setDate(2, new java.sql.Date(java.util.Date.from(fecha2.atStartOfDay(ZoneId.systemDefault()).toInstant()).getTime()));
@@ -118,7 +120,7 @@ public final class Administrador extends javax.swing.JFrame {
             utilidadPor();
             cn.close();
         } catch (SQLException ex) {
-            System.err.println(ex);
+            System.err.println("Error mes"+ex);
         }
     }
 
