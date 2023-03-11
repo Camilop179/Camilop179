@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="141" pageHeight="5669" columnWidth="125" leftMargin="8" rightMargin="8" topMargin="20" bottomMargin="20" uuid="d83149d6-3f30-4437-a9b6-3808e47a6f79">
 	<property name="ireport.zoom" value="2.332536901048669"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="365"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -29,7 +31,7 @@
 	</parameter>
 	<parameter name="url" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[select v.*,d.*,u.usuario,c.celular from ventas v join detallesventa d on nroVentas = nro_venta join usuarios u on u.idUsuarios=v.idUsuario join clientes c on c.cedula=v.cedula_cliente where nroVentas = $P{NroVentas};]]>
+		<![CDATA[select v.*,d.*,u.usuario,c.celular from ventas v join detallesventa d on nroVentas = nro_venta join usuarios u on u.idUsuarios=v.idUsuario join clientes c on c.cedula=v.cedula_cliente where nroVentas = $P{NroVentas}]]>
 	</queryString>
 	<field name="idventas" class="java.lang.Integer">
 		<fieldDescription><![CDATA[]]></fieldDescription>
@@ -178,65 +180,84 @@
 	<pageHeader>
 		<band height="111" splitType="Stretch">
 			<staticText>
-				<reportElement x="1" y="25" width="38" height="11" uuid="cadfc816-59ca-452b-a955-4116890256e0"/>
+				<reportElement x="1" y="26" width="38" height="11" isRemoveLineWhenBlank="true" uuid="cadfc816-59ca-452b-a955-4116890256e0">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Nombre: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="35" width="38" height="11" uuid="6254e164-eb00-4fcb-8d4a-f2963b614dcd"/>
+				<reportElement x="1" y="37" width="38" height="11" isRemoveLineWhenBlank="true" uuid="6254e164-eb00-4fcb-8d4a-f2963b614dcd">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<text><![CDATA[CC: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="45" width="38" height="11" uuid="97923061-d96b-4814-83c5-5b98219785f0"/>
+				<reportElement x="1" y="48" width="38" height="11" isRemoveLineWhenBlank="true" uuid="97923061-d96b-4814-83c5-5b98219785f0">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Telefono: ]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="15" width="38" height="11" uuid="6c503e7b-1882-4cb9-8d64-1d2eb9573370"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Fecha: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="5" width="38" height="11" uuid="dd5de7a2-e0a8-4e46-9416-62831a08dca0"/>
+				<reportElement x="1" y="4" width="38" height="11" uuid="dd5de7a2-e0a8-4e46-9416-62831a08dca0"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Factura #: ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="41" y="5" width="84" height="11" uuid="420e8985-2f94-47f8-af63-acb906675bc1"/>
+				<reportElement x="42" y="4" width="84" height="11" uuid="420e8985-2f94-47f8-af63-acb906675bc1"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{nroVentas}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="41" y="25" width="84" height="11" uuid="6da4c8fc-1ffd-446e-a42a-6dd71e36fdf2"/>
+				<reportElement x="42" y="26" width="84" height="11" isRemoveLineWhenBlank="true" uuid="6da4c8fc-1ffd-446e-a42a-6dd71e36fdf2">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cliente}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="41" y="35" width="84" height="11" uuid="1fe3d282-115e-4feb-9f77-56bf7b0e286f"/>
+				<reportElement x="42" y="37" width="84" height="11" isRemoveLineWhenBlank="true" uuid="1fe3d282-115e-4feb-9f77-56bf7b0e286f">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cedula_cliente}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="89" width="38" height="11" uuid="3bdb8286-4056-4007-8af4-119208bad002"/>
+				<reportElement x="1" y="92" width="38" height="11" isRemoveLineWhenBlank="true" uuid="3bdb8286-4056-4007-8af4-119208bad002"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Cajero: ]]></text>
 			</staticText>
@@ -247,72 +268,96 @@
 				</graphicElement>
 			</line>
 			<textField>
-				<reportElement x="42" y="89" width="84" height="11" uuid="5b703a17-cbed-408c-8493-5905af53cc62"/>
+				<reportElement x="42" y="92" width="84" height="11" isRemoveLineWhenBlank="true" uuid="5b703a17-cbed-408c-8493-5905af53cc62"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{usuario}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="41" y="45" width="84" height="11" uuid="b7c2e0e1-387c-4a12-9cca-e6d9cbeb99b2"/>
+				<reportElement x="42" y="48" width="84" height="11" isRemoveLineWhenBlank="true" uuid="b7c2e0e1-387c-4a12-9cca-e6d9cbeb99b2">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{celular}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="1" y="56" width="38" height="11" uuid="9a98e8a6-9bba-4ff7-a84b-3d4ceba9668e"/>
+				<reportElement x="1" y="59" width="38" height="11" isRemoveLineWhenBlank="true" uuid="9a98e8a6-9bba-4ff7-a84b-3d4ceba9668e">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Moto: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="67" width="38" height="11" uuid="5b8c72f0-cb26-4f77-adae-3603afe72147"/>
+				<reportElement x="1" y="70" width="38" height="11" isRemoveLineWhenBlank="true" uuid="5b8c72f0-cb26-4f77-adae-3603afe72147">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Placa: ]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1" y="77" width="38" height="11" uuid="f4cc142b-eeb5-46dc-b431-8593f091a241"/>
+				<reportElement x="1" y="81" width="38" height="11" isRemoveLineWhenBlank="true" uuid="f4cc142b-eeb5-46dc-b431-8593f091a241">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement textAlignment="Right">
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<text><![CDATA[Color: ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="42" y="56" width="84" height="11" uuid="c894f3aa-4226-45a2-9202-bad9114f1652"/>
+				<reportElement x="42" y="59" width="84" height="11" isRemoveLineWhenBlank="true" uuid="c894f3aa-4226-45a2-9202-bad9114f1652">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{moto}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="42" y="67" width="84" height="11" uuid="4d74c46a-1ece-4993-9785-a9f4f28b6ab7"/>
+				<reportElement x="42" y="70" width="84" height="11" isRemoveLineWhenBlank="true" uuid="4d74c46a-1ece-4993-9785-a9f4f28b6ab7">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{placa}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="42" y="78" width="84" height="11" uuid="1136d0cc-9825-4553-9bc1-ea10468857e4"/>
+				<reportElement x="42" y="81" width="84" height="11" isRemoveLineWhenBlank="true" uuid="1136d0cc-9825-4553-9bc1-ea10468857e4">
+					<printWhenExpression><![CDATA[$F{cedula_cliente}!=0]]></printWhenExpression>
+				</reportElement>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{color}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Auto" pattern="h:mm:a">
-				<reportElement x="87" y="15" width="36" height="11" uuid="3a12d166-8b93-4993-ae89-696460fb1d73"/>
+				<reportElement x="89" y="15" width="37" height="11" uuid="3a12d166-8b93-4993-ae89-696460fb1d73"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{hora}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd/MM/yyyy">
-				<reportElement x="41" y="15" width="47" height="11" uuid="de8a2496-0f63-4108-b546-79babbd2d7f8"/>
+				<reportElement x="42" y="15" width="47" height="11" uuid="de8a2496-0f63-4108-b546-79babbd2d7f8"/>
+				<box topPadding="1" leftPadding="1" bottomPadding="1"/>
 				<textElement>
-					<font size="8"/>
+					<font size="7"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
 			</textField>
@@ -379,10 +424,10 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="25" splitType="Stretch">
-			<textField isBlankWhenNull="true">
+		<band height="26" splitType="Stretch">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="0" y="0" width="26" height="25" isRemoveLineWhenBlank="true" uuid="f81a4e65-0c89-40c3-99f9-69506628f6f8"/>
-				<box>
+				<box topPadding="1" leftPadding="1" bottomPadding="2" rightPadding="1">
 					<pen lineStyle="Dotted"/>
 					<topPen lineStyle="Dotted"/>
 					<leftPen lineWidth="0.5" lineStyle="Dotted"/>
@@ -394,9 +439,9 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="94" y="0" width="31" height="25" isRemoveLineWhenBlank="true" uuid="09004b66-cf46-4d17-9e12-08b36aeac280"/>
-				<box>
+				<box topPadding="1" leftPadding="1" bottomPadding="2" rightPadding="1">
 					<pen lineStyle="Dotted"/>
 					<topPen lineStyle="Dotted"/>
 					<leftPen lineWidth="0.5" lineStyle="Dotted"/>
@@ -408,9 +453,9 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{precioTotal}.intValue()]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="78" y="0" width="16" height="25" isRemoveLineWhenBlank="true" uuid="3dfffc1f-c9e6-483a-8cd2-6dad4fdfb3fe"/>
-				<box>
+				<box topPadding="1" leftPadding="1" bottomPadding="2" rightPadding="1">
 					<pen lineStyle="Dotted"/>
 					<topPen lineStyle="Dotted"/>
 					<leftPen lineWidth="0.5" lineStyle="Dotted"/>
@@ -422,9 +467,9 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 			</textField>
-			<textField isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
 				<reportElement stretchType="RelativeToBandHeight" mode="Transparent" x="26" y="0" width="52" height="25" isRemoveLineWhenBlank="true" uuid="8110d766-ec5c-4e12-b476-e5d3f72a0f13"/>
-				<box leftPadding="2" rightPadding="2">
+				<box topPadding="1" leftPadding="1" bottomPadding="2" rightPadding="1">
 					<pen lineStyle="Dotted"/>
 					<topPen lineStyle="Dotted"/>
 					<leftPen lineWidth="0.5" lineStyle="Dotted"/>
