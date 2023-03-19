@@ -123,15 +123,16 @@ public final class Reportes extends javax.swing.JFrame {
             }
     }
 
-    public void egreso(String concepto, double Valor) {
+    public void egreso(String concepto, double Valor,int tipo) {
         try {
             Connection cn = Conexion.Conexion();
-            PreparedStatement ps = cn.prepareStatement("insert into egresos(Concepto,Valor,idUsuario,Fecha,Hora) values(?,?,?,?,?)");
+            PreparedStatement ps = cn.prepareStatement("insert into egresos(Concepto,Valor,idUsuario,Fecha,Hora,tipo) values(?,?,?,?,?,?)");
             ps.setString(1, concepto);
             ps.setDouble(2, Valor);
             ps.setInt(3, Login.idUsuario);
             ps.setDate(4, new java.sql.Date(Fechas.fechaActualDate().getTime()));
             ps.setTime(5, new java.sql.Time(Fechas.fechaActualDate().getTime()));
+            ps.setInt(6, tipo);
             ps.execute();
             cn.close();
             DefaultTableModel tabal = (DefaultTableModel) jTable3.getModel();
@@ -685,6 +686,8 @@ public final class Reportes extends javax.swing.JFrame {
         jTextField12 = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
         jTextField13 = new javax.swing.JTextField();
+        jLabel17 = new javax.swing.JLabel();
+        jTextFieldRentabilidadDiaAnt = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -1228,7 +1231,7 @@ public final class Reportes extends javax.swing.JFrame {
                     .addComponent(jLabel46)
                     .addComponent(jTextFieldValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE))
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 227, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Devengado", jPanel6);
@@ -1289,7 +1292,7 @@ public final class Reportes extends javax.swing.JFrame {
                     .addComponent(jLabel49)
                     .addComponent(jTextFieldValor1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 220, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1658,6 +1661,14 @@ public final class Reportes extends javax.swing.JFrame {
         jTextField13.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jTextField13.setText("jTextField1");
 
+        jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel17.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel17.setText("Rentabilidad Dia Anterior");
+
+        jTextFieldRentabilidadDiaAnt.setEditable(false);
+        jTextFieldRentabilidadDiaAnt.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jTextFieldRentabilidadDiaAnt.setText("jTextField1");
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -1686,7 +1697,8 @@ public final class Reportes extends javax.swing.JFrame {
                     .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel17, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTextFieldRentEs, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
@@ -1694,7 +1706,8 @@ public final class Reportes extends javax.swing.JFrame {
                     .addComponent(jTextField6)
                     .addComponent(jTextFieldRentabilidadMes)
                     .addComponent(jTextFieldRentabilidadDia)
-                    .addComponent(jTextFieldRentabilidadVentas))
+                    .addComponent(jTextFieldRentabilidadVentas)
+                    .addComponent(jTextFieldRentabilidadDiaAnt))
                 .addGap(110, 110, 110))
         );
         jPanel1Layout.setVerticalGroup(
@@ -1736,7 +1749,11 @@ public final class Reportes extends javax.swing.JFrame {
                     .addComponent(jTextFieldVentaMes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jTextFieldRentabilidadMes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(91, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jTextFieldRentabilidadDiaAnt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("Administración", jPanel1);
@@ -1930,11 +1947,10 @@ public final class Reportes extends javax.swing.JFrame {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         String Concepto = jComboBox4.getSelectedItem().toString();
         if (!Concepto.equals("Seleccionar") && !jTextField3.getText().equals("Valor")) {
-            double valor = Double.valueOf(jTextField3.getText().trim().replace(",", ""));
-            egreso(Concepto, valor);
+            double valor = Double.parseDouble(jTextField3.getText().trim().replace(",", ""));
+            egreso(Concepto, valor,1);
             jTextField3.setText("");
             jComboBox4.setSelectedIndex(0);
-
             jTextField3.requestFocus();
             jComboBox4.requestFocus();
         } else if (jTextField3.getText().equals("Valor")) {
@@ -1966,8 +1982,8 @@ public final class Reportes extends javax.swing.JFrame {
         String Concepto = jTextField8.getText();
         if (!Concepto.equals("Concepto") && !jTextField4.getText().equals("Valor")) {
 
-            double valor = Double.valueOf(jTextField4.getText().trim().replace(",", ""));
-            egreso(Concepto, valor);
+            double valor = Double.parseDouble(jTextField4.getText().trim().replace(",", ""));
+            egreso(Concepto, valor,2);
 
             jTextField8.setText("");
             jTextField4.setText("");
@@ -1987,8 +2003,8 @@ public final class Reportes extends javax.swing.JFrame {
         String Concepto = jTextField22.getText();
         if (!Concepto.equals("Concepto") && !jTextField5.getText().equals("Valor")) {
 
-            double valor = Double.valueOf(jTextField5.getText().trim().replace(",", ""));
-            egreso(Concepto, valor);
+            double valor = Double.parseDouble(jTextField5.getText().trim().replace(",", ""));
+            egreso(Concepto, valor,3);
             jTextField22.setText("");
             jTextField5.setText("");
 
@@ -2006,8 +2022,8 @@ public final class Reportes extends javax.swing.JFrame {
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         String Concepto = jTextField9.getText();
         if (!Concepto.equals("Concepto") && !jTextField7.getText().equals("Valor")) {
-            double valor = Double.valueOf(jTextField7.getText().trim().replace(",", ""));
-            egreso(Concepto, valor);
+            double valor = Double.parseDouble(jTextField7.getText().trim().replace(",", ""));
+            egreso(Concepto, valor,4);
             jTextField9.setText("");
             jTextField7.setText("");
             jTextField7.requestFocus();
@@ -2100,6 +2116,7 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
@@ -2179,6 +2196,7 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldNovedad1;
     private javax.swing.JTextField jTextFieldRentEs;
     private javax.swing.JTextField jTextFieldRentabilidadDia;
+    private javax.swing.JTextField jTextFieldRentabilidadDiaAnt;
     private javax.swing.JTextField jTextFieldRentabilidadMes;
     private javax.swing.JTextField jTextFieldRentabilidadVentas;
     private javax.swing.JTextField jTextFieldTotalInv1;

@@ -133,7 +133,7 @@ public final class Ventas extends javax.swing.JFrame {
             Connection cn;
             cn = Conexion.Conexion();
             PreparedStatement pr;
-            pr = cn.prepareStatement("select * from ventas where nroVentas = ?");
+            pr = cn.prepareStatement("select v.*,c.saldo,c.celular from ventas v left join clientes c on cedula_cliente=c.cedula  where nroVentas = ?");
             pr.setString(1, NroVenta);
             ResultSet rs = pr.executeQuery();
 
@@ -141,10 +141,13 @@ public final class Ventas extends javax.swing.JFrame {
                 jLabelFecha.setText(rs.getString(7));
                 jTextFieldTotal.setText(rs.getString(8));
                 jTextFieldCedula.setText(rs.getString(4));
+                jLabelTelefono.setText(rs.getString(19));
+                jLabelSaldo.setText(rs.getString(18));
                 jTextFieldNombre.setText(rs.getString(3));
                 jTextFieldPlaca.setText(rs.getString(13));
                 jTextFieldMoto.setText(rs.getString(12));
                 jTextFieldColor.setText(rs.getString(14));
+                jTextArea1.setText(rs.getString(16));
             }
 
             jTextFieldCodigo.setEditable(false);
@@ -237,9 +240,6 @@ public final class Ventas extends javax.swing.JFrame {
             if (n == 0) {
                 imprimir1();
             }
-            jTextFieldCedula.setText("");
-            jTextFieldNombre.setText("");
-            jTextFieldTotal.setText("0");
             limpiar();
             utilidaTotal.clear();
             nroVenta();
@@ -347,6 +347,9 @@ public final class Ventas extends javax.swing.JFrame {
             jTextFieldMoto.setText("");
             jTextFieldPlaca.setText("");
             jTextFieldColor.setText("");
+            jTextArea1.setText("");
+            jLabelFecha.setText("");
+            jLabelTelefono.setText("");
 
         }
     }
@@ -1026,7 +1029,7 @@ public final class Ventas extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelRegresar;
     private javax.swing.JLabel jLabelRegresar1;
     protected static javax.swing.JLabel jLabelSaldo;
-    private javax.swing.JLabel jLabelTelefono;
+    private static javax.swing.JLabel jLabelTelefono;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private static javax.swing.JTable jTableVenta;
