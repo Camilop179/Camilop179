@@ -13,18 +13,24 @@ import Clases.ImagenBoton;
 import Clases.TotalVentas;
 import Clases.Validaciones;
 import Clases.Utilidad;
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.*;
+import java.text.AttributedCharacterIterator;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
 import java.time.ZoneId;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,7 +44,7 @@ import javax.swing.plaf.basic.BasicProgressBarUI;
 public final class Administrador extends javax.swing.JFrame {
 
     public static boolean m;
-
+    static String porString;
     public Administrador() {
         Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
@@ -73,29 +79,44 @@ public final class Administrador extends javax.swing.JFrame {
         progesoUtilidad();
     }
 
-    public void progesoUtilidad() {
+    public static void uiProgresos(String s){
+        
         jProgressBar1.setUI(new BasicProgressBarUI(){
             @Override
             protected void paintDeterminate(Graphics g, JComponent c) {
                 Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 int ancho = jProgressBar1.getWidth();
                 int alto = jProgressBar1.getHeight();
+                g2.setColor(Color.WHITE);
+                RoundRectangle2D r3 = new RoundRectangle2D.Double(4,2,c.getWidth()-5,alto-7,alto,alto);
+                g2.fill(r3);
                 
                 double por = jProgressBar1.getPercentComplete();
-                
                 ancho = (int) (ancho*por);
                 g2.setColor(Color.RED);
-                Rectangle progreso = new Rectangle(0,0,ancho,alto);
-                g2.fill(progreso);
+                RoundRectangle2D R = new RoundRectangle2D.Double(4,2,ancho-6,alto-7,alto,alto);
+                g2.fill(R);
                 
+                g2.setColor(new Color(234,234,234));
+                g2.setFont(new Font("Purisa", Font.PLAIN, 18));
+                g2.drawString(s, 10, 20);
+                g2.setColor(Color.BLACK);
+                RoundRectangle2D r2 = new RoundRectangle2D.Double(2,2,ancho-5,alto-7,alto,alto);
+                Stroke grosor = new BasicStroke(3,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER);
+                g2.setStroke(grosor);
+                g2.draw(r2);
             }
             
         });
+    }
+    public void progesoUtilidad() {
+        uiProgresos(porString);
         try ( Connection cn = Conexion.Conexion()) {
             int utilidad = 0;
             LocalDate fecha = LocalDate.now();
             int mesNum = fecha.getMonthValue();
-            int añoNum = 0;
+            int añoNum;
             if (mesNum == 1) {
                 mesNum = 12;
                 añoNum = fecha.getYear() - 1;
@@ -105,9 +126,12 @@ public final class Administrador extends javax.swing.JFrame {
             }
             Calendar dia = Calendar.getInstance();
             dia.set(Calendar.MONTH, dia.get(Calendar.MONTH)-1);
-            Month mes = Month.of(mesNum);
-            LocalDate fecha1 = LocalDate.of(añoNum, mes.getValue(), 1);
-            LocalDate fecha2 = LocalDate.of(añoNum, mes.getValue(), dia.getActualMaximum(Calendar.DAY_OF_MONTH));
+            System.out.println(dia.getMaximum(Calendar.DAY_OF_MONTH));
+            LocalDate fecha1 = LocalDate.of(añoNum, mesNum, 1);
+            LocalDate fecha2 = LocalDate.now();
+            fecha2 = fecha2.minusMonths(1);
+            fecha2 = fecha2.with(TemporalAdjusters.lastDayOfMonth());
+            System.out.println(fecha2);
             PreparedStatement pr1 = cn.prepareStatement("select utilidad from ventas where fecha between ? and ?");
             pr1.setDate(1, new java.sql.Date(java.util.Date.from(fecha1.atStartOfDay(ZoneId.systemDefault()).toInstant()).getTime()));
             pr1.setDate(2, new java.sql.Date(java.util.Date.from(fecha2.atStartOfDay(ZoneId.systemDefault()).toInstant()).getTime()));
@@ -125,12 +149,11 @@ public final class Administrador extends javax.swing.JFrame {
     }
 
     public static void utilidadPor() {
-        String por;
         double porsentaje = (Double.valueOf(Utilidad.utilidadMes()) / Double.valueOf(jProgressBar1.getMaximum())) * 100;
-        por = "%" + new DecimalFormat("###,###.##").format(porsentaje);
+        porString = "%" + new DecimalFormat("###,###.##").format(porsentaje);
         jLabel9.setText(FormatoPesos.formato(Utilidad.utilidadMes()));
         jLabel13.setText(FormatoPesos.formato(jProgressBar1.getMaximum()));
-        jProgressBar1.setString(por);
+        uiProgresos(porString);
     }
 
     public void caja() {
@@ -444,9 +467,13 @@ public final class Administrador extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel4.setText("                      VENTA MES:");
 
+        jProgressBar1.setBackground(null);
         jProgressBar1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jProgressBar1.setForeground(new java.awt.Color(255, 255, 255));
         jProgressBar1.setMaximum(0);
-        jProgressBar1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jProgressBar1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jProgressBar1.setBorderPainted(false);
+        jProgressBar1.setStringPainted(true);
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -475,20 +502,6 @@ public final class Administrador extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(15, 15, 15)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(VentaMEs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelVentaSemana, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabelVentasHoy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 253, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGap(14, 14, 14)
@@ -499,7 +512,21 @@ public final class Administrador extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
-                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addGap(15, 15, 15)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jProgressBar1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, 214, Short.MAX_VALUE)
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(VentaMEs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabelVentaSemana, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabelVentasHoy, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
                 .addGap(155, 155, 155))
         );
         jPanel1Layout.setVerticalGroup(
@@ -517,8 +544,8 @@ public final class Administrador extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(VentaMEs)
                     .addComponent(jLabel4))
-                .addGap(30, 30, 30)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26)
+                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)

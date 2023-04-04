@@ -9,9 +9,14 @@ import Clases.Fechas;
 import Clases.Fondo;
 import Clases.FormatoPesos;
 import Clases.Validaciones;
+import static Ventanas.Administrador.jLabelCaja;
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.text.MaskFormatter;
 
 /**
@@ -38,6 +43,20 @@ public class Caja_Dia extends javax.swing.JDialog {
 
     }
 
+    public void caja() {
+        try (Connection cn = Conexion.Conexion()) {
+
+            PreparedStatement pr1 = cn.prepareStatement("select max(id),total from caja");
+            ResultSet rs1 = pr1.executeQuery();
+            while (rs1.next()) {
+                jLabel4.setText(rs1.getString(2));
+            }
+            cn.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -53,6 +72,8 @@ public class Caja_Dia extends javax.swing.JDialog {
         jButton1 = new javax.swing.JButton();
         jTextFieldEfectivo = new javax.swing.JTextField();
         jTextField2 = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
 
@@ -87,14 +108,18 @@ public class Caja_Dia extends javax.swing.JDialog {
             }
         });
 
+        jLabel3.setText("Efectivo Dia Anterior:");
+
+        jLabel4.setText("jLabel4");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(40, 40, 40)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(38, 38, 38)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel2)
                             .addComponent(jLabel1))
@@ -103,14 +128,22 @@ public class Caja_Dia extends javax.swing.JDialog {
                             .addComponent(jTextFieldEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(134, 134, 134)
-                        .addComponent(jButton1)))
-                .addContainerGap(66, Short.MAX_VALUE))
+                        .addGap(96, 96, 96)
+                        .addComponent(jButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(117, 117, 117)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(98, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel4))
+                .addGap(38, 38, 38)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jTextFieldEfectivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -120,7 +153,7 @@ public class Caja_Dia extends javax.swing.JDialog {
                     .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(24, 24, 24)
                 .addComponent(jButton1)
-                .addContainerGap(55, Short.MAX_VALUE))
+                .addGap(20, 20, 20))
         );
 
         pack();
@@ -132,31 +165,31 @@ public class Caja_Dia extends javax.swing.JDialog {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextFieldEfectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldEfectivoKeyReleased
-        if (!Validaciones.validarString(evt)&& !jTextFieldEfectivo.getText().equals("")&&Validaciones.validarSuprimir(evt)) {
+        if (!Validaciones.validarString(evt) && !jTextFieldEfectivo.getText().equals("") && Validaciones.validarSuprimir(evt)) {
             jTextFieldEfectivo.setText(FormatoPesos.formato(Double.parseDouble(jTextFieldEfectivo.getText().trim().replace(",", ""))));
         }
     }//GEN-LAST:event_jTextFieldEfectivoKeyReleased
 
     private void jTextField2KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyReleased
-        if (!Validaciones.validarString(evt)&&!jTextField2.getText().equals("")) {
+        if (!Validaciones.validarString(evt) && !jTextField2.getText().equals("")) {
             jTextField2.setText(FormatoPesos.formato(Double.parseDouble(jTextField2.getText().trim().replace(",", ""))));
         }
     }//GEN-LAST:event_jTextField2KeyReleased
 
     private void jTextFieldEfectivoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldEfectivoKeyTyped
-        if(Validaciones.validarString(evt)){
+        if (Validaciones.validarString(evt)) {
             evt.consume();
         }
     }//GEN-LAST:event_jTextFieldEfectivoKeyTyped
 
     private void jTextField2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField2KeyTyped
-        if(Validaciones.validarString(evt)){
+        if (Validaciones.validarString(evt)) {
             evt.consume();
         }
     }//GEN-LAST:event_jTextField2KeyTyped
 
     void ingresarCaja() {
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             PreparedStatement ps = cn.prepareStatement("insert into caja (id,Concepto,Valor,Total,Hora,Fecha) values(?,?,?,?,?,?)");
             ps.setInt(1, 0);
             ps.setString(2, "Inicio Caja");
@@ -172,7 +205,7 @@ public class Caja_Dia extends javax.swing.JDialog {
     }
 
     void ingresarPtm() {
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             PreparedStatement ps = cn.prepareStatement("insert into ptm (id,Concepto,Valor,Total,Hora,Fecha) values(?,?,?,?,?,?)");
             ps.setInt(1, 0);
             ps.setString(2, "Inicio PTM");
@@ -192,6 +225,8 @@ public class Caja_Dia extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextFieldEfectivo;
     // End of variables declaration//GEN-END:variables

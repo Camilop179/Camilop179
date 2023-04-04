@@ -101,31 +101,31 @@ public final class Reportes extends javax.swing.JFrame {
         administracion();
         creditos();
     }
-    public void creditos(){
+
+    public void creditos() {
         limpiar(jTable4, (DefaultTableModel) jTable4.getModel());
-        try ( Connection cn = Conexion.Conexion()) {
-                PreparedStatement pr = cn.prepareStatement("select * from ventas where FormaPago='Credito'");
-                ResultSet rs = pr.executeQuery();
-                while (rs.next()) {
-                    String[] datos = new String[5];
-                    datos[0] = rs.getString(2);
-                    datos[1] = rs.getString(4);
-                    datos[2] = rs.getString(8);
-                    datos[3] = rs.getString(7);
-                    datos[4] = rs.getString(15);
-                    DefaultTableModel df = (DefaultTableModel) jTable4.getModel();
-                    df.addRow(datos);
-                    jTable4.setModel(df);
-                }
-                total(jTable4, jTextField10, 2);
-            } catch (SQLException e) {
-                System.err.println(e);
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement pr = cn.prepareStatement("select * from ventas where FormaPago='Credito'");
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                String[] datos = new String[5];
+                datos[0] = rs.getString(2);
+                datos[1] = rs.getString(4);
+                datos[2] = rs.getString(8);
+                datos[3] = rs.getString(7);
+                datos[4] = rs.getString(15);
+                DefaultTableModel df = (DefaultTableModel) jTable4.getModel();
+                df.addRow(datos);
+                jTable4.setModel(df);
             }
+            total(jTable4, jTextField10, 2);
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
     }
 
-    public void egreso(String concepto, double Valor,int tipo) {
-        try {
-            Connection cn = Conexion.Conexion();
+    public void egreso(String concepto, double Valor, int tipo) {
+        try (Connection cn = Conexion.Conexion()) {
             PreparedStatement ps = cn.prepareStatement("insert into egresos(Concepto,Valor,idUsuario,Fecha,Hora,tipo) values(?,?,?,?,?,?)");
             ps.setString(1, concepto);
             ps.setDouble(2, Valor);
@@ -134,7 +134,7 @@ public final class Reportes extends javax.swing.JFrame {
             ps.setTime(5, new java.sql.Time(Fechas.fechaActualDate().getTime()));
             ps.setInt(6, tipo);
             ps.execute();
-            cn.close();
+
             DefaultTableModel tabal = (DefaultTableModel) jTable3.getModel();
             String[] datos = new String[4];
             datos[0] = concepto;
@@ -144,6 +144,7 @@ public final class Reportes extends javax.swing.JFrame {
             tabal.addRow(datos);
             jTable3.setModel(tabal);
             resta(Valor, concepto);
+            totalEgresos();
 
         } catch (SQLException e) {
             System.err.println(e);
@@ -192,27 +193,113 @@ public final class Reportes extends javax.swing.JFrame {
         tx = new TextoFondo("Valor", jTextField4);
         tx = new TextoFondo("Valor", jTextField5);
         tx = new TextoFondo("Valor", jTextField7);
+        tx = new TextoFondo("Valor", jTextField15);
+        tx = new TextoFondo("Valor", jTextField17);
         tx = new TextoFondo("Concepto", jTextField8);
         tx = new TextoFondo("Concepto", jTextField22);
         tx = new TextoFondo("Concepto", jTextField9);
+        tx = new TextoFondo("Concepto", jTextField11);
+        tx = new TextoFondo("Concepto", jTextField16);
         new ImagenBoton("cheque.png", jButton6, jButton6.getWidth() - 3, jButton6.getHeight() - 3);
-        new ImagenBoton("cheque.png", jButton7, jButton6.getWidth() - 3, jButton6.getHeight() - 3);
-        new ImagenBoton("cheque.png", jButton8, jButton6.getWidth() - 3, jButton6.getHeight() - 3);
-        new ImagenBoton("cheque.png", jButton9, jButton6.getWidth() - 3, jButton6.getHeight() - 3);
-
+        new ImagenBoton("cheque.png", jButton7, jButton7.getWidth() - 3, jButton7.getHeight() - 3);
+        new ImagenBoton("cheque.png", jButton8, jButton8.getWidth() - 3, jButton8.getHeight() - 3);
+        new ImagenBoton("cheque.png", jButton9, jButton9.getWidth() - 3, jButton9.getHeight() - 3);
+        new ImagenBoton("cheque.png", jButton10, jButton10.getWidth() - 3, jButton10.getHeight() - 3);
+        new ImagenBoton("cheque.png", jButton11, jButton11.getWidth() - 3, jButton11.getHeight() - 3);
         jButton3.setBackground(new Color(41, 128, 185));
         jButton3.setBorder(null);
         jButton6.setContentAreaFilled(false);
         jButton7.setContentAreaFilled(false);
         jButton8.setContentAreaFilled(false);
         jButton9.setContentAreaFilled(false);
+        jButton10.setContentAreaFilled(false);
+        jButton11.setContentAreaFilled(false);
 
         EgresoNomina();
+        totalEgresos();
+    }
 
+    public void totalEgresos() {
+        double total = 0;
+        double servcios = 0;
+        double aseo = 0;
+        double servicioT = 0;
+        double comida = 0;
+        double aliss = 0;
+        double varios = 0;
+        java.sql.Date fecha_i = new java.sql.Date(fechaMes(1).getTime());
+        java.sql.Date fecha_f = new java.sql.Date(Fechas.fechaActualDate().getTime());
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement pr = cn.prepareStatement("select * from egresos where fecha between ? and ? ");
+            pr.setDate(1, fecha_i);
+            pr.setDate(2, fecha_f);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+
+                switch (rs.getInt(7)) {
+                    case 1 -> {
+                        servcios += rs.getDouble(3);
+                        total += rs.getDouble(3);
+                    }
+                    case 2 -> {
+                        aseo += rs.getDouble(3);
+                        total += rs.getDouble(3);
+                    }
+                    case 3 -> {
+                        servicioT += rs.getDouble(3);
+                        total += rs.getDouble(3);
+                    }
+                    case 4 -> {
+                        comida += rs.getDouble(3);
+                        total += rs.getDouble(3);
+                    }
+                    case 5 -> {
+                        aliss += rs.getDouble(3);
+                        total += rs.getDouble(3);
+                    }
+                    case 6 -> {
+                        varios += rs.getDouble(3);
+                    }
+                    default ->
+                        throw new AssertionError();
+                }
+
+            }
+
+            jLabelSP.setText("$"+FormatoPesos.formato(servcios));
+            jLabelAseo.setText("$"+FormatoPesos.formato(aseo));
+            jLabelServicio.setText("$"+FormatoPesos.formato(servicioT));
+            jLabelAlisson.setText("$"+FormatoPesos.formato(aliss));
+            jLabelComida.setText("$"+FormatoPesos.formato(comida));
+            jLabelTotalEgresos.setText("$"+FormatoPesos.formato(total));
+            jLabelVarios.setText("$"+FormatoPesos.formato(varios));
+        } catch (SQLException ex) {
+            System.err.println("Error en Total Egresos" + ex);
+        }
+        totaldia();
+    }
+    public void totaldia(){
+        
+        double totaldia=0;
+        java.sql.Date fecha = new java.sql.Date(Fechas.fechaActualDate().getTime());
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement pr = cn.prepareStatement("select * from egresos where fecha = ? ");
+            pr.setDate(1, fecha);
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                if(rs.getInt(7)!=6){
+                    totaldia += rs.getDouble(3);
+                }
+
+            }
+        }catch(SQLException e){
+            
+        }
+        jLabelTotalEgresosDia.setText("$"+FormatoPesos.formato(totaldia));
     }
 
     public Date fechaMes(int dia) {
-        Date fecha = null;
+        Date fecha;
         gc.setTime(fecha_actual);
         LocalDate fechaLocal = LocalDate.now();
         LocalDate fechaF = LocalDate.of(fechaLocal.getYear(), fechaLocal.getMonth(), dia);
@@ -222,7 +309,7 @@ public final class Reportes extends javax.swing.JFrame {
 
     public String rentabilidad(Date fecha_inicial, Date fecha_actual) {
         double total = 0;
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             PreparedStatement pr = cn.prepareStatement("select utilidad from ventas where fecha BETWEEN ? and ?");
             pr.setDate(1, new java.sql.Date(fecha_inicial.getTime()));
             pr.setDate(2, new java.sql.Date(fecha_actual.getTime()));
@@ -239,7 +326,7 @@ public final class Reportes extends javax.swing.JFrame {
     public void rentabilidadTotal() {
         double totalR = 0;
         double total = 0;
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             PreparedStatement ps = cn.prepareStatement("select utilidad,precio_Total from ventas");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -262,7 +349,7 @@ public final class Reportes extends javax.swing.JFrame {
         jTextFieldVentaMes.setText(TotalVentas.VentaMes());
         double totalIn = 0;
         double rentEs = 0;
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             PreparedStatement ps = cn.prepareStatement("select utilidad,total_cost,cantidad from producto");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -472,7 +559,7 @@ public final class Reportes extends javax.swing.JFrame {
     }
 
     public void nroNomina() {
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             PreparedStatement pr = cn.prepareStatement("select max(NroNomina) from nomina");
             ResultSet rs = pr.executeQuery();
             while (rs.next()) {
@@ -614,6 +701,30 @@ public final class Reportes extends javax.swing.JFrame {
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
+        jLabel33 = new javax.swing.JLabel();
+        jTextField11 = new javax.swing.JTextField();
+        jTextField15 = new javax.swing.JTextField();
+        jButton10 = new javax.swing.JButton();
+        jLabel18 = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
+        jLabel20 = new javax.swing.JLabel();
+        jLabel21 = new javax.swing.JLabel();
+        jLabelSP = new javax.swing.JLabel();
+        jLabelAseo = new javax.swing.JLabel();
+        jLabelComida = new javax.swing.JLabel();
+        jLabelAlisson = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
+        jLabelTotalEgresos = new javax.swing.JLabel();
+        jLabel34 = new javax.swing.JLabel();
+        jTextField16 = new javax.swing.JTextField();
+        jTextField17 = new javax.swing.JTextField();
+        jButton11 = new javax.swing.JButton();
+        jLabelVarios = new javax.swing.JLabel();
+        jLabelTotal = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabelServicio = new javax.swing.JLabel();
+        jLabelTotal1 = new javax.swing.JLabel();
+        jLabelTotalEgresosDia = new javax.swing.JLabel();
         jPanel3 = new Fondo("FondoMenu.jpg");
         jLabel39 = new javax.swing.JLabel();
         jFormattedTextFieldFetcha = new javax.swing.JFormattedTextField();
@@ -910,7 +1021,7 @@ public final class Reportes extends javax.swing.JFrame {
 
         jLabel32.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel32.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel32.setText("Egresos varios ");
+        jLabel32.setText("Comida");
 
         jTextField5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTextField5.setText("jTextField5");
@@ -938,7 +1049,6 @@ public final class Reportes extends javax.swing.JFrame {
         });
 
         jTextField7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jTextField7.setText("jTextField7");
         jTextField7.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField7KeyReleased(evt);
@@ -976,7 +1086,6 @@ public final class Reportes extends javax.swing.JFrame {
         jTextField8.setText("jTextField3");
 
         jTextField9.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jTextField9.setText("jTextField7");
 
         jTable3.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -1042,6 +1151,122 @@ public final class Reportes extends javax.swing.JFrame {
             }
         });
 
+        jLabel33.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel33.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel33.setText("Alisson");
+
+        jTextField11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField11.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField11KeyReleased(evt);
+            }
+        });
+
+        jTextField15.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField15.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField15KeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextField15KeyTyped(evt);
+            }
+        });
+
+        jButton10.setText("jButton6");
+        jButton10.setAlignmentX(0.5F);
+        jButton10.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
+
+        jLabel18.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel18.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel18.setText("Servicios Publicos");
+
+        jLabel19.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel19.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel19.setText("Aseo");
+
+        jLabel20.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel20.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel20.setText("Comida");
+
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel21.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel21.setText("Alisson");
+
+        jLabelSP.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelSP.setText("jLabel22");
+
+        jLabelAseo.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelAseo.setText("jLabel23");
+
+        jLabelComida.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelComida.setText("jLabel24");
+
+        jLabelAlisson.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelAlisson.setText("jLabel30");
+
+        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel22.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel22.setText("Varios");
+
+        jLabelTotalEgresos.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelTotalEgresos.setText("jLabel23");
+
+        jLabel34.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel34.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel34.setText("Varios");
+
+        jTextField16.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField16.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField16KeyReleased(evt);
+            }
+        });
+
+        jTextField17.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jTextField17.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextField17KeyReleased(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                jTextField17KeyTyped(evt);
+            }
+        });
+
+        jButton11.setText("jButton6");
+        jButton11.setAlignmentX(0.5F);
+        jButton11.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
+
+        jLabelVarios.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelVarios.setText("jLabel23");
+
+        jLabelTotal.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelTotal.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabelTotal.setText("Total:");
+
+        jLabel23.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel23.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabel23.setText("Servicio Tecnico");
+
+        jLabelServicio.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelServicio.setText("jLabel24");
+
+        jLabelTotal1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelTotal1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        jLabelTotal1.setText("Total Dia:");
+
+        jLabelTotalEgresosDia.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelTotalEgresosDia.setText("jLabel23");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -1058,41 +1283,87 @@ public final class Reportes extends javax.swing.JFrame {
                             .addComponent(jLabel26, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel29, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel32, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel28, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(6, 6, 6)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jComboBox4, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField22, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField8, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jTextField18)
-                            .addComponent(jTextField9))
+                            .addComponent(jLabel28, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel33, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel34, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextField3)
-                            .addComponent(jTextField4)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addComponent(jTextField16)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jTextField17, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jComboBox4, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jTextField22, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jTextField8, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jTextField18)
+                                    .addComponent(jTextField9)
+                                    .addComponent(jTextField11, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(jTextField3)
+                                        .addComponent(jTextField4)
+                                        .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
+                .addGap(12, 12, 12)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(493, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
+                        .addContainerGap(481, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton11, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane5))))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane5)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel18, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                                    .addComponent(jLabel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel23, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel20, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabelSP)
+                                            .addComponent(jLabelServicio)
+                                            .addComponent(jLabelAseo))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(jLabel22, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabelTotal, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(jPanel2Layout.createSequentialGroup()
+                                        .addComponent(jLabelComida)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabelTotal1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabelAlisson)
+                                    .addComponent(jLabelVarios)
+                                    .addComponent(jLabelTotalEgresos)
+                                    .addComponent(jLabelTotalEgresosDia))
+                                .addContainerGap())))))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(154, 154, 154)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(170, 170, 170)
+                        .addGap(16, 16, 16)
                         .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1123,14 +1394,63 @@ public final class Reportes extends javax.swing.JFrame {
                             .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jTextField7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton9)))
+                            .addComponent(jButton9))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton10)
+                            .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jButton11)
+                            .addComponent(jTextField17, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jTextField16, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(154, 154, 154)
                         .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 396, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(43, Short.MAX_VALUE))
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel18)
+                            .addComponent(jLabelSP))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel19)
+                            .addComponent(jLabelAseo))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel23)
+                            .addComponent(jLabelServicio)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabelAlisson)
+                            .addComponent(jLabel21))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel22)
+                            .addComponent(jLabelVarios))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabelTotalEgresos)
+                            .addComponent(jLabelTotal))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabelTotalEgresosDia)
+                        .addComponent(jLabelTotal1))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel20)
+                        .addComponent(jLabelComida)))
+                .addGap(50, 50, 50))
         );
+
+        jButton10.setContentAreaFilled(false);
+        jButton10.setContentAreaFilled(false);
 
         jTabbedPane2.addTab("Resumen Egresos", jPanel2);
 
@@ -1948,7 +2268,7 @@ public final class Reportes extends javax.swing.JFrame {
         String Concepto = jComboBox4.getSelectedItem().toString();
         if (!Concepto.equals("Seleccionar") && !jTextField3.getText().equals("Valor")) {
             double valor = Double.parseDouble(jTextField3.getText().trim().replace(",", ""));
-            egreso(Concepto, valor,1);
+            egreso(Concepto, valor, 1);
             jTextField3.setText("");
             jComboBox4.setSelectedIndex(0);
             jTextField3.requestFocus();
@@ -1983,7 +2303,7 @@ public final class Reportes extends javax.swing.JFrame {
         if (!Concepto.equals("Concepto") && !jTextField4.getText().equals("Valor")) {
 
             double valor = Double.parseDouble(jTextField4.getText().trim().replace(",", ""));
-            egreso(Concepto, valor,2);
+            egreso(Concepto, valor, 2);
 
             jTextField8.setText("");
             jTextField4.setText("");
@@ -2004,7 +2324,7 @@ public final class Reportes extends javax.swing.JFrame {
         if (!Concepto.equals("Concepto") && !jTextField5.getText().equals("Valor")) {
 
             double valor = Double.parseDouble(jTextField5.getText().trim().replace(",", ""));
-            egreso(Concepto, valor,3);
+            egreso(Concepto, valor, 3);
             jTextField22.setText("");
             jTextField5.setText("");
 
@@ -2023,7 +2343,7 @@ public final class Reportes extends javax.swing.JFrame {
         String Concepto = jTextField9.getText();
         if (!Concepto.equals("Concepto") && !jTextField7.getText().equals("Valor")) {
             double valor = Double.parseDouble(jTextField7.getText().trim().replace(",", ""));
-            egreso(Concepto, valor,4);
+            egreso(Concepto, valor, 4);
             jTextField9.setText("");
             jTextField7.setText("");
             jTextField7.requestFocus();
@@ -2039,41 +2359,100 @@ public final class Reportes extends javax.swing.JFrame {
 
     private void jTextFieldCedulaCreditoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCedulaCreditoKeyPressed
 
-            
+
     }//GEN-LAST:event_jTextFieldCedulaCreditoKeyPressed
 
     private void jTable4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable4MouseClicked
-        if(evt.getClickCount()==2){
-            
-            
+        if (evt.getClickCount() == 2) {
+
         }
     }//GEN-LAST:event_jTable4MouseClicked
 
     private void jTextFieldCedulaCreditoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCedulaCreditoKeyReleased
         limpiar(jTable4, (DefaultTableModel) jTable4.getModel());
-            try ( Connection cn = Conexion.Conexion()) {
-                PreparedStatement pr = cn.prepareStatement("select c.nombres,c.celular,c.saldo,v.nroVentas,v.precio_Total,v.fecha,v.saldo,v.cedula_cliente from clientes c join ventas v on "
-                        + "c.cedula=v.cedula_cliente where v.FormaPago='Credito' and c.cedula like ?");
-                pr.setString(1, "%"+jTextFieldCedulaCredito.getText()+"%");
-                ResultSet rs = pr.executeQuery();
-                while (rs.next()) {
-                    jLabelNombre.setText(rs.getString(1));
-                    jLabelTelefono.setText(rs.getString(2));
-                    String[] datos = new String[5];
-                    datos[0] = rs.getString(4);
-                    datos[1] = rs.getString(8);
-                    datos[2] = rs.getString(5);
-                    datos[3]=rs.getString(6);
-                    datos[4]=rs.getString(7);
-                    DefaultTableModel df = (DefaultTableModel) jTable4.getModel();
-                    df.addRow(datos);
-                    jTable4.setModel(df);
-                }
-                total(jTable4, jTextField10, 2);
-            } catch (SQLException e) {
-                System.err.println(e);
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement pr = cn.prepareStatement("select c.nombres,c.celular,c.saldo,v.nroVentas,v.precio_Total,v.fecha,v.saldo,v.cedula_cliente from clientes c join ventas v on "
+                    + "c.cedula=v.cedula_cliente where v.FormaPago='Credito' and c.cedula like ?");
+            pr.setString(1, "%" + jTextFieldCedulaCredito.getText() + "%");
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+                jLabelNombre.setText(rs.getString(1));
+                jLabelTelefono.setText(rs.getString(2));
+                String[] datos = new String[5];
+                datos[0] = rs.getString(4);
+                datos[1] = rs.getString(8);
+                datos[2] = rs.getString(5);
+                datos[3] = rs.getString(6);
+                datos[4] = rs.getString(7);
+                DefaultTableModel df = (DefaultTableModel) jTable4.getModel();
+                df.addRow(datos);
+                jTable4.setModel(df);
             }
+            total(jTable4, jTextField10, 2);
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
     }//GEN-LAST:event_jTextFieldCedulaCreditoKeyReleased
+
+    private void jTextField15KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField15KeyReleased
+        formato(jTextField15);
+    }//GEN-LAST:event_jTextField15KeyReleased
+
+    private void jTextField15KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField15KeyTyped
+        numero(evt);
+    }//GEN-LAST:event_jTextField15KeyTyped
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        String Concepto = jTextField11.getText();
+        if (!Concepto.equals("Concepto") && !jTextField15.getText().equals("Valor")) {
+            double valor = Double.parseDouble(jTextField15.getText().trim().replace(",", ""));
+            egreso(Concepto, valor, 5);
+            jTextField11.setText("");
+            jTextField15.setText("");
+            jTextField11.requestFocus();
+            jTextField15.requestFocus();
+        } else if (jTextField11.getText().equals("Valor")) {
+            JOptionPane.showMessageDialog(this, "No ingreso un precio");
+            jTextField11.setBackground(Color.red);
+        } else {
+            JOptionPane.showMessageDialog(null, "Campo vacio", "No se Selecciono un Servicio", JOptionPane.ERROR_MESSAGE);
+            jTextField15.setBackground(Color.red);
+        }
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jTextField11KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField11KeyReleased
+        formato(jTextField15);
+    }//GEN-LAST:event_jTextField11KeyReleased
+
+    private void jTextField16KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField16KeyReleased
+        formato(jTextField15);
+    }//GEN-LAST:event_jTextField16KeyReleased
+
+    private void jTextField17KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField17KeyReleased
+        formato(jTextField15);
+    }//GEN-LAST:event_jTextField17KeyReleased
+
+    private void jTextField17KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField17KeyTyped
+        numero(evt);
+    }//GEN-LAST:event_jTextField17KeyTyped
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        String Concepto = jTextField16.getText();
+        if (!Concepto.equals("Concepto") && !jTextField17.getText().equals("Valor")) {
+            double valor = Double.parseDouble(jTextField17.getText().trim().replace(",", ""));
+            egreso(Concepto, valor, 6);
+            jTextField16.setText("");
+            jTextField17.setText("");
+            jTextField16.requestFocus();
+            jTextField17.requestFocus();
+        } else if (jTextField16.getText().equals("Valor")) {
+            JOptionPane.showMessageDialog(this, "No ingreso un precio");
+            jTextField16.setBackground(Color.red);
+        } else {
+            JOptionPane.showMessageDialog(null, "Campo vacio", "No se Selecciono un Servicio", JOptionPane.ERROR_MESSAGE);
+            jTextField17.setBackground(Color.red);
+        }
+    }//GEN-LAST:event_jButton11ActionPerformed
     //validar si se tipea un numero
     void numero(KeyEvent evt) {
         if (Validaciones.validarString(evt)) {
@@ -2082,7 +2461,7 @@ public final class Reportes extends javax.swing.JFrame {
     }
 
     void formato(JTextField jt) {
-        if (!jt.getText().equals("")) {
+        if (!jt.getText().equals("Valor") && !jt.getText().equals("")) {
             jt.setText(FormatoPesos.formato(Double.parseDouble(jt.getText().trim().replace(",", "").trim())));
         }
     }
@@ -2092,6 +2471,8 @@ public final class Reportes extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -2117,7 +2498,13 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel25;
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
@@ -2126,6 +2513,8 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
+    private javax.swing.JLabel jLabel33;
+    private javax.swing.JLabel jLabel34;
     private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
@@ -2143,11 +2532,21 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelAlisson;
+    private javax.swing.JLabel jLabelAseo;
+    private javax.swing.JLabel jLabelComida;
     private javax.swing.JLabel jLabelNombre;
     private javax.swing.JLabel jLabelNombreE;
     private javax.swing.JLabel jLabelNombreN;
     private javax.swing.JLabel jLabelNroNomina;
+    private javax.swing.JLabel jLabelSP;
+    private javax.swing.JLabel jLabelServicio;
     private javax.swing.JLabel jLabelTelefono;
+    private javax.swing.JLabel jLabelTotal;
+    private javax.swing.JLabel jLabelTotal1;
+    private javax.swing.JLabel jLabelTotalEgresos;
+    private javax.swing.JLabel jLabelTotalEgresosDia;
+    private javax.swing.JLabel jLabelVarios;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
@@ -2175,9 +2574,13 @@ public final class Reportes extends javax.swing.JFrame {
     private javax.swing.JTable jTableDevengado;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField10;
+    private javax.swing.JTextField jTextField11;
     private javax.swing.JTextField jTextField12;
     private javax.swing.JTextField jTextField13;
     private javax.swing.JTextField jTextField14;
+    private javax.swing.JTextField jTextField15;
+    private javax.swing.JTextField jTextField16;
+    private javax.swing.JTextField jTextField17;
     private javax.swing.JTextField jTextField18;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField22;

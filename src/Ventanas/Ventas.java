@@ -6,6 +6,7 @@ import Clases.Errores;
 import Clases.Fechas;
 import Clases.Fondo;
 import Clases.FormatoPesos;
+import Clases.FormatoTablas;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Validaciones;
@@ -28,6 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumnModel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -43,6 +46,7 @@ import net.sf.jasperreports.view.JasperViewer;
 public final class Ventas extends javax.swing.JFrame {
 
     public static boolean m = false;
+    FormatoTablas ft = new FormatoTablas();
     static ArrayList utilidaTotal = new ArrayList();
 
     public Ventas() {
@@ -71,11 +75,27 @@ public final class Ventas extends javax.swing.JFrame {
         jScrollPane2.getViewport().setBackground(new Color(51, 153, 255));
         tamañoColumna();
 
+        jTableVenta.setDefaultRenderer(Object.class, ft);
         reportes();
         cerra();
+        eventotabla();
 
     }
 
+    public void eventotabla() {
+        jTableVenta.getModel().addTableModelListener((TableModelEvent e) -> {
+            if (e.getType() == TableModelEvent.UPDATE) {
+                int columna = e.getColumn();
+                if (columna == 2) {
+                    cambiarCant();
+                    total();
+                } else if (columna == 3) {
+                    cambiarCant();
+                    total();
+                }
+            }
+        });
+    }
     public void cerra() {
         try {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -250,7 +270,7 @@ public final class Ventas extends javax.swing.JFrame {
     public static void total() {
         double t = 0;
         for (int i = 0; i < jTableVenta.getRowCount(); i++) {
-            t += Double.parseDouble(jTableVenta.getValueAt(i, 4).toString().replace(",", ""));
+            t += Double.parseDouble(jTableVenta.getValueAt(i, 4).toString());
         }
         jTextFieldTotal.setText(FormatoPesos.formato(t));
     }
@@ -269,33 +289,31 @@ public final class Ventas extends javax.swing.JFrame {
                 int i = tabla(rs.getString(1));
                 if (i >= 0) {
                     int cant = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
-                    int precio = Integer.parseInt(jTableVenta.getValueAt(i, 2).toString().replaceAll("[\\D]", ""));
+                    int precio = Integer.parseInt(jTableVenta.getValueAt(i, 2).toString());
                     cant++;
                     int totalV = precio * cant;
                     jTableVenta.setValueAt(cant, i, 3);
-                    jTableVenta.setValueAt(FormatoPesos.formato(totalV), i, 4);
+                    jTableVenta.setValueAt(totalV, i, 4);
                     utilidaTotal.set(i, (precio - rs.getDouble(4)) * cant);
-                    System.out.println(utilidaTotal);
                     total();
                 } else {
                     String[] datos = new String[5];
                     datos[0] = rs.getString(1);
                     datos[1] = rs.getString(2);
-                    datos[2] = FormatoPesos.formato(rs.getInt(3));
+                    datos[2] = String.valueOf(rs.getInt(3));
                     datos[3] = "1";
-                    datos[4] = FormatoPesos.formato(rs.getInt(3));
+                    datos[4] = String.valueOf(rs.getInt(3));
                     tabla.addRow(datos);
                     Object obg = rs.getDouble(3) - rs.getDouble(4);
                     utilidaTotal.add(obg);
-                    System.out.println(utilidaTotal);
                     total();
                 }
                 jTextFieldCodigo.setText("");
+                m = false;
             } else {
                 m = true;
                 new Catalogo().setVisible(true);
             }
-
         } catch (SQLException e) {
             System.err.println(e);
             Errores.Errores("Error al Agregar Producto: " + e);
@@ -429,16 +447,15 @@ public final class Ventas extends javax.swing.JFrame {
     }
 
     public void cambiarCant() {
-        for (int row = 0; row < jTableVenta.getRowCount(); row++) {
-            String codigo = jTableVenta.getValueAt(row, 0).toString();
-            int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
-            double precio = Double.parseDouble(jTableVenta.getValueAt(row, 2).toString().replace(",", ""));
-            double total1 = cant * precio;
-            double util = (precio - Utilidad.costo(codigo)) * cant;
-            utilidaTotal.set(row, util);
-            jTableVenta.setValueAt(FormatoPesos.formato(total1), row, 4);
-            jTableVenta.setValueAt(FormatoPesos.formato(precio), row, 2);
-        }
+        int row = jTableVenta.getSelectedRow();
+        String codigo = jTableVenta.getValueAt(row, 0).toString();
+        int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
+        double precio = Double.parseDouble(jTableVenta.getValueAt(row, 2).toString());
+        double total1 = cant * precio;
+        double util = (precio - Utilidad.costo(codigo)) * cant;
+        utilidaTotal.set(row, util);
+        jTableVenta.setValueAt(total1, row, 4);
+
     }
 
     public static int tabla(String codigo) {
@@ -496,6 +513,7 @@ public final class Ventas extends javax.swing.JFrame {
         jTextArea1 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setBackground(new java.awt.Color(234, 234, 234));
         setSize(new java.awt.Dimension(1000, 600));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -612,9 +630,6 @@ public final class Ventas extends javax.swing.JFrame {
         jTableVenta.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jTableVentaKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                jTableVentaKeyReleased(evt);
             }
         });
         jScrollPane2.setViewportView(jTableVenta);
@@ -968,14 +983,6 @@ public final class Ventas extends javax.swing.JFrame {
             eliminarProducto();
         }
     }//GEN-LAST:event_jTableVentaKeyPressed
-
-    private void jTableVentaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableVentaKeyReleased
-
-        if (!Validaciones.validarString(evt)) {
-            cambiarCant();
-            total();
-        }
-    }//GEN-LAST:event_jTableVentaKeyReleased
 
     private void jTextFieldMotoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldMotoKeyPressed
         if (!Validaciones.validarEnter(evt)) {

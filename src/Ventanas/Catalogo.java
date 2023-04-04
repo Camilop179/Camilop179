@@ -5,7 +5,11 @@ import Clases.Imagenes;
 import Clases.TablaFondo;
 import Clases.Fondo;
 import Clases.Validaciones;
+import static Ventanas.Ventas.m;
+import static Ventanas.Ventas.utilidaTotal;
 import java.awt.HeadlessException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.sql.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -22,7 +26,7 @@ public final class Catalogo extends javax.swing.JFrame {
 
     static String sql;
     public static int vent = 0;
-    static int column=0;
+    static int column = 0;
 
     public Catalogo() {
         Fondo fondo = new Fondo("FondoMenu.jpg");
@@ -39,6 +43,24 @@ public final class Catalogo extends javax.swing.JFrame {
         jTextFieldBusqueda.requestFocus();
         inventario();
         total();
+        cerra();
+    }
+
+    public void cerra() {
+        try {
+            this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+
+                    setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    Ventas.m = false;
+                    utilidaTotal.clear();
+
+                }
+            });
+        } catch (Exception e) {
+        }
     }
 
     /**
@@ -58,15 +80,16 @@ public final class Catalogo extends javax.swing.JFrame {
     /**
      * Consulatar Base de Datos para los Productos
      */
-    static String Numero_sin_punto(double m){
-        String num="";
+    static String Numero_sin_punto(double m) {
+        String num;
         DecimalFormatSymbols sm = new DecimalFormatSymbols();
         sm.setDecimalSeparator('.');
         sm.setGroupingSeparator(',');
-        DecimalFormat dm = new DecimalFormat("###,###",sm);
-        num=dm.format(m);
+        DecimalFormat dm = new DecimalFormat("###,###", sm);
+        num = dm.format(m);
         return num;
-    } 
+    }
+
     public static void inventario() {
         if (Ventas.m) {
             sql = "select p.idProducto,p.codigo,p.codigo_barras,p.producto"
@@ -92,8 +115,8 @@ public final class Catalogo extends javax.swing.JFrame {
                 for (int i = 0; i < column; i++) {
                     datos[i] = rs.getString(i + 1);
                 }
-                if(Ventas.m){
-                    datos[4]=Numero_sin_punto(rs.getDouble(5));
+                if (Ventas.m) {
+                    datos[4] = Numero_sin_punto(rs.getDouble(5));
                 }
                 tabla.addRow(datos);
             }
@@ -122,8 +145,8 @@ public final class Catalogo extends javax.swing.JFrame {
         tabla.addColumn("Precio Venta");
         tabla.addColumn("Cantidad");
         if (!Ventas.m) {
-        tabla.addColumn("Utilidad");
-        tabla.addColumn("Utilida %");
+            tabla.addColumn("Utilidad");
+            tabla.addColumn("Utilida %");
         }
         tabla.addColumn("Tipo");
         tabla.addColumn("Seccion");
@@ -165,15 +188,12 @@ public final class Catalogo extends javax.swing.JFrame {
                 }
                 x++;
                 switch (i) {
-                    case 0:
+                    case 0 ->
                         code += "p.codigo like ?";
-                        break;
-                    case 1:
+                    case 1 ->
                         code += "p.codigo_barras like ?";
-                        break;
-                    case 2:
+                    case 2 ->
                         code += "p.producto like ?";
-                        break;
                 }
             }
 
@@ -182,8 +202,7 @@ public final class Catalogo extends javax.swing.JFrame {
         String[] datos = new String[column];
         try {
             Connection cnn = Conexion.Conexion();
-            PreparedStatement pre = cnn.prepareStatement(sql+" where " + code);
-            System.out.println(code);
+            PreparedStatement pre = cnn.prepareStatement(sql + " where " + code);
             for (int i = 1; i <= x; i++) {
                 pre.setString(i, '%' + jTextFieldBusqueda.getText().trim() + '%');
             }
@@ -404,13 +423,13 @@ public final class Catalogo extends javax.swing.JFrame {
             Ventas.jTextFieldCodigo.setText(cod);
             this.dispose();
             Ventas.producto();
-            Ventas.m=false;
+            Ventas.m = false;
         } else if (Compras.n) {
             cod = Table.getValueAt(i, 1).toString();
             Compras.jTextFieldCodigo.setText(cod);
             this.dispose();
             Compras.producto();
-            Compras.n=false;
+            Compras.n = false;
         } else if (Administrador.m) {
             if (evt.getClickCount() == 2) {
                 if (Ventas.m == true) {

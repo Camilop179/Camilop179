@@ -9,6 +9,7 @@ import Clases.Conexion;
 import Clases.Fechas;
 import Clases.Fondo;
 import Clases.FormatoPesos;
+import Clases.FormatoTablas;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Utilidad;
@@ -20,6 +21,8 @@ import java.text.*;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
@@ -31,6 +34,7 @@ public class Compras extends javax.swing.JFrame {
 
     static boolean n = false;
 
+    FormatoTablas ft = new FormatoTablas();
     static DefaultTableModel tabla;
 
     /**
@@ -57,7 +61,28 @@ public class Compras extends javax.swing.JFrame {
         }
         reportes();
         cerra();
+        eventotabla();
+        jTableCompra.setDefaultRenderer(Object.class, ft);
 
+    }
+
+    public void eventotabla() {
+        jTableCompra.getModel().addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                if (e.getType() == TableModelEvent.UPDATE) {
+                    int columna = e.getColumn();
+                    if (columna == 2) {
+                        cambiarCant();
+                        total();
+                    } else if (columna == 3) {
+                        cambiarCant();
+                        total();
+                    }
+                }
+            }
+        }
+        );
     }
 
     public void cerra() {
@@ -263,25 +288,26 @@ public class Compras extends javax.swing.JFrame {
 
         int t = 0;
         for (int i = 0; i < jTableCompra.getRowCount(); i++) {
-            t += Integer.parseInt(jTableCompra.getValueAt(i, 4).toString().replace(",", ""));
+            t += Double.parseDouble(jTableCompra.getValueAt(i, 4).toString().replace(",", ""));
         }
         jTextFieldTotal.setText("" + t);
     }
 
     void caja() {
-        try {
-            double total = Double.parseDouble(Administrador.jLabelCaja.getText().replace(",", ""))
-                    - Double.valueOf(jTextFieldTotal.getText().replace(",", ""));
-            Connection cn = Conexion.Conexion();
-            PreparedStatement ps = cn.prepareStatement("insert into caja(Concepto,Valor,Total,Fecha,Hora) values(?,?,?,?,?)");
+        try (Connection cn = Conexion.Conexion()) {
+            double total;
+            total = Double.valueOf(jTextFieldTotal.getText().replace(",", ""))- Double.valueOf(Administrador.jLabelCaja.getText().replace(",", ""));
+
+            PreparedStatement ps;
+            ps = cn.prepareStatement("insert into caja(Concepto,Valor,Total,Fecha,Hora) values(?,?,?,?,?)");
             ps.setString(1, "FC #" + jLabelNoCompra.getText());
-            ps.setDouble(2, -Double.valueOf(jTextFieldTotal.getText().replace(",", "")));
+            ps.setDouble(2, -Double.parseDouble(jTextFieldTotal.getText().replace(",", "")));
             ps.setDouble(3, total);
             ps.setDate(4, new java.sql.Date(Fechas.fechaActualDate().getTime()));
             ps.setTime(5, new Time(Fechas.fechaActualDate().getTime()));
             ps.execute();
             Administrador.jLabelCaja.setText(FormatoPesos.formato(total));
-            cn.close();
+
         } catch (NumberFormatException | SQLException e) {
             System.out.println(e);
         }
@@ -802,7 +828,7 @@ public class Compras extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Compra exitosa");
         } else {
             FormaPago = "Pendiente";
-            
+
             compra(FormaPago);
             detalleCompra();
             JOptionPane.showMessageDialog(null, "Compra exitosa");
@@ -859,19 +885,14 @@ public class Compras extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldAsesorrKeyPressed
     public void cambiarCant() {
         int row = jTableCompra.getSelectedRow();
-        String codigo = jTableCompra.getValueAt(row, 0).toString();
         int cant = Integer.parseInt(jTableCompra.getValueAt(row, 3).toString());
-        int precio = Integer.parseInt(jTableCompra.getValueAt(row, 2).toString());
-        int total1 = cant * precio;
-        double util = Utilidad.costo(codigo) - precio;
+        double precio = Integer.parseInt(jTableCompra.getValueAt(row, 2).toString());
+        double total1 = cant * precio;
 
         jTableCompra.setValueAt(total1, row, 4);
     }
     private void jTableCompraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableCompraKeyReleased
-        if (!Validaciones.validarEnter(evt)) {
-            cambiarCant();
-            total();
-        }// TODO add your handling code here:
+        // TODO add your handling code here:
     }//GEN-LAST:event_jTableCompraKeyReleased
 
 
