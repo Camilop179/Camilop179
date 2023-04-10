@@ -30,7 +30,6 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.TableColumnModel;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -382,10 +381,10 @@ public final class Ventas extends javax.swing.JFrame {
                 pr.setInt(2, Integer.parseInt(jLabelNoVenta.getText()));
                 pr.setString(3, jTableVenta.getValueAt(i, 0).toString());
                 pr.setString(4, jTableVenta.getValueAt(i, 1).toString());
-                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString().replace(",", "")));
+                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString()));
                 pr.setInt(6, Integer.parseInt(jTableVenta.getValueAt(i, 3).toString()));
                 pr.setDouble(7, (double) utilidaTotal.get(i));
-                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString().replace(",", "")));
+                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString()));
                 pr.executeUpdate();
                 String codigo = jTableVenta.getValueAt(i, 0).toString();
                 int cantidad = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
@@ -455,6 +454,7 @@ public final class Ventas extends javax.swing.JFrame {
         double util = (precio - Utilidad.costo(codigo)) * cant;
         utilidaTotal.set(row, util);
         jTableVenta.setValueAt(total1, row, 4);
+        System.out.println(utilidaTotal);
 
     }
 
@@ -967,6 +967,7 @@ public final class Ventas extends javax.swing.JFrame {
     private void jTextFieldCodigoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCodigoKeyPressed
         if (!Validaciones.validarEnter(evt)) {
             producto();
+            System.out.println(utilidaTotal);
         } else if ((evt.getKeyCode() == 71) && (evt.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
             vender();
         }

@@ -367,17 +367,17 @@ public final class Reportes extends javax.swing.JFrame {
     void egresosReg() {
         try {
             String[] datos = new String[4];
-            DefaultTableModel tabla = (DefaultTableModel) jTable3.getModel();
+            DefaultTableModel tablaEgresos;
+            tablaEgresos = (DefaultTableModel) jTable3.getModel();
             Connection cn = Conexion.Conexion();
-            PreparedStatement ps = cn.prepareStatement("Select e.Concepto,e.Valor,c.Total,e.hora from egresos e right join caja c "
-                    + "on e.hora=c.Hora where e.fecha=?");
-            ps.setDate(1, new java.sql.Date(Fechas.fechaActualDate().getTime()));
+            PreparedStatement ps = cn.prepareStatement("Select e.Concepto,e.Valor,c.Total,e.hora from egresos e left join caja c "
+                    + "on e.hora=c.Hora where e.fecha=current_date()");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 for (int i = 0; i < 4; i++) {
                     datos[i] = rs.getString(i + 1);
                 }
-                tabla.addRow(datos);
+                tablaEgresos.addRow(datos);
             }
         } catch (SQLException ex) {
             System.err.println(ex);

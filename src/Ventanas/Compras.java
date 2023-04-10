@@ -293,11 +293,24 @@ public class Compras extends javax.swing.JFrame {
         jTextFieldTotal.setText("" + t);
     }
 
+    public double cajaTotal(){
+        double total = 0;
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement ps;
+            ps = cn.prepareStatement("SELECT total FROM caja  where id=(select max(id) from caja)");
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                total=rs.getDouble(1);
+            }
+        } catch (NumberFormatException | SQLException e) {
+            System.out.println(e);
+        }
+        return total;
+    }
     void caja() {
         try (Connection cn = Conexion.Conexion()) {
             double total;
-            total = Double.valueOf(jTextFieldTotal.getText().replace(",", ""))- Double.valueOf(Administrador.jLabelCaja.getText().replace(",", ""));
-
+            total = cajaTotal()- Double.parseDouble(jTextFieldTotal.getText().replace(",", ""));
             PreparedStatement ps;
             ps = cn.prepareStatement("insert into caja(Concepto,Valor,Total,Fecha,Hora) values(?,?,?,?,?)");
             ps.setString(1, "FC #" + jLabelNoCompra.getText());
@@ -888,7 +901,6 @@ public class Compras extends javax.swing.JFrame {
         int cant = Integer.parseInt(jTableCompra.getValueAt(row, 3).toString());
         double precio = Integer.parseInt(jTableCompra.getValueAt(row, 2).toString());
         double total1 = cant * precio;
-
         jTableCompra.setValueAt(total1, row, 4);
     }
     private void jTableCompraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableCompraKeyReleased

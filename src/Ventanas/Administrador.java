@@ -45,6 +45,7 @@ public final class Administrador extends javax.swing.JFrame {
 
     public static boolean m;
     static String porString;
+
     public Administrador() {
         Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
@@ -79,9 +80,9 @@ public final class Administrador extends javax.swing.JFrame {
         progesoUtilidad();
     }
 
-    public static void uiProgresos(String s){
-        
-        jProgressBar1.setUI(new BasicProgressBarUI(){
+    public static void uiProgresos(String s) {
+
+        jProgressBar1.setUI(new BasicProgressBarUI() {
             @Override
             protected void paintDeterminate(Graphics g, JComponent c) {
                 Graphics2D g2 = (Graphics2D) g;
@@ -89,30 +90,31 @@ public final class Administrador extends javax.swing.JFrame {
                 int ancho = jProgressBar1.getWidth();
                 int alto = jProgressBar1.getHeight();
                 g2.setColor(Color.WHITE);
-                RoundRectangle2D r3 = new RoundRectangle2D.Double(4,2,c.getWidth()-5,alto-7,alto,alto);
+                RoundRectangle2D r3 = new RoundRectangle2D.Double(4, 2, c.getWidth() - 5, alto - 7, alto, alto);
                 g2.fill(r3);
-                
+
                 double por = jProgressBar1.getPercentComplete();
-                ancho = (int) (ancho*por);
+                ancho = (int) (ancho * por);
                 g2.setColor(Color.RED);
-                RoundRectangle2D R = new RoundRectangle2D.Double(4,2,ancho-6,alto-7,alto,alto);
+                RoundRectangle2D R = new RoundRectangle2D.Double(4, 2, ancho - 6, alto - 7, alto, alto);
                 g2.fill(R);
-                
-                g2.setColor(new Color(234,234,234));
+
+                g2.setColor(new Color(234, 234, 234));
                 g2.setFont(new Font("Purisa", Font.PLAIN, 18));
                 g2.drawString(s, 10, 20);
                 g2.setColor(Color.BLACK);
-                RoundRectangle2D r2 = new RoundRectangle2D.Double(2,2,ancho-5,alto-7,alto,alto);
-                Stroke grosor = new BasicStroke(3,BasicStroke.CAP_ROUND,BasicStroke.JOIN_MITER);
+                RoundRectangle2D r2 = new RoundRectangle2D.Double(2, 2, ancho - 5, alto - 7, alto, alto);
+                Stroke grosor = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER);
                 g2.setStroke(grosor);
                 g2.draw(r2);
             }
-            
+
         });
     }
+
     public void progesoUtilidad() {
         uiProgresos(porString);
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             int utilidad = 0;
             LocalDate fecha = LocalDate.now();
             int mesNum = fecha.getMonthValue();
@@ -125,7 +127,7 @@ public final class Administrador extends javax.swing.JFrame {
                 añoNum = fecha.getYear();
             }
             Calendar dia = Calendar.getInstance();
-            dia.set(Calendar.MONTH, dia.get(Calendar.MONTH)-1);
+            dia.set(Calendar.MONTH, dia.get(Calendar.MONTH) - 1);
             System.out.println(dia.getMaximum(Calendar.DAY_OF_MONTH));
             LocalDate fecha1 = LocalDate.of(añoNum, mesNum, 1);
             LocalDate fecha2 = LocalDate.now();
@@ -144,7 +146,7 @@ public final class Administrador extends javax.swing.JFrame {
             utilidadPor();
             cn.close();
         } catch (SQLException ex) {
-            System.err.println("Error mes"+ex);
+            System.err.println("Error mes" + ex);
         }
     }
 
@@ -157,34 +159,24 @@ public final class Administrador extends javax.swing.JFrame {
     }
 
     public void caja() {
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement ps = cn.prepareStatement("select total from caja where fecha = current_date() and id =(Select max(id) from caja)");
+            ResultSet rs = ps.executeQuery();
 
-            PreparedStatement pr1 = cn.prepareStatement("select max(id) from caja where fecha =?");
-            pr1.setDate(1, new java.sql.Date(Fechas.fechaActualDate().getTime()));
-            ResultSet rs1 = pr1.executeQuery();
-            while (rs1.next()) {
-                if (rs1.getInt(1) != 0) {
-                    PreparedStatement ps = cn.prepareStatement("select total from caja where fecha =? and id =?");
-                    ps.setDate(1, new java.sql.Date(Fechas.fechaActualDate().getTime()));
-                    ps.setInt(2, rs1.getInt(1));
-                    ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                jLabelCaja.setText(FormatoPesos.formato(rs.getDouble(1)));
 
-                    while (rs.next()) {
-                        jLabelCaja.setText(FormatoPesos.formato(rs.getDouble(1)));
-                    }
-                } else {
-                    new Caja_Dia(this, true).setVisible(true);
-                    caja();
-                }
+            } else {
+                new Caja_Dia(this, true).setVisible(true);
+                caja();
             }
-            cn.close();
         } catch (SQLException ex) {
             Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public void ptm() {
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             PreparedStatement pr1 = cn.prepareStatement("select max(id) from ptm");
             ResultSet rs1 = pr1.executeQuery();
             while (rs1.next()) {
@@ -198,8 +190,10 @@ public final class Administrador extends javax.swing.JFrame {
                 }
             }
             cn.close();
+
         } catch (SQLException ex) {
-            Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Administrador.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -765,7 +759,7 @@ public final class Administrador extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel5MouseClicked
 
     void Cambioptm(double valor, String concepto) {
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             double total = Double.parseDouble(jLabelPtm.getText().trim().replace(",", "")) + (valor);
             PreparedStatement ps = cn.prepareStatement("insert into ptm (id,Concepto,Valor,Total,Hora,Fecha) values(?,?,?,?,?,?)");
             ps.setInt(1, 0);
@@ -782,7 +776,7 @@ public final class Administrador extends javax.swing.JFrame {
     }
 
     void CambioCaja(double valor, String concepto) {
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             double total = Double.parseDouble(jLabelCaja.getText().trim().replace(",", "")) + (valor);
             PreparedStatement ps = cn.prepareStatement("insert into caja (id,Concepto,Valor,Total,Hora,Fecha) values(?,?,?,?,?,?)");
             ps.setInt(1, 0);

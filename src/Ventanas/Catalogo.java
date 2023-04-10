@@ -55,8 +55,6 @@ public final class Catalogo extends javax.swing.JFrame {
 
                     setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
                     Ventas.m = false;
-                    utilidaTotal.clear();
-
                 }
             });
         } catch (Exception e) {
