@@ -416,32 +416,26 @@ public final class Catalogo extends javax.swing.JFrame {
     private void TableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableMouseClicked
         String cod;
         int i = Table.getSelectedRow();
-        if (Ventas.m) {
-            cod = Table.getValueAt(i, 1).toString();
-            Ventas.jTextFieldCodigo.setText(cod);
-            this.dispose();
-            Ventas.producto();
-            Ventas.m = false;
-        } else if (Compras.n) {
-            cod = Table.getValueAt(i, 1).toString();
-            Compras.jTextFieldCodigo.setText(cod);
-            this.dispose();
-            Compras.producto();
-            Compras.n = false;
-        } else if (Administrador.m) {
-            if (evt.getClickCount() == 2) {
-                if (Ventas.m == true) {
-                    cod = Table.getValueAt(i, 1).toString();
-                    Ventas.jTextFieldCodigo.setText(cod);
-                    this.dispose();
-                    Ventas.producto();
-                } else {
-                    vent = 1;
-                    int id = Integer.parseInt(Table.getValueAt(i, 0).toString());
-                    new Producto().setVisible(true);
-                    Producto.modificar(id);
-                    Producto.idp = id;
-                }
+
+        if (evt.getClickCount() == 2) {
+            if (Ventas.m) {
+                cod = Table.getValueAt(i, 1).toString();
+                Ventas.jTextFieldCodigo.setText(cod);
+                this.dispose();
+                Ventas.producto();
+                Ventas.m = false;
+            } else if (Compras.n) {
+                cod = Table.getValueAt(i, 1).toString();
+                Compras.jTextFieldCodigo.setText(cod);
+                this.dispose();
+                Compras.producto();
+                Compras.n = false;
+            } else if (Administrador.m) {
+                vent = 1;
+                int id = Integer.parseInt(Table.getValueAt(i, 0).toString());
+                new Producto().setVisible(true);
+                Producto.modificar(id);
+                Producto.idp = id;
             }
         }
 
