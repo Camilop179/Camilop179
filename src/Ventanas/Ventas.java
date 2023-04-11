@@ -967,7 +967,6 @@ public final class Ventas extends javax.swing.JFrame {
     private void jTextFieldCodigoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCodigoKeyPressed
         if (!Validaciones.validarEnter(evt)) {
             producto();
-            System.out.println(utilidaTotal);
         } else if ((evt.getKeyCode() == 71) && (evt.getModifiers() & KeyEvent.CTRL_MASK) != 0) {
             vender();
         }
