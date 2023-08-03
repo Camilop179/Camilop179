@@ -13,20 +13,23 @@ import javax.swing.JPanel;
  *
  * @author harol
  */
-  public class Fondo extends JPanel{
+public class Fondo extends JPanel {
+
     private Image fondo;
     private String d;
-    public Fondo(String d){
+
+    public Fondo(String d) {
         this.d = d;
     }
-        @Override
-        public void paint(Graphics g){
-        fondo = new ImageIcon(getClass().getResource("/imagenes/"+d)).getImage();
-        if(fondo!=null){
-            g.drawImage(fondo, 0, 0,getWidth(), getHeight(), this); 
+
+    @Override
+    public void paint(Graphics g) {
+        fondo = new ImageIcon(getClass().getResource("/imagenes/" + d)).getImage();
+        if (fondo != null) {
+            g.drawImage(fondo, 0, 0, getWidth(), getHeight(), this);
             setOpaque(false);
             super.paint(g);
-        }else{
+        } else {
             System.out.println("Clases.Fondo.paint()");
         }
     }

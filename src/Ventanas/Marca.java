@@ -29,7 +29,7 @@ public class Marca extends javax.swing.JFrame {
         marca();
     }
 
-       public static void marca() {
+    public static void marca() {
         String[] datos = new String[2];
         DefaultTableModel tabla = new DefaultTableModel();
 
@@ -48,13 +48,14 @@ public class Marca extends javax.swing.JFrame {
                 }
                 tabla.addRow(datos);
             }
+            cnn.close();
 
         } catch (SQLException e) {
             System.err.println(e);
         }
 
     }
-       
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -165,6 +166,7 @@ public class Marca extends javax.swing.JFrame {
                 pre.setString(2, marca);
                 pre.executeUpdate();
                 jTextFieldMarca.setText("");
+                cn.close();
             } catch (SQLException e) {
             }
             dispose();
@@ -172,7 +174,6 @@ public class Marca extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jButtonAgregarActionPerformed
 
- 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonAgregar;

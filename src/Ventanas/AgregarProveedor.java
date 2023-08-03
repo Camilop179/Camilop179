@@ -38,7 +38,7 @@ public class AgregarProveedor extends javax.swing.JDialog {
 
     }
 
-     public void agregar() {
+    public void agregar() {
 
         if (!((jTextFieldNit.getText() + jTextFieldCelular.getText() + jTextFieldNombre.getText()).equals(""))) {
             try {
@@ -62,6 +62,7 @@ public class AgregarProveedor extends javax.swing.JDialog {
                 jTextFieldCorreo.setText("");
                 dispose();
                 Producto.llenarProveedor();
+                cn.close();
 
             } catch (HeadlessException | SQLException e) {
                 System.err.println("Error al ingresar el producto " + e);
@@ -69,6 +70,7 @@ public class AgregarProveedor extends javax.swing.JDialog {
             }
         }
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -250,10 +252,8 @@ public class AgregarProveedor extends javax.swing.JDialog {
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
         int x = evt.getXOnScreen();
         int y = evt.getYOnScreen();
-        this.setLocation(x-xm, y-ym);
+        this.setLocation(x - xm, y - ym);
     }//GEN-LAST:event_formMouseDragged
-
-   
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

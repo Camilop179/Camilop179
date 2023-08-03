@@ -110,11 +110,11 @@ public final class Producto extends javax.swing.JFrame {
         String codigo = jTextFieldCodigo.getText();
         String codigo_B = jTextFieldCodigoB.getText();
         String product = jTextFieldProducto.getText();
-        Double precio_C = Double.parseDouble(jTextFieldPrecio_C.getText());
-        Double precio_V = Double.parseDouble(jTextFieldPrecio_V.getText());
+        Double precio_C = Double.valueOf(jTextFieldPrecio_C.getText());
+        Double precio_V = Double.valueOf(jTextFieldPrecio_V.getText());
         int cantidad = Integer.parseInt(jTextFieldCantidad.getText());
-        Double utilidad = Double.parseDouble(jTextFieldUtilidad.getText());
-        Double utilidad_Por = Double.parseDouble(jTextFieldUtilidad_Por.getText());
+        Double utilidad = Double.valueOf(jTextFieldUtilidad.getText());
+        Double utilidad_Por = Double.valueOf(jTextFieldUtilidad_Por.getText());
         String tipo = jComboBoxTipo_Producto.getSelectedItem().toString();
         String seccion = jComboBoxSeccion.getSelectedItem().toString();
         String prov = jComboBoxProveedor.getSelectedItem().toString();
@@ -123,8 +123,7 @@ public final class Producto extends javax.swing.JFrame {
         java.sql.Date fecha_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
         java.sql.Date fecha_v_bd = new java.sql.Date(fecha_v.getTime());
         if (!("".equals(codigo + codigo_B + product + tipo + seccion) && precio_C + precio_V == 0)) {
-            try {
-                Connection cn = Conexion.Conexion();
+            try (Connection cn = Conexion.Conexion()) {
                 PreparedStatement pre = cn.prepareStatement("Update producto set codigo = ?, codigo_barras=?, producto=?, precio_compra=?, precio_venta=?, "
                         + "cantidad=?, utilidad=?, porcentaje_utilidad=?, tipo=?, seccion=?, marca=?, proveedor=?, idUsuario=?, fecha_ingreso=?,"
                         + "fecha_vencimiento=?,total_cost=? where idProducto=?");
@@ -158,9 +157,9 @@ public final class Producto extends javax.swing.JFrame {
                 jTextFieldUtilidad.setText("");
                 jTextFieldUtilidad_Por.setText("");
                 jTextFieldProducto.requestFocus();
-                Catalogo.inventario();
+                Catalogo.buscar();
                 Catalogo.total();
-                cn.close();
+
             } catch (SQLException e) {
                 System.err.println("Error al ingresar el producto " + e);
                 JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
@@ -175,15 +174,15 @@ public final class Producto extends javax.swing.JFrame {
 
         String product = jTextFieldProducto.getText();
 
-        Double precio_C = Double.parseDouble(jTextFieldPrecio_C.getText());
+        Double precio_C = Double.valueOf(jTextFieldPrecio_C.getText());
 
-        Double precio_V = Double.parseDouble(jTextFieldPrecio_V.getText());
+        Double precio_V = Double.valueOf(jTextFieldPrecio_V.getText());
 
         int cantidad = Integer.parseInt(jTextFieldCantidad.getText());
 
-        Double utilidad = Double.parseDouble(jTextFieldUtilidad.getText());
+        Double utilidad = Double.valueOf(jTextFieldUtilidad.getText());
 
-        Double utilidad_Por = Double.parseDouble(jTextFieldUtilidad_Por.getText());
+        Double utilidad_Por = Double.valueOf(jTextFieldUtilidad_Por.getText());
 
         String tipo = jComboBoxTipo_Producto.getSelectedItem().toString();
 
@@ -196,8 +195,8 @@ public final class Producto extends javax.swing.JFrame {
         String marca = jComboBoxMarca.getSelectedItem().toString();
 
         if (!("".equals(codigo + codigo_B + product + tipo + seccion) && precio_C + precio_V == 0)) {
-            try {
-                Connection cn = Conexion.Conexion();
+            try (Connection cn = Conexion.Conexion()) {
+
                 PreparedStatement pre = cn.prepareStatement("INSERT INTO producto (idProducto,codigo,codigo_barras,producto,cantidad,precio_compra,"
                         + "precio_venta,utilidad,porcentaje_utilidad,"
                         + "idUsuario,fecha_ingreso,fecha_vencimiento,proveedor,marca,tipo,seccion,total_cost) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -235,7 +234,7 @@ public final class Producto extends javax.swing.JFrame {
                 jComboBoxProveedor.setSelectedIndex(0);
                 jComboBoxSeccion.setSelectedIndex(0);
                 jComboBoxTipo_Producto.setSelectedIndex(0);
-                Catalogo.inventario();
+                Catalogo.buscar();
                 Catalogo.total();
                 cn.close();
             } catch (SQLException e) {
@@ -266,7 +265,7 @@ public final class Producto extends javax.swing.JFrame {
             double precio_v = Double.parseDouble(jTextFieldPrecio_V.getText());
             double preico_c = Double.parseDouble(jTextFieldPrecio_C.getText());
             double util = precio_v - preico_c;
-            double utilpo = ((precio_v / preico_c) - 1) * 100;
+            double utilpo = (1 - (preico_c / precio_v)) * 100;
             jTextFieldUtilidad.setText(String.valueOf((double) Math.round(util)));
             jTextFieldUtilidad_Por.setText(String.valueOf((double) Math.round(utilpo * 100) / 100));
         }
@@ -332,11 +331,6 @@ public final class Producto extends javax.swing.JFrame {
 
         jTextFieldCodigo.setBackground(new java.awt.Color(0, 153, 153));
         jTextFieldCodigo.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextFieldCodigo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldCodigoActionPerformed(evt);
-            }
-        });
 
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Precio Compra:");
@@ -358,11 +352,6 @@ public final class Producto extends javax.swing.JFrame {
 
         jTextFieldCantidad.setBackground(new java.awt.Color(0, 153, 153));
         jTextFieldCantidad.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-        jTextFieldCantidad.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldCantidadActionPerformed(evt);
-            }
-        });
 
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Utilidad:");
@@ -423,11 +412,6 @@ public final class Producto extends javax.swing.JFrame {
         jTextFieldPrecio_V.setBackground(new java.awt.Color(0, 153, 153));
         jTextFieldPrecio_V.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         jTextFieldPrecio_V.setText("0");
-        jTextFieldPrecio_V.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldPrecio_VActionPerformed(evt);
-            }
-        });
         jTextFieldPrecio_V.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextFieldPrecio_VKeyReleased(evt);
@@ -491,7 +475,7 @@ public final class Producto extends javax.swing.JFrame {
                             .addComponent(jLabel3)
                             .addComponent(jLabel16))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
@@ -522,13 +506,13 @@ public final class Producto extends javax.swing.JFrame {
                                             .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING))))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jComboBoxTipo_Producto, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextFieldPrecio_V, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                                    .addComponent(jTextFieldCodigoB, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextFieldPrecio_V)
+                                    .addComponent(jComboBoxTipo_Producto, 0, 206, Short.MAX_VALUE)
                                     .addComponent(jComboBoxSeccion, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jComboBoxProveedor, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jComboBoxMarca, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                    .addComponent(jComboBoxMarca, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jTextFieldCodigoB)))
                             .addComponent(jTextFieldProducto)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(12, 12, 12)
@@ -538,7 +522,7 @@ public final class Producto extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(78, 78, 78)
                         .addComponent(jLabel7)))
-                .addContainerGap(95, Short.MAX_VALUE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -618,14 +602,6 @@ public final class Producto extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextFieldCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldCodigoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldCodigoActionPerformed
-
-    private void jTextFieldCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldCantidadActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldCantidadActionPerformed
-
     private void jLabelListoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelListoMouseClicked
         if (Catalogo.vent == 0) {
             agregar();
@@ -636,10 +612,6 @@ public final class Producto extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jLabelListoMouseClicked
 
-    private void jTextFieldPrecio_VActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextFieldPrecio_VActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextFieldPrecio_VActionPerformed
-
     private void jTextFieldPrecio_CKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPrecio_CKeyReleased
         utilidad();
     }//GEN-LAST:event_jTextFieldPrecio_CKeyReleased
@@ -648,7 +620,6 @@ public final class Producto extends javax.swing.JFrame {
         if (Validaciones.validarString(evt)) {
             getToolkit().beep();
             evt.consume();
-        } else {
         }
     }//GEN-LAST:event_jTextFieldPrecio_VKeyTyped
 
@@ -675,8 +646,8 @@ public final class Producto extends javax.swing.JFrame {
 
         if (!(jTextFieldPrecio_C.getText().equals("") || jTextFieldPrecio_V.getText().equals(""))) {
             double precio_c = Double.parseDouble(jTextFieldPrecio_C.getText());
-            double util = Double.parseDouble(jTextFieldUtilidad_Por.getText());
-            double precio_v = ((util / 100) + 1) * precio_c;
+            double util = 1 - (Double.parseDouble(jTextFieldUtilidad_Por.getText()) / 100);
+            double precio_v = precio_c / util;
             jTextFieldPrecio_V.setText(String.valueOf((double) Math.round(precio_v)));
             jTextFieldUtilidad.setText(String.valueOf((double) Math.round(precio_v - precio_c)));
         }

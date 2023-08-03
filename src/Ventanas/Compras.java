@@ -5,6 +5,7 @@
 package Ventanas;
 
 import Clases.ActualizarCantidad;
+import Clases.Caja;
 import Clases.Conexion;
 import Clases.Fechas;
 import Clases.Fondo;
@@ -12,7 +13,6 @@ import Clases.FormatoPesos;
 import Clases.FormatoTablas;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
-import Clases.Utilidad;
 import Clases.Validaciones;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -46,8 +46,8 @@ public class Compras extends javax.swing.JFrame {
         initComponents();
         new ImagenBoton("vender.png", jButtonVender, 45, 45);
 
-        new Imagenes("Adelante.png", jLabelRegresar1);
-        new Imagenes("Atras.png", jLabelRegresar);
+        new Imagenes("flechaAdelante.png", jLabelRegresar1);
+        new Imagenes("flechaAtras.png", jLabelRegresar);
         jTextFieldNombre.setEditable(false);
         jLabelFecha.setText(Fechas.fechaActual());
         jDateChooser_fechav.setDate(Fechas.fechaActualDate());
@@ -72,11 +72,12 @@ public class Compras extends javax.swing.JFrame {
             public void tableChanged(TableModelEvent e) {
                 if (e.getType() == TableModelEvent.UPDATE) {
                     int columna = e.getColumn();
+                    int row = e.getLastRow();
                     if (columna == 2) {
-                        cambiarCant();
+                        cambiarCant(row);
                         total();
                     } else if (columna == 3) {
-                        cambiarCant();
+                        cambiarCant(row);
                         total();
                     }
                 }
@@ -128,6 +129,7 @@ public class Compras extends javax.swing.JFrame {
                 tabla.addRow(datos);
 
             }
+            cn.close();
         } catch (SQLException e) {
             System.err.println(e);
         }
@@ -211,6 +213,7 @@ public class Compras extends javax.swing.JFrame {
             } else {
                 jLabelNoCompra.setText("" + 1);
             }
+            cn.close();
         } catch (SQLException e) {
             System.err.println(e);
         }
@@ -278,6 +281,7 @@ public class Compras extends javax.swing.JFrame {
                 ActualizarCantidad.aumentar(cantidad, precio, codigo);
                 pr.executeUpdate();
             }
+            cn.close();
             nroCompra();
         } catch (SQLException e) {
             System.err.println(e);
@@ -293,24 +297,10 @@ public class Compras extends javax.swing.JFrame {
         jTextFieldTotal.setText("" + t);
     }
 
-    public double cajaTotal(){
-        double total = 0;
-        try (Connection cn = Conexion.Conexion()) {
-            PreparedStatement ps;
-            ps = cn.prepareStatement("SELECT total FROM caja  where id=(select max(id) from caja)");
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                total=rs.getDouble(1);
-            }
-        } catch (NumberFormatException | SQLException e) {
-            System.out.println(e);
-        }
-        return total;
-    }
     void caja() {
         try (Connection cn = Conexion.Conexion()) {
             double total;
-            total = cajaTotal()- Double.parseDouble(jTextFieldTotal.getText().replace(",", ""));
+            total = new Caja().cajaTotal() - Double.parseDouble(jTextFieldTotal.getText().replace(",", ""));
             PreparedStatement ps;
             ps = cn.prepareStatement("insert into caja(Concepto,Valor,Total,Fecha,Hora) values(?,?,?,?,?)");
             ps.setString(1, "FC #" + jLabelNoCompra.getText());
@@ -321,6 +311,7 @@ public class Compras extends javax.swing.JFrame {
             ps.execute();
             Administrador.jLabelCaja.setText(FormatoPesos.formato(total));
 
+            cn.close();
         } catch (NumberFormatException | SQLException e) {
             System.out.println(e);
         }
@@ -351,6 +342,7 @@ public class Compras extends javax.swing.JFrame {
             pr.setString(9, FormaPago);
             pr.executeUpdate();
 
+            cn.close();
         } catch (NumberFormatException | SQLException | ParseException e) {
             JOptionPane.showMessageDialog(null, "Error al Conectar a la Base de Datos \n " + e);
             System.err.println(e);
@@ -803,6 +795,7 @@ public class Compras extends javax.swing.JFrame {
                 n = true;
                 new Catalogo().setVisible(true);
             }
+            cnn.close();
 
         } catch (SQLException e) {
             System.err.println(e);
@@ -896,8 +889,8 @@ public class Compras extends javax.swing.JFrame {
             jTextFieldCodigo.requestFocus();
         }
     }//GEN-LAST:event_jTextFieldAsesorrKeyPressed
-    public void cambiarCant() {
-        int row = jTableCompra.getSelectedRow();
+
+    public void cambiarCant(int row) {
         int cant = Integer.parseInt(jTableCompra.getValueAt(row, 3).toString());
         double precio = Integer.parseInt(jTableCompra.getValueAt(row, 2).toString());
         double total1 = cant * precio;

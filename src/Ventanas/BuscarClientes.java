@@ -48,6 +48,7 @@ public class BuscarClientes extends javax.swing.JDialog {
                 }
                 df.addRow(obg);
             }
+            cn.close();
         } catch (SQLException ex) {
             System.out.println(ex);
         }
@@ -96,9 +97,6 @@ public class BuscarClientes extends javax.swing.JDialog {
         jRadioButton2.setText("Nombre");
 
         jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTextField1KeyPressed(evt);
-            }
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextField1KeyReleased(evt);
             }
@@ -121,6 +119,11 @@ public class BuscarClientes extends javax.swing.JDialog {
             }
         });
         jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setResizable(false);
@@ -200,40 +203,33 @@ public class BuscarClientes extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_JBotonCerrarActionPerformed
 
-    private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
-        
-    }//GEN-LAST:event_jTextField1KeyPressed
-
     private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
-        if (!Validaciones.validarEnter(evt)) {
-            String buscar = jTextField1.getText().trim();
-            if (jRadioButton1.isSelected() && jRadioButton2.isSelected()) {
-                buscar("select cedula,nombres,celular from clientes like nombres =? or cedula=?", buscar, 2);
-            }else if(jRadioButton1.isSelected()){
-                buscar("select cedula,nombres,celular from clientes like cedula = ?", buscar,1);
-            }else if(jRadioButton2.isSelected()){
-                buscar("select cedula,nombres,celular from clientes like nombres = ?",buscar,1);
-            }
+
+        String buscar = jTextField1.getText().trim();
+        if (jRadioButton1.isSelected() && jRadioButton2.isSelected()) {
+            buscar("select cedula,nombres,celular from clientes where nombres like ? or cedula like ?", buscar, 2);
+        } else if (jRadioButton1.isSelected()) {
+            buscar("select cedula,nombres,celular from clientes where cedula like ?", buscar, 1);
+        } else if (jRadioButton2.isSelected()) {
+            buscar("select cedula,nombres,celular from clientes where nombres like ?", buscar, 1);
         }
+
     }//GEN-LAST:event_jTextField1KeyReleased
 
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        int i = jTable1.getSelectedRow();
+        Ventas.jTextFieldCedula.setText(jTable1.getValueAt(i, 0).toString());
+        dispose();
+    }//GEN-LAST:event_jTable1MouseClicked
+
     public void buscar(String sql, String buscar, int parametros) {
-        Object[] colum = new Object[3];
-        colum[0]="Cedula";
-        colum[1] = "Nombres";
-        colum[2]="Telefono";
-        DefaultTableModel df = new DefaultTableModel(){
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
-        df.addColumn(colum);
+        DefaultTableModel df = (DefaultTableModel) jTable1.getModel();
+        limpiar();
         try (Connection cn = Conexion.Conexion()) {
             Object[] obg = new Object[3];
             PreparedStatement ps = cn.prepareStatement(sql);
             for (int i = 0; i < parametros; i++) {
-                ps.setString(i+1, "%"+buscar+"%");
+                ps.setString(i + 1, "%" + buscar + "%");
             }
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -242,53 +238,21 @@ public class BuscarClientes extends javax.swing.JDialog {
                 }
                 df.addRow(obg);
             }
+            cn.close();
+            jTable1.setModel(df);
         } catch (SQLException ex) {
             System.out.println(ex);
         }
     }
 
-    public void limpiar(){
-        
-    }
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(BuscarClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(BuscarClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(BuscarClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(BuscarClientes.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    public void limpiar() {
+        DefaultTableModel tabla = (DefaultTableModel) jTable1.getModel();
+        for (int i = 0; i < jTable1.getRowCount(); i++) {
+            tabla.removeRow(i);
+            i--;
         }
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                BuscarClientes dialog = new BuscarClientes(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
     }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JBotonCerrar;

@@ -1,4 +1,3 @@
-
 package Ventanas;
 
 import Clases.Conexion;
@@ -22,7 +21,7 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
         this.setUndecorated(true);
         initComponents();
         setLocationRelativeTo(null);
-        Shape p = new RoundRectangle2D.Double(0,0,this.getBounds().width,this.getBounds().height,30,30);
+        Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
         parametro();
     }
@@ -32,9 +31,10 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
         try {
             FileReader fr = new FileReader(ruta);
             BufferedReader br = new BufferedReader(fr);
-                txtBaseDatos.setText(br.readLine());
-                txtHost.setText(br.readLine());
-                txtUsuario.setText(br.readLine());
+            txtBaseDatos.setText(br.readLine());
+            txtHost.setText(br.readLine());
+            txtUsuario.setText(br.readLine());
+
         } catch (IOException e) {
         }
     }
@@ -49,7 +49,7 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
             if (!file.exists()) {
                 file.createNewFile();
             }
-            try ( PrintWriter conte = new PrintWriter(ruta)) {
+            try (PrintWriter conte = new PrintWriter(ruta)) {
                 conte.println(bd);
                 conte.println(host);
                 conte.println(user);
@@ -188,7 +188,7 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
             new Login().setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo conectar con la base de datos");
-            
+
         }
 
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -196,7 +196,7 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
     private void txtContraseñaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtContraseñaKeyPressed
         if (!Validaciones.validarEnter(evt)) {
             Conexion.parametros(txtHost.getText(), txtBaseDatos.getText(), txtUsuario.getText(), new String(txtContraseña.getPassword()));
-            
+
             Conexion.Conexion();
             if (Conexion.cn != null) {
                 guardarParametro();
@@ -225,10 +225,9 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
     private void formMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseDragged
         int xs = evt.getXOnScreen();
         int ys = evt.getYOnScreen();
-        this.setLocation(xs-x, ys-y);
+        this.setLocation(xs - x, ys - y);
     }//GEN-LAST:event_formMouseDragged
 
-    
     /**
      * @param args the command line arguments
      */
@@ -249,7 +248,7 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(ConexionBaseDatos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-        
+
         //</editor-fold>
 
         /* Create and display the form */

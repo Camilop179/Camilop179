@@ -18,7 +18,9 @@ import javax.swing.JOptionPane;
  * @author harol
  */
 public class IngresarClientes extends javax.swing.JDialog {
-    boolean m=false;
+
+    boolean m = false;
+
     /**
      * Creates new form NewJDialog
      */
@@ -30,17 +32,17 @@ public class IngresarClientes extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         new Imagenes("disco-flexible.png", jLabelGuardar);
         new Imagenes("salida.png", jLabelSalir);
-        
-        
+
     }
-       public void agregar(){
-        
-        if (!((jTextFieldCedula.getText()+jTextFieldCelular.getText()+jTextFieldNombre.getText()).equals(""))) {
+
+    public void agregar() {
+
+        if (!((jTextFieldCedula.getText() + jTextFieldCelular.getText() + jTextFieldNombre.getText()).equals(""))) {
             try {
                 Connection cn = Conexion.Conexion();
                 PreparedStatement pre = cn.prepareStatement("INSERT INTO clientes (idclientes,cedula,nombres,celular) values(?,?,?,?)");
                 pre.setInt(1, 0);
-                pre.setString(2,jTextFieldCedula.getText());
+                pre.setString(2, jTextFieldCedula.getText());
                 pre.setString(3, jTextFieldNombre.getText());
                 pre.setString(4, jTextFieldCelular.getText());
 
@@ -50,6 +52,7 @@ public class IngresarClientes extends javax.swing.JDialog {
                 jTextFieldCelular.setText("");
                 jTextFieldNombre.setText("");
                 dispose();
+                cn.close();
 
             } catch (Exception e) {
                 System.err.println("Error al ingresar el producto " + e);
@@ -57,8 +60,6 @@ public class IngresarClientes extends javax.swing.JDialog {
             }
         }
     }
-   
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -181,25 +182,23 @@ public class IngresarClientes extends javax.swing.JDialog {
     }//GEN-LAST:event_jLabelSalirMouseClicked
 
     private void jTextFieldCedulaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCedulaKeyPressed
-        if(!Validaciones.validarEnter(evt)){
+        if (!Validaciones.validarEnter(evt)) {
             jTextFieldNombre.requestFocus();
         }
     }//GEN-LAST:event_jTextFieldCedulaKeyPressed
 
     private void jTextFieldNombreKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldNombreKeyPressed
-        if(!Validaciones.validarEnter(evt)){
+        if (!Validaciones.validarEnter(evt)) {
             jTextFieldCelular.requestFocus();
         }
     }//GEN-LAST:event_jTextFieldNombreKeyPressed
 
     private void jTextFieldCelularKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCelularKeyPressed
-        if(!Validaciones.validarEnter(evt)){
+        if (!Validaciones.validarEnter(evt)) {
             agregar();
         }
     }//GEN-LAST:event_jTextFieldCelularKeyPressed
 
-    
- 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;

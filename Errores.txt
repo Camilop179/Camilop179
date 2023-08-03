@@ -1,1 +1,1 @@
-No se puedo conectar Base de Datos: java.sql.SQLNonTransientConnectionException: Data source rejected establishment of connection,  message from server: "Too many connections"
+Error al Agregar Producto: java.sql.SQLException: Column Index out of range, 5 > 4. 

@@ -42,7 +42,7 @@ public class Login extends javax.swing.JFrame {
 
     }
 
-     public void iniciarsesion() {
+    public void iniciarsesion() {
         usuario = jTextFieldUsuario.getText().trim();
         contraseña = Hash.hash24(new String(jPasswordFieldContraseña.getPassword()));
         System.out.println(contraseña);
@@ -74,6 +74,7 @@ public class Login extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(null, "Datos incorrectos");
                 }
 
+                cn.close();
             } catch (HeadlessException | SQLException e) {
                 System.err.println("Error al iniciar sesion " + e);
                 JOptionPane.showMessageDialog(null, "¡Error al iniciar sesion!. Contacte al soporte Corporacion Portillo.");
@@ -82,7 +83,7 @@ public class Login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Ingrese los datos, porfavor.");
         }
     }
-   
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -274,11 +275,10 @@ public class Login extends javax.swing.JFrame {
             System.exit(0);
         }
     }//GEN-LAST:event_jLabelCerrarPrograma1MouseClicked
-   
+
     /**
      * @param args the command line arguments
      */
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonEntrar;

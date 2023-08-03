@@ -7,7 +7,6 @@ package Ventanas;
 import Clases.Conexion;
 import Clases.Fondo;
 import Clases.ImagenBoton;
-import Clases.Imagenes;
 import Clases.TablaFondo;
 import Clases.Validaciones;
 import static Ventanas.Catalogo.sql;
@@ -25,27 +24,24 @@ import javax.swing.table.TableColumnModel;
  */
 public class Servicios extends javax.swing.JFrame {
 
-    /**
-     * Creates new form Servicios
-     */
-    public Servicios() {Fondo fondo = new Fondo("FondoMenu.jpg");
+    public Servicios() {
+        Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
         initComponents();
 
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         jCheckBoxCodigo.setContentAreaFilled(false);
         setLocationRelativeTo(null);
-        new ImagenBoton("Agregar.gif", jButton1, jButton1.getHeight()-2, jButton1.getWidth()-2);
+        new ImagenBoton("Agregar.gif", jButton1, jButton1.getHeight() - 2, jButton1.getWidth() - 2);
         jButton1.setContentAreaFilled(false);
         jTextFieldBusqueda.requestFocus();
         inventario();
         cerra();
     }
 
-
     public static void inventario() {
-            sql = "select p.id,p.codigo,p.concepto,p.valor,"+
-                    "u.nombre,p.FechaModificar from servicio p left join usuarios u on p.idUsuario = u.idusuarios";
+        sql = "select p.id,p.codigo,p.concepto,p.valor,"
+                + "u.nombre,p.FechaModificar from servicio p left join usuarios u on p.idUsuario = u.idusuarios";
 
         DefaultTableModel tabla = tabla(6);
 
@@ -68,7 +64,7 @@ public class Servicios extends javax.swing.JFrame {
         }
 
     }
-    
+
     public static DefaultTableModel tabla(int column) {
         DefaultTableModel tabla = new DefaultTableModel() {
             @Override
@@ -99,7 +95,7 @@ public class Servicios extends javax.swing.JFrame {
 
         return tabla;
     }
-    
+
     public void cerra() {
         try {
             this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -256,7 +252,7 @@ public class Servicios extends javax.swing.JFrame {
                 cod = Table.getValueAt(i, 1).toString();
                 Ventas.jTextFieldCodigo.setText(cod);
                 this.dispose();
-                Ventas.producto();
+                Ventas.servicio();
                 Ventas.m = false;
             } else if (Compras.n) {
                 cod = Table.getValueAt(i, 1).toString();
@@ -295,11 +291,11 @@ public class Servicios extends javax.swing.JFrame {
     }//GEN-LAST:event_TableKeyPressed
 
     private void jTextFieldBusquedaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldBusquedaKeyReleased
-     
+        buscar();
     }//GEN-LAST:event_jTextFieldBusquedaKeyReleased
 
     private void jCheckBoxCodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxCodigoActionPerformed
- 
+
     }//GEN-LAST:event_jCheckBoxCodigoActionPerformed
 
     private void jCheckBoxNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxNombreActionPerformed
@@ -310,16 +306,57 @@ public class Servicios extends javax.swing.JFrame {
         new Servicio().setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    public static void buscar() {
+        boolean[] c = new boolean[]{jCheckBoxCodigo.isSelected(), jCheckBoxNombre.isSelected()};
+        int x = 0;
+        String code = "";
+        for (int i = 0; i < 2; i++) {
+            if (c[i]) {
+                if (x > 0) {
+                    code += " or ";
+                }
+                x++;
+                switch (i) {
+                    case 0 ->
+                        code += "p.Codigo like ?";
+                    case 1 ->
+                        code += "p.Concepto like ?";
+                }
+            }
+
+        }
+        DefaultTableModel tabla = tabla(6);
+        String[] datos = new String[6];
+        try {
+            Connection cnn = Conexion.Conexion();
+            PreparedStatement pre = cnn.prepareStatement(sql + " where " + code);
+            for (int i = 1; i <= x; i++) {
+                pre.setString(i, '%' + jTextFieldBusqueda.getText().trim() + '%');
+            }
+            ResultSet rs = pre.executeQuery();
+
+            while (rs.next()) {
+                for (int i = 0; i < 6; i++) {
+                    datos[i] = rs.getString(i + 1);
+                }
+                tabla.addRow(datos);
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+
+    }
     /**
      * @param args the command line arguments
      */
-  
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JTable Table;
     private javax.swing.JButton jButton1;
-    private javax.swing.JCheckBox jCheckBoxCodigo;
-    private javax.swing.JCheckBox jCheckBoxNombre;
+    private static javax.swing.JCheckBox jCheckBoxCodigo;
+    private static javax.swing.JCheckBox jCheckBoxNombre;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField jTextFieldBusqueda;
+    private static javax.swing.JTextField jTextFieldBusqueda;
     // End of variables declaration//GEN-END:variables
 }

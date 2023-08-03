@@ -323,6 +323,9 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBotonCerrarActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ImagenBoton(&quot;cerrar.png&quot;)"/>
+      </AuxValues>
     </Component>
     <Component class="javax.swing.JButton" name="Minimizar">
       <Properties>
@@ -336,6 +339,9 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="MinimizarActionPerformed"/>
       </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new ImagenBoton(&quot;Minimizar.png&quot;)"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

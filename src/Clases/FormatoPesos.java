@@ -12,6 +12,18 @@ import java.text.DecimalFormatSymbols;
  * @author harol
  */
 public class FormatoPesos {
+    public FormatoPesos(){
+        
+    }
+    
+    public String decimales(double valor){
+        DecimalFormatSymbols sm = new DecimalFormatSymbols();
+        sm.setDecimalSeparator('.');
+        sm.setGroupingSeparator(',');
+        DecimalFormat dm = new DecimalFormat("###,###.##",sm);
+        return dm.format(valor);
+    }
+    
     public static String formato(double valor){
         
         DecimalFormatSymbols sm = new DecimalFormatSymbols();

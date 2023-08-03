@@ -188,7 +188,7 @@ public class Saldo extends javax.swing.JDialog {
             if ((Boolean)jTable1.getValueAt(i, 3)) {
                 obg[0] = "FV"+jTable1.getValueAt(i, 0);
                 obg[1] = jTable1.getValueAt(i, 1);
-                Comprobante_Ingreso.llenarTable(obg);
+                Comprobante.llenarTable(obg);
             }
         }
         this.dispose();

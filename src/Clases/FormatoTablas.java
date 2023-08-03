@@ -36,7 +36,13 @@ public class FormatoTablas extends DefaultTableCellRenderer {
 
         setFont(table.getFont());
 
-        return this; // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+        return this;
     }
+
+    @Override
+    public Color getBackground() {
+        return super.getBackground(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    }
+    
 
 }

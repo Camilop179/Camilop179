@@ -10,6 +10,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import Clases.ImagenBoton;
+import Clases.ShortCut;
 import Clases.TotalVentas;
 import Clases.Validaciones;
 import Clases.Utilidad;
@@ -18,17 +19,17 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.KeyEventDispatcher;
+import java.awt.KeyboardFocusManager;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.*;
-import java.text.AttributedCharacterIterator;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
@@ -78,6 +79,25 @@ public final class Administrador extends javax.swing.JFrame {
         caja();
         ptm();
         progesoUtilidad();
+        ShortCut.setup();
+    }
+
+    void eventoGlobal() {
+        KeyboardFocusManager mananger = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        mananger.addKeyEventDispatcher(new KeyEventDispatcher() {
+            @Override
+
+            public boolean dispatchKeyEvent(KeyEvent e) {
+                if (e.getID() == KeyEvent.KEY_RELEASED) {
+                    if ((e.getKeyCode() == KeyEvent.VK_S) && (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && !Ventas.n) {
+                        new Ventas().setVisible(true);
+                    } else {
+                        new Ventas().requestFocusInWindow();
+                    }
+                }
+                return false;
+            }
+        });
     }
 
     public static void uiProgresos(String s) {
@@ -87,8 +107,8 @@ public final class Administrador extends javax.swing.JFrame {
             protected void paintDeterminate(Graphics g, JComponent c) {
                 Graphics2D g2 = (Graphics2D) g;
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                int ancho = jProgressBar1.getWidth();
-                int alto = jProgressBar1.getHeight();
+                int ancho = c.getWidth();
+                int alto = c.getHeight();
                 g2.setColor(Color.WHITE);
                 RoundRectangle2D r3 = new RoundRectangle2D.Double(4, 2, c.getWidth() - 5, alto - 7, alto, alto);
                 g2.fill(r3);
@@ -170,6 +190,7 @@ public final class Administrador extends javax.swing.JFrame {
                 new Caja_Dia(this, true).setVisible(true);
                 caja();
             }
+            cn.close();
         } catch (SQLException ex) {
             Logger.getLogger(Administrador.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -755,7 +776,7 @@ public final class Administrador extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextFieldPtmKeyTyped
 
     private void jLabel5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel5MouseClicked
-        new Comprobante_Ingreso().setVisible(true);
+        new Cotizacion().setVisible(true);
     }//GEN-LAST:event_jLabel5MouseClicked
 
     void Cambioptm(double valor, String concepto) {
@@ -770,6 +791,7 @@ public final class Administrador extends javax.swing.JFrame {
             ps.setDate(6, new Date(Fechas.fechaActualDate().getTime()));
             ps.execute();
             jLabelPtm.setText(String.valueOf(total));
+            cn.close();
         } catch (SQLException ex) {
             System.err.println(ex);
         }
@@ -786,6 +808,7 @@ public final class Administrador extends javax.swing.JFrame {
             ps.setTime(5, new Time(Fechas.fechaActualDate().getTime()));
             ps.setDate(6, new Date(Fechas.fechaActualDate().getTime()));
             ps.execute();
+            cn.close();
             jLabelCaja.setText(FormatoPesos.formato(total));
         } catch (SQLException ex) {
             System.err.println(ex);

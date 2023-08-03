@@ -110,8 +110,7 @@ public final class Servicio extends javax.swing.JFrame {
                 jTextFieldPrecio_C.setText("0");
                 jTextFieldProducto.setText("");
                 jTextFieldProducto.requestFocus();
-                Catalogo.inventario();
-                Catalogo.total();
+                Servicios.buscar();
                 cn.close();
             } catch (SQLException e) {
                 System.err.println("Error al ingresar el producto " + e);
