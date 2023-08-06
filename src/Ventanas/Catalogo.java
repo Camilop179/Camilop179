@@ -42,7 +42,21 @@ public final class Catalogo extends javax.swing.JFrame {
         jTextFieldBusqueda.requestFocus();
         inventario();
         total();
+        llenarTipo();
         cerra();
+    }
+    
+    void llenarTipo(){
+        try (Connection cnn = Conexion.Conexion()){
+            PreparedStatement pre = cnn.prepareStatement("select Tipo from tipo");
+            ResultSet rs = pre.executeQuery();
+            while (rs.next()) {
+                jComboBox1.addItem(rs.getString(1));
+            }
+            cnn.close();
+        }catch(SQLException e){
+            
+        }
     }
 
     public void cerra() {
@@ -176,6 +190,7 @@ public final class Catalogo extends javax.swing.JFrame {
     public static void buscar() {
         boolean[] c = new boolean[]{jCheckBoxCodigo.isSelected(), jCheckBoxCodigo_Barra.isSelected(), jCheckBoxNombre.isSelected()};
         int x = 0;
+        boolean n=false;
         String code = "";
         for (int i = 0; i < 3; i++) {
             if (c[i]) {
@@ -194,12 +209,21 @@ public final class Catalogo extends javax.swing.JFrame {
             }
 
         }
+        if(!jComboBox1.getSelectedItem().equals("Seleccionar")){
+            code +=" and p.tipo = ?";
+            n=true;
+        }
+        System.out.println(code);
         DefaultTableModel tabla = tabla(column);
         String[] datos = new String[column];
         try (Connection cnn = Conexion.Conexion()){
             PreparedStatement pre = cnn.prepareStatement(sql + " where " + code);
             for (int i = 1; i <= x; i++) {
                 pre.setString(i, '%' + jTextFieldBusqueda.getText().trim() + '%');
+            }
+            x++;
+            if(n){
+                pre.setString(x,  jComboBox1.getSelectedItem().toString());
             }
             ResultSet rs = pre.executeQuery();
 
@@ -237,6 +261,8 @@ public final class Catalogo extends javax.swing.JFrame {
         jTextFieldTotal = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jComboBox1 = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setSize(new java.awt.Dimension(1900, 1800));
@@ -348,6 +374,11 @@ public final class Catalogo extends javax.swing.JFrame {
             }
         });
 
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Tipo:");
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -361,9 +392,13 @@ public final class Catalogo extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jCheckBoxCodigo_Barra, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextFieldBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 652, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(jTextFieldBusqueda)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jLabel4)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jCheckBoxNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(12, 12, 12)
                         .addComponent(jLabelNP, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
@@ -400,7 +435,9 @@ public final class Catalogo extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jCheckBoxCodigo_Barra)
-                            .addComponent(jTextFieldBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jTextFieldBusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)
+                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
                 .addGap(10, 10, 10)
@@ -509,9 +546,11 @@ public final class Catalogo extends javax.swing.JFrame {
     private static javax.swing.JCheckBox jCheckBoxCodigo;
     private static javax.swing.JCheckBox jCheckBoxCodigo_Barra;
     private static javax.swing.JCheckBox jCheckBoxNombre;
+    private static javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabelNP;
     private javax.swing.JScrollPane jScrollPane1;
     private static javax.swing.JTextField jTextFieldBusqueda;
