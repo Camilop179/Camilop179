@@ -1,6 +1,5 @@
 package Ventanas;
 
-import Clases.ActualizarCantidad;
 import Clases.Conexion;
 import Clases.Errores;
 import Clases.Fechas;
@@ -12,7 +11,6 @@ import Clases.Imagenes;
 import Clases.Imprimir;
 import Clases.Validaciones;
 import Clases.Utilidad;
-import static Ventanas.Administrador.jProgressBar1;
 import java.awt.Color;
 
 import java.sql.*;

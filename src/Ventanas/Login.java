@@ -25,7 +25,7 @@ public class Login extends javax.swing.JFrame {
      * Creates new form Login
      */
     public Login() {
-        Fondo fondo = new Fondo("Fondo.jpg");
+        Fondo fondo = new Fondo("inicio sesionk´<.jpg");
         this.setContentPane(fondo);
         this.setUndecorated(true);
         initComponents();
