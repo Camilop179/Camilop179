@@ -77,36 +77,67 @@ public final class Reportes extends javax.swing.JFrame {
     TextoFondo tx;
 
     public Reportes() {
+        Fondo fondo = new Fondo("FondoMenu.jpg");
+
+        this.setContentPane(fondo);
+
         initComponents();
+
         jscroll();
-        new ImagenBoton("buscando.png", jButtonBuscar, jButtonBuscar.getWidth() - 5, jButtonBuscar.getHeight() - 5);
-        new ImagenBoton("buscando.png", jButtonBuscar1, jButtonBuscar1.getWidth() - 5, jButtonBuscar1.getHeight() - 5);
-        new ImagenBoton("proximo.png", jButton3, jButton3.getWidth() - 20, jButton3.getHeight() - 5);
+
+        new ImagenBoton(
+                "buscando.png", jButtonBuscar, jButtonBuscar.getWidth() - 5, jButtonBuscar.getHeight() - 5);
+        new ImagenBoton(
+                "buscando.png", jButtonBuscar1, jButtonBuscar1.getWidth() - 5, jButtonBuscar1.getHeight() - 5);
+        new ImagenBoton(
+                "proximo.png", jButton3, jButton3.getWidth() - 20, jButton3.getHeight() - 5);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        jButtonBuscar.setContentAreaFilled(false);
-        jButtonBuscar1.setContentAreaFilled(false);
+
+        jButtonBuscar.setContentAreaFilled(
+                false);
+        jButtonBuscar1.setContentAreaFilled(
+                false);
         jFormattedTextFieldFetcha.setText(Fechas.fechaActual());
         jDateChooser_fechaI.setDate(fecha_actual);
         int dia = Calendar.getInstance().getActualMaximum(Calendar.DAY_OF_MONTH);
+
         jDateChooser_fechaF.setDate(fechaMes(dia));
-        jScrollPane4.getViewport().setBackground(new Color(51, 153, 255));
-        jScrollPane3.getViewport().setBackground(new Color(51, 153, 255));
-        jTabbedPane2.setUI(new uiJTabben());
-        jTabbedPane3.setUI(new uiJTabben());
-        jTabbedPane1.setUI(new uiJTabben());
+        jScrollPane4.getViewport()
+                .setBackground(new Color(51, 153, 255));
+        jScrollPane3.getViewport()
+                .setBackground(new Color(51, 153, 255));
+        jTabbedPane2.setUI(
+                new uiJTabben());
+        jTabbedPane3.setUI(
+                new uiJTabben());
+        jTabbedPane1.setUI(
+                new uiJTabben());
         cerra();
+
         nroNomina();
+
         fecha();
+
         compra();
+
         venta();
-        total(jTable2, jTextFieldTotalVenta, 7);
-        total(jTable1, jTextField2, 4);
+
+        total(jTable2, jTextFieldTotalVenta,
+                7);
+        total(jTable1, jTextField2,
+                4);
         b = false;
+
         tabla(jTableDevengado);
+
         tabla(jTableDeduccion);
-        jTextFieldTotalInv1.setEditable(false);
+
+        jTextFieldTotalInv1.setEditable(
+                false);
         resumenEgresos();
+
         administracion();
+
         creditos();
     }
 
@@ -173,7 +204,7 @@ public final class Reportes extends javax.swing.JFrame {
             cn.close();
             Administrador.jLabelCaja.setText(FormatoPesos.formato(total));
         } catch (NumberFormatException | SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al restar caja: "+e);
+            JOptionPane.showMessageDialog(this, "Error al restar caja: " + e);
             System.out.println(e);
         }
     }
@@ -182,7 +213,7 @@ public final class Reportes extends javax.swing.JFrame {
         try {
             double total = 0;
             Connection cn = Conexion.Conexion();
-            PreparedStatement ps = cn.prepareStatement("select Total from nomina where fecha between ? and ?");
+            PreparedStatement ps = cn.prepareStatement("select Total from nomina where fecha2 between ? and ?");
             ps.setDate(1, new java.sql.Date(fechaMes(1).getTime()));
             ps.setDate(2, new java.sql.Date(fecha_actual.getTime()));
             ResultSet rs = ps.executeQuery();
@@ -330,7 +361,7 @@ public final class Reportes extends javax.swing.JFrame {
         } catch (SQLException e) {
             System.err.println("Error Rentabilidad: " + e);
         }
-        return dm1.format(total);
+        return ""+total;
     }
 
     public void rentabilidadTotal() {
@@ -353,7 +384,14 @@ public final class Reportes extends javax.swing.JFrame {
     public void administracion() {
         rentabilidadTotal();
         int dia1 = Calendar.getInstance().getActualMinimum(Calendar.DAY_OF_MONTH);
-        jTextFieldRentabilidadDia.setText(rentabilidad(fecha_actual, fecha_actual));
+        double rentDia = Double.parseDouble(rentabilidad(fecha_actual, fecha_actual));
+        double estimadoDia=0;
+        jTextFieldRentabilidadDia.setText(FormatoPesos.formato(rentDia));
+        if(rentDia>estimadoDia){
+            jTextFieldRentabilidadDia.setBackground(Color.GREEN);
+        }else{
+            jTextFieldRentabilidadDia.setBackground(Color.GREEN);
+        }
         jTextFieldRentabilidadMes.setText(rentabilidad(fechaMes(dia1), fecha_actual));
         jTextFieldVentaDia.setText(TotalVentas.VentaDia());
         jTextFieldVentaMes.setText(TotalVentas.VentaMes());
@@ -670,8 +708,7 @@ public final class Reportes extends javax.swing.JFrame {
     private void initComponents() {
 
         jTabbedPane2 = new javax.swing.JTabbedPane();
-        jPanel5 = new Fondo("FondoMenu.jpg")
-        ;
+        jPanel5 = new javax.swing.JPanel();
         jComboBox1 = new javax.swing.JComboBox<>();
         jTextFieldBuscar = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -818,7 +855,6 @@ public final class Reportes extends javax.swing.JFrame {
         jTabbedPane2.setTabPlacement(javax.swing.JTabbedPane.BOTTOM);
         jTabbedPane2.setToolTipText("");
         jTabbedPane2.setAutoscrolls(true);
-        jTabbedPane2.setOpaque(true);
 
         jPanel5.setOpaque(false);
 
@@ -904,6 +940,8 @@ public final class Reportes extends javax.swing.JFrame {
         );
 
         jTabbedPane2.addTab("Facturas Compras", jPanel5);
+
+        jPanel4.setOpaque(false);
 
         jScrollPane2.setBackground(null);
         jScrollPane2.setOpaque(false);
@@ -1015,6 +1053,8 @@ public final class Reportes extends javax.swing.JFrame {
         );
 
         jTabbedPane2.addTab("Facturas Ventas", jPanel4);
+
+        jPanel2.setOpaque(false);
 
         jLabel25.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel25.setText("Gastos");
@@ -1473,6 +1513,8 @@ public final class Reportes extends javax.swing.JFrame {
 
         jTabbedPane2.addTab("Resumen Egresos", jPanel2);
 
+        jPanel3.setOpaque(false);
+
         jLabel39.setForeground(new java.awt.Color(255, 255, 255));
         jLabel39.setText("Fecha:");
 
@@ -1783,6 +1825,8 @@ public final class Reportes extends javax.swing.JFrame {
 
         jTabbedPane2.addTab("Nomina", jPanel3);
 
+        jPanel7.setOpaque(false);
+
         jTabbedPane3.setBackground(null);
         jTabbedPane3.setForeground(new java.awt.Color(255, 255, 255));
         jTabbedPane3.setTabPlacement(javax.swing.JTabbedPane.LEFT);
@@ -1924,6 +1968,8 @@ public final class Reportes extends javax.swing.JFrame {
         );
 
         jTabbedPane2.addTab("Creditos", jPanel7);
+
+        jPanel1.setOpaque(false);
 
         jTextField1.setEditable(false);
         jTextField1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -2247,7 +2293,7 @@ public final class Reportes extends javax.swing.JFrame {
     private void jTable2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable2MouseClicked
         int fila = jTable2.rowAtPoint(evt.getPoint());
         if (fila > -1) {
-            m=1;
+            m = 1;
             nro = jTable2.getValueAt(fila, 1).toString();
 
             new Ventas().setVisible(true);

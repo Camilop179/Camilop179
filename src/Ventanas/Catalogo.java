@@ -4,14 +4,13 @@ import Clases.Conexion;
 import Clases.Imagenes;
 import Clases.TablaFondo;
 import Clases.Fondo;
+import Clases.FormatoPesos;
 import Clases.Imprimir;
 import Clases.Validaciones;
 import java.awt.HeadlessException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -38,7 +37,7 @@ public final class Catalogo extends javax.swing.JFrame {
         jCheckBoxNombre.setContentAreaFilled(false);
         setLocationRelativeTo(null);
 
-        new Imagenes("agregar-producto.png", jLabelNP);
+        new Imagenes("agregar-producto.png", jLabelNP,70,60);
         jTextFieldBusqueda.requestFocus();
         inventario();
         total();
@@ -84,34 +83,25 @@ public final class Catalogo extends javax.swing.JFrame {
             t += Double.parseDouble(Table.getValueAt(i, 5).toString());
         }
 
-        DecimalFormat dm = new DecimalFormat("###,###");
 
-        jTextFieldTotal.setText("$" + dm.format(t));
+        jTextFieldTotal.setText("$" + FormatoPesos.formato(t));
     }
 
     /**
      * Consulatar Base de Datos para los Productos
      */
-    static String Numero_sin_punto(double m) {
-        String num;
-        DecimalFormatSymbols sm = new DecimalFormatSymbols();
-        sm.setDecimalSeparator('.');
-        sm.setGroupingSeparator(',');
-        DecimalFormat dm = new DecimalFormat("###,###", sm);
-        num = dm.format(m);
-        return num;
-    }
+    
 
     public static void inventario() {
         if (Ventas.m) {
             sql = "select p.idProducto,p.codigo,p.codigo_barras,p.producto"
                     + ",p.precio_venta,p.cantidad,p.tipo,p.seccion"
-                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on p.idUsuario = u.idusuarios";
+                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.minimo from producto p left join usuarios u on p.idUsuario = u.idusuarios";
             column = 13;
         } else {
             sql = "select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_compra"
                     + ",total_cost,p.precio_venta,p.cantidad,p.utilidad,p.porcentaje_utilidad,p.tipo,p.seccion"
-                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.fecha_vencimiento from producto p left join usuarios u on p.idUsuario = u.idusuarios";
+                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.minimo from producto p left join usuarios u on p.idUsuario = u.idusuarios";
             column = 17;
         }
         DefaultTableModel tabla = tabla(column);
@@ -126,7 +116,7 @@ public final class Catalogo extends javax.swing.JFrame {
                     datos[i] = rs.getString(i + 1);
                 }
                 if (Ventas.m) {
-                    datos[4] = Numero_sin_punto(rs.getDouble(5));
+                    datos[4] = FormatoPesos.formato(rs.getDouble(5));
                 }
                 tabla.addRow(datos);
             }
@@ -164,7 +154,7 @@ public final class Catalogo extends javax.swing.JFrame {
         tabla.addColumn("Proveedor");
         tabla.addColumn("Usuario");
         tabla.addColumn("Fecha Entrada");
-        tabla.addColumn("Fecha Vencimiento");
+        tabla.addColumn("Minimo");
 
         Table.setModel(tabla);
 
@@ -209,11 +199,6 @@ public final class Catalogo extends javax.swing.JFrame {
             }
 
         }
-        if(!jComboBox1.getSelectedItem().equals("Seleccionar")){
-            code +=" and p.tipo = ?";
-            n=true;
-        }
-        System.out.println(code);
         DefaultTableModel tabla = tabla(column);
         String[] datos = new String[column];
         try (Connection cnn = Conexion.Conexion()){
@@ -231,6 +216,11 @@ public final class Catalogo extends javax.swing.JFrame {
                 for (int i = 0; i < column; i++) {
                     datos[i] = rs.getString(i + 1);
                 }
+                
+                if (Ventas.m) {
+                    datos[4] = FormatoPesos.formato(rs.getDouble(5));
+                }
+                
                 tabla.addRow(datos);
             }
             cnn.close();
@@ -492,7 +482,6 @@ public final class Catalogo extends javax.swing.JFrame {
                 int id = Integer.parseInt(Table.getValueAt(i, 0).toString());
                 new Producto().setVisible(true);
                 Producto.modificar(id);
-                Producto.idp = id;
             }
         }
 

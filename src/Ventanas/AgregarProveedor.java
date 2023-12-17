@@ -31,8 +31,8 @@ public class AgregarProveedor extends javax.swing.JDialog {
 
         setResizable(false);
         setLocationRelativeTo(null);
-        new Imagenes("disco-flexible.png", jLabelGuardar);
-        new Imagenes("salida.png", jLabelSalir);
+        new Imagenes("disco-flexible.png", jLabelGuardar,30,30);
+        new Imagenes("salida.png", jLabelSalir,30,30);
         Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
 

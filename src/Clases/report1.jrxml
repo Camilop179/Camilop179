@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="141" pageHeight="5669" columnWidth="125" leftMargin="8" rightMargin="8" topMargin="20" bottomMargin="20" uuid="d83149d6-3f30-4437-a9b6-3808e47a6f79">
 	<property name="ireport.zoom" value="2.332536901048669"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="365"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter (2)"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -148,21 +148,21 @@
 				<textElement>
 					<font size="8"/>
 				</textElement>
-				<text><![CDATA[1004805976-4]]></text>
+				<text><![CDATA[1088738549-0]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="42" y="106" width="83" height="22" uuid="d2e170aa-3374-441d-8913-59866201527c"/>
 				<textElement markup="none">
 					<font size="8"/>
 				</textElement>
-				<textFieldExpression><![CDATA["3108403107\n3178535003"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["3108403107\n3226245012"]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="42" y="127" width="83" height="30" uuid="660bcd9b-ca7d-444b-840c-c5ba5607b82f"/>
-				<textElement>
+				<reportElement x="42" y="127" width="83" height="30" isRemoveLineWhenBlank="true" uuid="660bcd9b-ca7d-444b-840c-c5ba5607b82f"/>
+				<textElement markup="html">
 					<font size="7"/>
 				</textElement>
-				<text><![CDATA[cll3 Cr7 Barrio Comercio,\n El Tambo Nariño.]]></text>
+				<text><![CDATA[Barrio Belen Umbria MZ X Lote 8 <br> Cucuta-Norte de Santander]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="1" y="74" width="124" height="20" uuid="e9bd535b-3b36-448e-87f9-6c096ba54bc8"/>
@@ -439,7 +439,7 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
-			<textField textAdjust="StretchHeight" isBlankWhenNull="true">
+			<textField textAdjust="StretchHeight" pattern="¤#,#00.##;¤-#,#00.##" isBlankWhenNull="true">
 				<reportElement mode="Transparent" x="94" y="0" width="31" height="25" isRemoveLineWhenBlank="true" uuid="09004b66-cf46-4d17-9e12-08b36aeac280"/>
 				<box topPadding="1" leftPadding="1" bottomPadding="2" rightPadding="1">
 					<pen lineStyle="Dotted"/>
@@ -498,7 +498,7 @@
 					<pen lineWidth="1.5" lineStyle="Dashed"/>
 				</graphicElement>
 			</line>
-			<textField>
+			<textField pattern="¤#,#00.##;¤-#,#00.##">
 				<reportElement x="26" y="13" width="98" height="36" uuid="e3860cad-714a-4405-a85f-d6c605b931b4"/>
 				<box leftPadding="7">
 					<pen lineWidth="1.0"/>
@@ -510,7 +510,7 @@
 				<textElement>
 					<font size="18"/>
 				</textElement>
-				<textFieldExpression><![CDATA['$'+$F{precio_Total}.intValue()]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{precio_Total}.intValue()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="69" width="39" height="20" uuid="403c6842-5ca2-450e-93d0-483e76c80f17"/>

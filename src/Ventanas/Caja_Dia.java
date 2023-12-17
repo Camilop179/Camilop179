@@ -37,16 +37,18 @@ public class Caja_Dia extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
+        caja();
 
     }
 
     public void caja() {
         try (Connection cn = Conexion.Conexion()) {
 
-            PreparedStatement pr1 = cn.prepareStatement("select max(id),total from caja");
+            PreparedStatement pr1 = cn.prepareStatement("select total from caja where id=(select max(id) from caja)");
             ResultSet rs1 = pr1.executeQuery();
             while (rs1.next()) {
-                jLabel4.setText(rs1.getString(2));
+                jLabel4.setText(rs1.getString(1));
+                
             }
             cn.close();
         } catch (SQLException ex) {
@@ -105,8 +107,10 @@ public class Caja_Dia extends javax.swing.JDialog {
             }
         });
 
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Efectivo Dia Anterior:");
 
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("jLabel4");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

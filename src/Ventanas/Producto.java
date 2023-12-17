@@ -27,7 +27,7 @@ public final class Producto extends javax.swing.JFrame {
 
         setLocationRelativeTo(null);
         setResizable(false);
-        new Imagenes("disco-flexible.png", jLabelListo);
+        new Imagenes("disco-flexible.png", jLabelListo, 56, 56);
         jLabelFecha.setText(Fechas.fechaActual());
         llenarTipo();
         llenarProveedor();
@@ -40,10 +40,12 @@ public final class Producto extends javax.swing.JFrame {
 
     public static void modificar(int id) {
         try {
+            idp=id;
             Connection cn;
             cn = Conexion.Conexion();
             PreparedStatement pr;
-            pr = cn.prepareStatement("select * from producto where idProducto = " + id);
+            pr = cn.prepareStatement("select * from producto where idProducto = ?");
+            pr.setInt(1, id);
             ResultSet rs;
             rs = pr.executeQuery();
             while (rs.next()) {
@@ -59,7 +61,7 @@ public final class Producto extends javax.swing.JFrame {
                 jComboBoxMarca.setSelectedItem(rs.getString(15));
                 jComboBoxTipo_Producto.setSelectedItem(rs.getString(16));
                 jComboBoxSeccion.setSelectedItem(rs.getString(17));
-                jDateChooser_fechav.setDate(new java.util.Date(rs.getDate(13).getTime()));
+                jTextFieldCantidadMin.setText(rs.getString(13));
             }
             cn.close();
         } catch (SQLException e) {
@@ -119,14 +121,12 @@ public final class Producto extends javax.swing.JFrame {
         String seccion = jComboBoxSeccion.getSelectedItem().toString();
         String prov = jComboBoxProveedor.getSelectedItem().toString();
         String marca = jComboBoxMarca.getSelectedItem().toString();
-        java.util.Date fecha_v = jDateChooser_fechav.getDate();
         java.sql.Date fecha_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
-        java.sql.Date fecha_v_bd = new java.sql.Date(fecha_v.getTime());
         if (!("".equals(codigo + codigo_B + product + tipo + seccion) && precio_C + precio_V == 0)) {
             try (Connection cn = Conexion.Conexion()) {
                 PreparedStatement pre = cn.prepareStatement("Update producto set codigo = ?, codigo_barras=?, producto=?, precio_compra=?, precio_venta=?, "
                         + "cantidad=?, utilidad=?, porcentaje_utilidad=?, tipo=?, seccion=?, marca=?, proveedor=?, idUsuario=?, fecha_ingreso=?,"
-                        + "fecha_vencimiento=?,total_cost=? where idProducto=?");
+                        + "minimo=?,total_cost=? where idProducto=?");
 
                 pre.setString(1, codigo);
                 pre.setString(2, codigo_B);
@@ -142,24 +142,12 @@ public final class Producto extends javax.swing.JFrame {
                 pre.setString(12, prov);
                 pre.setInt(13, Login.idUsuario);
                 pre.setDate(14, fecha_i_bd);
-                pre.setDate(15, fecha_v_bd);
+                pre.setString(15, jTextFieldCantidadMin.getText().trim());
                 pre.setDouble(16, (precio_C * cantidad));
                 pre.setInt(17, id);
 
                 pre.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Actualizacion exitoso");
-                jTextFieldCantidad.setText("");
-                jTextFieldCodigo.setText("");
-                jTextFieldCodigoB.setText("");
-                jTextFieldPrecio_C.setText("");
-                jTextFieldPrecio_V.setText("");
-                jTextFieldProducto.setText("");
-                jTextFieldUtilidad.setText("");
-                jTextFieldUtilidad_Por.setText("");
-                jTextFieldProducto.requestFocus();
-                Catalogo.buscar();
-                Catalogo.total();
-
             } catch (SQLException e) {
                 System.err.println("Error al ingresar el producto " + e);
                 JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
@@ -186,9 +174,7 @@ public final class Producto extends javax.swing.JFrame {
 
         String tipo = jComboBoxTipo_Producto.getSelectedItem().toString();
 
-        java.util.Date fecha_v = jDateChooser_fechav.getDate();
         java.sql.Date fecha_i_bd = new java.sql.Date(Fechas.fechaActualDate().getTime());
-        java.sql.Date fecha_v_bd = new java.sql.Date(fecha_v.getTime());
         String seccion = jComboBoxSeccion.getSelectedItem().toString();
 
         String prov = jComboBoxProveedor.getSelectedItem().toString();
@@ -199,7 +185,7 @@ public final class Producto extends javax.swing.JFrame {
 
                 PreparedStatement pre = cn.prepareStatement("INSERT INTO producto (idProducto,codigo,codigo_barras,producto,cantidad,precio_compra,"
                         + "precio_venta,utilidad,porcentaje_utilidad,"
-                        + "idUsuario,fecha_ingreso,fecha_vencimiento,proveedor,marca,tipo,seccion,total_cost) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+                        + "idUsuario,fecha_ingreso,minimo,proveedor,marca,tipo,seccion,total_cost) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
                 pre.setInt(1, 0);
                 pre.setString(2, codigo);
                 pre.setString(3, codigo_B);
@@ -212,7 +198,7 @@ public final class Producto extends javax.swing.JFrame {
 
                 pre.setInt(10, Login.idUsuario);
                 pre.setDate(11, fecha_i_bd);
-                pre.setDate(12, fecha_v_bd);
+                pre.setString(12, jTextFieldCantidadMin.getText().trim());
                 pre.setString(13, prov);
                 pre.setString(14, marca);
                 pre.setString(15, tipo);
@@ -221,14 +207,15 @@ public final class Producto extends javax.swing.JFrame {
 
                 pre.executeUpdate();
                 JOptionPane.showMessageDialog(null, "Registro exitoso");
-                jTextFieldCantidad.setText("");
+                jTextFieldCantidad.setText("0");
                 jTextFieldCodigo.setText("");
                 jTextFieldCodigoB.setText("");
                 jTextFieldPrecio_C.setText("0");
                 jTextFieldPrecio_V.setText("0");
                 jTextFieldProducto.setText("");
-                jTextFieldUtilidad.setText("");
-                jTextFieldUtilidad_Por.setText("");
+                jTextFieldUtilidad.setText("0");
+                jTextFieldUtilidad_Por.setText("0");
+                jTextFieldCantidadMin.setText("0");
                 jTextFieldProducto.requestFocus();
                 jComboBoxMarca.setSelectedIndex(0);
                 jComboBoxProveedor.setSelectedIndex(0);
@@ -309,8 +296,8 @@ public final class Producto extends javax.swing.JFrame {
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jComboBoxProveedor = new javax.swing.JComboBox<>();
-        jDateChooser_fechav = new com.toedter.calendar.JDateChooser();
         jLabel16 = new javax.swing.JLabel();
+        jTextFieldCantidadMin = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -319,6 +306,11 @@ public final class Producto extends javax.swing.JFrame {
 
         jTextFieldProducto.setBackground(new java.awt.Color(0, 153, 153));
         jTextFieldProducto.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jTextFieldProducto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                jTextFieldProductoKeyReleased(evt);
+            }
+        });
 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Codigo de Barra:");
@@ -365,6 +357,7 @@ public final class Producto extends javax.swing.JFrame {
 
         jTextFieldUtilidad_Por.setBackground(new java.awt.Color(0, 153, 153));
         jTextFieldUtilidad_Por.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        jTextFieldUtilidad_Por.setText("0");
         jTextFieldUtilidad_Por.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 jTextFieldUtilidad_PorKeyReleased(evt);
@@ -449,7 +442,10 @@ public final class Producto extends javax.swing.JFrame {
         });
 
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel16.setText("Fecha Vencimiento");
+        jLabel16.setText("Cantidad Min:");
+
+        jTextFieldCantidadMin.setBackground(new java.awt.Color(0, 153, 153));
+        jTextFieldCantidadMin.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -467,13 +463,19 @@ public final class Producto extends javax.swing.JFrame {
                         .addGap(10, 10, 10)
                         .addComponent(jLabelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(37, 37, 37)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel16))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(56, 56, 56)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel3)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel16, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -496,12 +498,9 @@ public final class Producto extends javax.swing.JFrame {
                                         .addComponent(jLabel11))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jDateChooser_fechav, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                .addGap(19, 19, 19)))
+                                            .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jTextFieldCantidadMin, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(jLabel14, javax.swing.GroupLayout.Alignment.TRAILING))))
@@ -518,10 +517,7 @@ public final class Producto extends javax.swing.JFrame {
                         .addGap(12, 12, 12)
                         .addComponent(jLabel9)
                         .addGap(78, 78, 78)
-                        .addComponent(jLabel15))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(78, 78, 78)
-                        .addComponent(jLabel7)))
+                        .addComponent(jLabel15)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -530,23 +526,21 @@ public final class Producto extends javax.swing.JFrame {
                 .addGap(10, 10, 10)
                 .addComponent(jLabelFecha)
                 .addGap(76, 76, 76)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldProducto, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextFieldCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jTextFieldCodigoB, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel1)))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextFieldCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextFieldCodigoB, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jTextFieldPrecio_V, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel5))
                         .addGap(6, 6, 6)
@@ -554,11 +548,11 @@ public final class Producto extends javax.swing.JFrame {
                             .addComponent(jLabel10)
                             .addComponent(jComboBoxTipo_Producto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jTextFieldPrecio_C, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jTextFieldUtilidad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -567,9 +561,9 @@ public final class Producto extends javax.swing.JFrame {
                         .addComponent(jComboBoxSeccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel11))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel7)
-                            .addComponent(jTextFieldUtilidad_Por, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jTextFieldUtilidad_Por, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel7))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(3, 3, 3)
@@ -589,9 +583,9 @@ public final class Producto extends javax.swing.JFrame {
                                     .addComponent(jLabel15)
                                     .addComponent(jTextFieldCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel16)
-                                    .addComponent(jDateChooser_fechav, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jTextFieldCantidadMin, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel16))))))
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelListo, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -603,12 +597,18 @@ public final class Producto extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLabelListoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelListoMouseClicked
-        if (Catalogo.vent == 0) {
+        if (Catalogo.vent == 0 && !productoNegativo.m) {
             agregar();
+        } else if (productoNegativo.m) {
+            actualizar(idp);
+            dispose();
+            Administrador.pn.tablaProducto();
         } else {
             actualizar(idp);
             Catalogo.vent = 0;
             dispose();
+            Catalogo.buscar();
+            Catalogo.total();
         }
     }//GEN-LAST:event_jLabelListoMouseClicked
 
@@ -644,7 +644,7 @@ public final class Producto extends javax.swing.JFrame {
 
     private void jTextFieldUtilidad_PorKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldUtilidad_PorKeyReleased
 
-        if (!(jTextFieldPrecio_C.getText().equals("") || jTextFieldPrecio_V.getText().equals(""))) {
+        if (!jTextFieldPrecio_C.getText().equals("") && !jTextFieldPrecio_V.getText().equals("") && !jTextFieldUtilidad_Por.getText().equals("")) {
             double precio_c = Double.parseDouble(jTextFieldPrecio_C.getText());
             double util = 1 - (Double.parseDouble(jTextFieldUtilidad_Por.getText()) / 100);
             double precio_v = precio_c / util;
@@ -693,12 +693,15 @@ public final class Producto extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jComboBoxProveedorActionPerformed
 
+    private void jTextFieldProductoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldProductoKeyReleased
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextFieldProductoKeyReleased
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private static javax.swing.JComboBox<String> jComboBoxMarca;
     private static javax.swing.JComboBox<String> jComboBoxProveedor;
     public static javax.swing.JComboBox<String> jComboBoxSeccion;
     public static javax.swing.JComboBox<String> jComboBoxTipo_Producto;
-    private static com.toedter.calendar.JDateChooser jDateChooser_fechav;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -717,6 +720,7 @@ public final class Producto extends javax.swing.JFrame {
     private javax.swing.JLabel jLabelFecha;
     private static javax.swing.JLabel jLabelListo;
     private static javax.swing.JTextField jTextFieldCantidad;
+    private static javax.swing.JTextField jTextFieldCantidadMin;
     private static javax.swing.JTextField jTextFieldCodigo;
     private static javax.swing.JTextField jTextFieldCodigoB;
     private static javax.swing.JTextField jTextFieldPrecio_C;

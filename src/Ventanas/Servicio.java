@@ -26,7 +26,7 @@ public final class Servicio extends javax.swing.JFrame {
 
         setLocationRelativeTo(null);
         setResizable(false);
-        new Imagenes("disco-flexible.png", jLabelListo);
+        new Imagenes("disco-flexible.png", jLabelListo,37,37);
         jLabelFecha.setText(Fechas.fechaActual());
 
         this.repaint();

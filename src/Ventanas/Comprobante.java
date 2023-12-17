@@ -8,8 +8,12 @@ import Clases.Conexion;
 import Clases.Fechas;
 import Clases.Fondo;
 import Clases.FormatoPesos;
+
 import Clases.Validaciones;
+import Clases.uiJTabben;
 import java.sql.*;
+import javax.swing.JOptionPane;
+
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -21,6 +25,8 @@ public class Comprobante extends javax.swing.JFrame {
     /**
      * Creates new form Comprobante_Ingreso
      */
+    public static boolean m = false;
+
     public Comprobante() {
         Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
@@ -28,10 +34,12 @@ public class Comprobante extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         jLabelFecha.setText(Fechas.fechaActual());
         nro();
+        jTabbedPane1.setUI(new uiJTabben());
+
     }
 
     public void nro() {
-        try ( Connection cn = Conexion.Conexion()) {
+        try (Connection cn = Conexion.Conexion()) {
             PreparedStatement ps = cn.prepareStatement("Select max(Nro) from comprobante_ingresos");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -42,25 +50,28 @@ public class Comprobante extends javax.swing.JFrame {
                     num++;
                     jLabelNro.setText("1");
                 }
-            }            cn.close();
+            }
+            cn.close();
 
         } catch (Exception e) {
         }
     }
 
-    public static void llenarTable(Object[] obg){
+    public static void llenarTable(Object[] obg) {
         DefaultTableModel df = (DefaultTableModel) jTable1.getModel();
         df.addRow(obg);
         jTable1.setModel(df);
         total();
     }
-    public static void total(){
-        double total=0;
+
+    public static void total() {
+        double total = 0;
         for (int i = 0; i < jTable1.getRowCount(); i++) {
-            total+= Double.valueOf(jTable1.getValueAt(i, 1).toString());
+            total += Double.valueOf(jTable1.getValueAt(i, 1).toString());
         }
         jTextField2.setText(FormatoPesos.formato(total));
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -71,7 +82,7 @@ public class Comprobante extends javax.swing.JFrame {
     private void initComponents() {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new Fondo("FondoMenu.jpg");
+        jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jLabel1 = new javax.swing.JLabel();
@@ -79,7 +90,7 @@ public class Comprobante extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabelNro = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        jTextFieldCedula = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabelNombre = new javax.swing.JLabel();
@@ -90,6 +101,12 @@ public class Comprobante extends javax.swing.JFrame {
         jTextField2 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jTabbedPane1.setForeground(new java.awt.Color(255, 255, 255));
+
+        jPanel1.setOpaque(false);
+
+        jScrollPane1.setOpaque(false);
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -130,9 +147,9 @@ public class Comprobante extends javax.swing.JFrame {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("CC o Nit:");
 
-        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+        jTextFieldCedula.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTextField1KeyPressed(evt);
+                jTextFieldCedulaKeyPressed(evt);
             }
         });
 
@@ -154,6 +171,11 @@ public class Comprobante extends javax.swing.JFrame {
         });
 
         jButton2.setText("Abono");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
@@ -185,7 +207,7 @@ public class Comprobante extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jLabelNro))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(jTextFieldCedula, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jLabel6)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -223,7 +245,7 @@ public class Comprobante extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldCedula, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6)
                     .addComponent(jLabel7)
                     .addComponent(jLabelNombre)
@@ -254,33 +276,48 @@ public class Comprobante extends javax.swing.JFrame {
             .addComponent(jTabbedPane1)
         );
 
+        jTabbedPane1.addTab("Cotizacion", new CotizacionT());
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String cedula = jTextField1.getText();
+        String cedula = jTextFieldCedula.getText();
         if (!cedula.equals("")) {
-            Saldo.setCedula(jTextField1.getText());
             new Saldo(this, true).setVisible(true);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jTextField1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyPressed
+    private void jTextFieldCedulaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldCedulaKeyPressed
         if (!Validaciones.validarEnter(evt)) {
-            try ( Connection cn = Conexion.Conexion()) {
-                PreparedStatement ps = cn.prepareStatement("Select * from clientes where cedula=?");
-                ps.setString(1, jTextField1.getText());
-                ResultSet rs = ps.executeQuery();
-                while (rs.next()) {
-                    jLabelNombre.setText(rs.getString(3));
-                    jLabelTelefono.setText(rs.getString(4));
-                }
-            } catch (Exception e) {
-                System.err.println(e);
-            }
+            buscarCliente();
         }
-    }//GEN-LAST:event_jTextField1KeyPressed
+    }//GEN-LAST:event_jTextFieldCedulaKeyPressed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        new Abono(this, true).setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    public void buscarCliente() {
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement ps = cn.prepareStatement("Select * from clientes where cedula = ?");
+            ps.setString(1, jTextFieldCedula.getText());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                jLabelNombre.setText(rs.getString(3));
+                jLabelTelefono.setText(rs.getString(4));
+                m = false;
+            } else {
+                m = true;
+                JOptionPane.showMessageDialog(this, "El nro de Cedula " + jTextFieldCedula.getText() + " no se a registrado");
+                new BuscarClientes(this, true).setVisible(true);
+            }
+            cn.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al buscar cliente: " + e);
+            System.err.println(e);
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -302,7 +339,7 @@ public class Comprobante extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private static javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
     private static javax.swing.JTextField jTextField2;
+    public static javax.swing.JTextField jTextFieldCedula;
     // End of variables declaration//GEN-END:variables
 }

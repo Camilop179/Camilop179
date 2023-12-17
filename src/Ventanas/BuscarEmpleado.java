@@ -39,7 +39,7 @@ public final class BuscarEmpleado extends javax.swing.JDialog {
         DefaultTableModel df = (DefaultTableModel) jTable1.getModel();
         try (Connection cn = Conexion.Conexion()) {
             Object[] obg = new Object[3];
-            PreparedStatement ps = cn.prepareStatement("select cedula,nombres,celular from clientes");
+            PreparedStatement ps = cn.prepareStatement("select cedula,nombre,telefono from empleados");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 for (int i = 0; i < 3; i++) {
@@ -118,6 +118,11 @@ public final class BuscarEmpleado extends javax.swing.JDialog {
             }
         });
         jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setResizable(false);
@@ -209,6 +214,13 @@ public final class BuscarEmpleado extends javax.swing.JDialog {
         }
 
     }//GEN-LAST:event_jTextField1KeyReleased
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        int i = jTable1.getSelectedRow();
+        String cedula = jTable1.getValueAt(i, 0).toString();
+        Nomina.jTextFieldCedula.setText(cedula);
+        dispose();
+    }//GEN-LAST:event_jTable1MouseClicked
 
     public void buscar(String sql, String buscar, int parametros) {
         DefaultTableModel df = (DefaultTableModel) jTable1.getModel();

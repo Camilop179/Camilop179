@@ -4,16 +4,27 @@
  */
 package Ventanas;
 
+import Clases.Conexion;
+import Clases.Errores;
 import Clases.Fechas;
-import Clases.Fondo;
+import Clases.FormatoPesos;
 import Clases.FormatoTablas;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
-import static Ventanas.Cotizacion.nroVenta;
+import Clases.Imprimir;
+import Clases.Utilidad;
+import Clases.Validaciones;
+import java.sql.*;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 /**
  *
@@ -32,25 +43,15 @@ public class CotizacionT extends javax.swing.JPanel {
     static ArrayList Servicio = new ArrayList();
 
     public CotizacionT() {
-        Fondo fondo = new Fondo("FondoMenu.jpg");
         idEmp.add(0);
         n = true;
         initComponents();
         llenarEmpleado();
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        new ImagenBoton("vender.png", jButtonVender, 43, 43);
-        jButtonBuscando.setContentAreaFilled(false);
-        ImageIcon imagen1 = new ImageIcon("src/imagenes/carrito-de-compras.png");
-        new Imagenes("buscando.png", jLabelBuscar);
-        new Imagenes("Adelante.png", jLabelRegresar1);
-        new Imagenes("Atras.png", jLabelRegresar);
-        new Imagenes("imprimir.png", jLabelImprimir);
-        new ImagenBoton("buscando.png", jButtonBuscando, 38, 38);
+       
         jLabelFecha.setText(Fechas.fechaActual());
-        this.setLocationRelativeTo(null);
         if (Reportes.m == 1) {
             jLabelImprimir.setVisible(true);
-            jLabelNoVenta.setText("" + Reportes.nro);
+            jLabelNoCot.setText("" + Reportes.nro);
         } else {
             jLabelImprimir.setVisible(false);
             nroVenta();
@@ -59,10 +60,436 @@ public class CotizacionT extends javax.swing.JPanel {
         tamañoColumna();
         jTableVenta.setDefaultRenderer(Object.class, ft);
         reportes();
-        cerra();
         eventotabla();
+        imagenes();
+    }
+    public void imagenes(){
+         new ImagenBoton("vender.png", jButtonVender, 43, 43);
+        jButtonBuscando.setContentAreaFilled(false);
+        new Imagenes("buscando.png", jLabelBuscar,43,43);
+        new Imagenes("Adelante.png", jLabelRegresar1,43,43);
+        new Imagenes("Atras.png", jLabelRegresar,43,43);
+        new Imagenes("imprimir.png", jLabelImprimir,43,43);
+        new ImagenBoton("buscando.png", jButtonBuscando, 38, 38);
+    }
+    @Override
+    public void paint(Graphics g) {
+        Image fondo = new ImageIcon(getClass().getResource("/imagenes/FondoMenu.jpg")).getImage();
+        if (fondo != null) {
+            g.drawImage(fondo, 0, 0, getWidth(), getHeight(), this);
+            setOpaque(false);
+            super.paint(g);
+        } else {
+            System.out.println("Clases.Fondo.paint()");
+        }
+    }
+    
+    public void eventotabla() {
+        jTableVenta.getModel().addTableModelListener((TableModelEvent e) -> {
+            if (e.getType() == TableModelEvent.UPDATE) {
+                int columna = e.getColumn();
+                int row = e.getLastRow();
+                if (columna == 2) {
+                    cambiarCant(row);
+                    total();
+                } else if (columna == 3) {
+                    cambiarCant(row);
+                    total();
+                }
+            }
+        });
     }
 
+
+    public void reportes() {
+        if (Reportes.m == 1) {
+            String NroVentas = jLabelNoCot.getText();
+            buscarDetalle(NroVentas);
+            buscarVentas(NroVentas);
+        }
+    }
+
+    public static void buscarDetalle(String NroVenta) {
+        limpiar();
+        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        String[] datos = new String[5];
+        try (Connection cn = Conexion.Conexion()){
+            
+            PreparedStatement pr2 = cn.prepareStatement(
+                    "select codigo,producto,precioUnitario,cantidad,PrecioTotal from detallescotizacion where nro_Cotizacion = ?");
+            pr2.setString(1, NroVenta);
+            ResultSet rs2 = pr2.executeQuery();
+            while (rs2.next()) {
+                for (int i = 0; i < 5; i++) {
+                    datos[i] = rs2.getString(i + 1);
+                }
+                tabla.addRow(datos);
+
+            }
+            cn.close();
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+    }
+
+    public static void buscarVentas(String NroVenta) {
+        try {
+            Connection cn;
+            cn = Conexion.Conexion();
+            PreparedStatement pr;
+            pr = cn.prepareStatement("select v.*,c.saldo,c.celular from cotizacion v left join clientes c on cedula_cliente=c.cedula  where nroCotizacion = ?");
+            pr.setString(1, NroVenta);
+            ResultSet rs = pr.executeQuery();
+
+            while (rs.next()) {
+                jLabelFecha.setText(rs.getString(7));
+                jTextFieldTotal.setText(rs.getString(8));
+                jTextFieldCedula.setText(rs.getString(4));
+                jLabelTelefono.setText(rs.getString(17));
+                jTextFieldNombre.setText(rs.getString(3));
+                jTextFieldPlaca.setText(rs.getString(10));
+                jTextFieldMoto.setText(rs.getString(9));
+                jTextFieldColor.setText(rs.getString(11));
+                jTextArea1.setText(rs.getString(12));
+                jComboBox1.setSelectedIndex(rs.getInt(14));
+            }
+
+            jTextFieldCodigo.setEditable(false);
+            jTextFieldCedula.setEditable(false);
+            jTextFieldNombre.setEditable(false);
+            jTextFieldTotal.setEditable(false);
+            cn.close();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    public final void tamañoColumna() {
+        DefaultTableModel tabla = new DefaultTableModel() {
+            boolean[] m = new boolean[]{
+                false, true, true, true, false
+            };
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return m[columnIndex];
+            }
+        };
+        tabla.addColumn("Codigo");
+        tabla.addColumn("Producto");
+        tabla.addColumn("Precio Unidad");
+        tabla.addColumn("Cantidad");
+        tabla.addColumn("Total");
+
+        jTableVenta.setEditingColumn(-1);
+
+        jTableVenta.setModel(tabla);
+        TableColumnModel columnModel = jTableVenta.getColumnModel();
+        columnModel.getColumn(0).setResizable(false);
+        columnModel.getColumn(1).setResizable(false);
+        columnModel.getColumn(2).setResizable(false);
+        columnModel.getColumn(3).setResizable(false);
+        columnModel.getColumn(4).setResizable(false);
+
+        columnModel.getColumn(0).setPreferredWidth(70);
+        columnModel.getColumn(1).setPreferredWidth(300);
+        columnModel.getColumn(2).setPreferredWidth(100);
+        columnModel.getColumn(3).setPreferredWidth(50);
+        columnModel.getColumn(4).setPreferredWidth(100);
+
+    }
+
+    public static int nroVenta() {
+        int nro_venta = 0;
+        try {
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr = cn.prepareStatement("select max(nroCotizacion) from cotizacion");
+            ResultSet rs = pr.executeQuery();
+
+            while (rs.next()) {
+                nro_venta = rs.getInt(1);
+                nro_venta++;
+                jLabelNoCot.setText("" + nro_venta);
+            }
+            cn.close();
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+        return nro_venta;
+    }
+
+    public void vender() {
+        int i = JOptionPane.showConfirmDialog(this, "Desea realizar Cotizacion");
+        if (i == 0) {
+            venta();
+            detalleVenta();
+        }
+    }
+
+    public static void total() {
+        double t = 0;
+        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+            t += Double.parseDouble(jTableVenta.getValueAt(i, 4).toString());
+        }
+        jTextFieldTotal.setText(FormatoPesos.formato(t));
+    }
+
+    public static void servicio() {
+        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+
+        try {
+            String codigo = jTextFieldCodigo.getText().trim();
+            Connection cnn = Conexion.Conexion();
+            PreparedStatement pre = cnn.prepareStatement("select codigo,Concepto,Valor from servicio where codigo = ?");
+            pre.setString(1, codigo);
+            ResultSet rs = pre.executeQuery();
+            if (rs.next()) {
+                int i = tabla(rs.getString(1));
+                if (i >= 0) {
+                    int cant = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
+                    cant++;
+                    jTableVenta.setValueAt(cant, i, 3);
+                    total();
+                } else {
+                    String[] datos = new String[5];
+                    datos[0] = rs.getString(1);
+                    datos[1] = rs.getString(2);
+                    datos[2] = String.valueOf(rs.getInt(3));
+                    datos[3] = "1";
+                    datos[4] = String.valueOf(rs.getInt(3));
+                    tabla.addRow(datos);
+                    Object obg = rs.getDouble(3);
+                    utilidaTotal.add(obg);
+                    total();
+                    Servicio.add(true);
+                }
+                jTextFieldCodigo.setText("");
+                m = false;
+            } else {
+                m = true;
+                new Servicios().setVisible(true);
+            }
+            cnn.close();
+        } catch (SQLException e) {
+            System.err.println(e);
+            Errores.Errores("Error al Agregar Producto: " + e);
+        }
+    }
+
+    public static void producto() {
+        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+
+        try {
+            String codigo = jTextFieldCodigo.getText().trim();
+            Connection cnn = Conexion.Conexion();
+            PreparedStatement pre = cnn.prepareStatement("select codigo,producto,precio_venta,precio_compra from producto where codigo = ? or codigo_barras = ?");
+            pre.setString(1, codigo);
+            pre.setString(2, codigo);
+            ResultSet rs = pre.executeQuery();
+            if (rs.next()) {
+                int i = tabla(rs.getString(1));
+                if (i >= 0) {
+                    int cant = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
+                    int precio = Integer.parseInt(jTableVenta.getValueAt(i, 2).toString());
+                    cant++;
+                    int totalV = precio * cant;
+                    jTableVenta.setValueAt(cant, i, 3);
+                    jTableVenta.setValueAt(totalV, i, 4);
+                    utilidaTotal.set(i, (precio - rs.getDouble(4)) * cant);
+                    total();
+                } else {
+                    String[] datos = new String[5];
+                    datos[0] = rs.getString(1);
+                    datos[1] = rs.getString(2);
+                    datos[2] = String.valueOf(rs.getInt(3));
+                    datos[3] = "1";
+                    datos[4] = String.valueOf(rs.getInt(3));
+                    tabla.addRow(datos);
+                    Object obg = rs.getDouble(3) - rs.getDouble(4);
+                    utilidaTotal.add(obg);
+                    Servicio.add(false);
+                    total();
+                }
+                jTextFieldCodigo.setText("");
+                m = false;
+            } else {
+                m = true;
+                new Catalogo().setVisible(true);
+            }
+            cnn.close();
+        } catch (SQLException e) {
+            System.err.println(e);
+            Errores.Errores("Error al Agregar Producto: " + e);
+        }
+    }
+
+    public void buscarcl() {
+        if (!jTextFieldCedula.getText().equals("")) {
+            try (Connection cn = Conexion.Conexion()) {
+                String cedula = jTextFieldCedula.getText();
+                PreparedStatement pr = cn.prepareStatement("select * from clientes where cedula = ?");
+                pr.setString(1, cedula);
+                ResultSet rs = pr.executeQuery();
+                if (rs.next()) {
+                    String nombre = rs.getString(3);
+
+                    jTextFieldNombre.setText(nombre);
+                    jLabelTelefono.setText(rs.getString(4));
+                    jLabelSaldo.setText(rs.getString(5));
+                    jTextFieldNombre.requestFocus();
+
+                } else {
+
+                    int i = JOptionPane.showConfirmDialog(null, "No se encuentra cliente", "¿desea ingresar el cliente?", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                    System.out.println(i);
+                    if (i == 0) {
+
+                        IngresarClientes cliente = new IngresarClientes(new Comprobante(), true);
+                        IngresarClientes.jTextFieldCedula.setText(cedula);
+                        cliente.setVisible(true);
+                        buscarcl();
+                    }
+                }
+                cn.close();
+            } catch (SQLException e) {
+                System.out.println(e);
+                Errores.Errores("Error al Buscar CLiente: " + e);
+            }
+        }
+    }
+
+    public static void limpiar() {
+        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+            tabla.removeRow(i);
+            i--;
+            jTextFieldCedula.setText("");
+            jTextFieldNombre.setText("");
+            jTextFieldTotal.setText("0");
+            jTextFieldMoto.setText("");
+            jTextFieldPlaca.setText("");
+            jTextFieldColor.setText("");
+            jTextArea1.setText("");
+            jLabelFecha.setText("");
+            jLabelTelefono.setText("");
+
+            utilidaTotal.clear();
+            Servicio.clear();
+
+        }
+    }
+
+    public static void detalleVenta() {
+        try (Connection cn = Conexion.Conexion()) {
+
+            PreparedStatement pr = cn.prepareStatement("INSERT INTO detallescotizacion (id,nro_Cotizacion,codigo,producto,precioUnitario,cantidad,utilidad,precioTotal,Servicio) values(?,?,?,?,?,?,?,?,?)");
+            for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+                pr.setInt(1, 0);
+                pr.setInt(2, Integer.parseInt(jLabelNoCot.getText()));
+                pr.setString(3, jTableVenta.getValueAt(i, 0).toString());
+                pr.setString(4, jTableVenta.getValueAt(i, 1).toString());
+                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString()));
+                pr.setInt(6, Integer.parseInt(jTableVenta.getValueAt(i, 3).toString()));
+                pr.setDouble(7, (double) utilidaTotal.get(i));
+                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString()));
+                pr.setBoolean(9, (boolean) Servicio.get(i));
+                pr.executeUpdate();
+            }
+            cn.close();
+        } catch (SQLException e) {
+            System.err.println(e);
+            JOptionPane.showMessageDialog(null, "Error al subir detalles venta: " + e);
+            Errores.Errores("Error al Subir Detalles de venta: " + e);
+        }
+    }
+
+    public static void venta() {
+        try {
+            double utilidad = 0;
+            for (int i = 0; i < utilidaTotal.size(); i++) {
+                utilidad += Double.parseDouble(utilidaTotal.get(i).toString());
+            }
+            int nro = nroVenta();
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr = cn.prepareStatement("INSERT INTO cotizacion (id,nroCotizacion,cliente,cedula_cliente,idUsuario,utilidad,fecha,precio_Total,moto,placa,color,comentario,hora,idEmpleado,Descuento) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            pr.setInt(1, 0);
+            pr.setInt(2, nro);
+            pr.setString(3, jTextFieldNombre.getText());
+            if (jTextFieldCedula.getText().equals("")) {
+                pr.setString(4, "0");
+            } else {
+                pr.setString(4, jTextFieldCedula.getText().trim());
+            }
+            pr.setInt(5, Login.idUsuario);
+            pr.setDouble(6, utilidad);
+            pr.setDate(7, new java.sql.Date(Fechas.fechaActualDate().getTime()));
+            pr.setDouble(8, Double.parseDouble(jTextFieldTotal.getText().replace(",", "")));
+            pr.setString(9, jTextFieldMoto.getText().trim());
+            pr.setString(10, jTextFieldPlaca.getText().trim());
+            pr.setString(11, jTextFieldColor.getText().trim());
+            pr.setString(12, jTextArea1.getText());
+            pr.setTime(13, new Time(Fechas.fechaActualDate().getTime()));
+            pr.setInt(14, (int) idEmp.get(jComboBox1.getSelectedIndex()));
+            pr.setDouble(15, 0);
+            pr.executeUpdate();
+            cn.close();
+        } catch (SQLException e) {
+            System.err.println(e);
+            JOptionPane.showMessageDialog(null, "Error al subir Venta: " + e);
+            Errores.Errores("Error al subir venta: " + e);
+        }
+    }
+
+    public void eliminarProducto() {
+        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        int row = jTableVenta.getSelectedRow();
+        utilidaTotal.remove(row);
+        Servicio.remove(row);
+        tabla.removeRow(jTableVenta.getSelectedRow());
+        total();
+    }
+
+    public void cambiarCant(int row) {
+        String codigo = jTableVenta.getValueAt(row, 0).toString();
+        int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
+        double precio = Double.parseDouble(jTableVenta.getValueAt(row, 2).toString());
+        double total1 = cant * precio;
+        double util = (precio - Utilidad.costo(codigo)) * cant;
+        utilidaTotal.set(row, util);
+        jTableVenta.setValueAt(total1, row, 4);
+        System.out.println(utilidaTotal);
+
+    }
+
+    public static int tabla(String codigo) {
+        int l = -1;
+        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+            if (jTableVenta.getValueAt(i, 0).toString().equals(codigo)) {
+                l = i;
+            }
+        }
+        return l;
+    }
+
+    public static void llenarEmpleado() {
+        jComboBox1.removeAll();
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement pr = cn.prepareStatement("select * from empleados");
+            ResultSet rs = pr.executeQuery();
+            jComboBox1.addItem("Selecciona");
+            while (rs.next()) {
+                idEmp.add(rs.getInt(1));
+                jComboBox1.addItem(rs.getString(3));
+            }
+            jComboBox1.addItem("Agregar");
+            cn.close();
+        } catch (SQLException e) {
+            System.out.println(e);
+            Errores.Errores("Error al Buscar CLiente: " + e);
+        }
+
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -84,7 +511,7 @@ public class CotizacionT extends javax.swing.JPanel {
         jLabel13 = new javax.swing.JLabel();
         jButtonVender = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
-        jLabelNoVenta = new javax.swing.JLabel();
+        jLabelNoCot = new javax.swing.JLabel();
         jLabelBuscar = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -176,8 +603,8 @@ public class CotizacionT extends javax.swing.JPanel {
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Nro. Venta:");
 
-        jLabelNoVenta.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabelNoVenta.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelNoCot.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabelNoCot.setForeground(new java.awt.Color(255, 255, 255));
 
         jLabelBuscar.setText("d");
         jLabelBuscar.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -406,7 +833,7 @@ public class CotizacionT extends javax.swing.JPanel {
                                         .addGap(79, 79, 79)
                                         .addComponent(jLabel7)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabelNoVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jLabelNoCot, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jTextFieldCedula, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -442,7 +869,7 @@ public class CotizacionT extends javax.swing.JPanel {
                             .addComponent(jLabel5)
                             .addComponent(jLabelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel7)
-                            .addComponent(jLabelNoVenta, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabelNoCot, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(25, 25, 25)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
@@ -494,7 +921,7 @@ public class CotizacionT extends javax.swing.JPanel {
 
         if (!Validaciones.validarEnter(evt)) {
             if (jTextFieldCedula.getText().equals("")) {
-                new BuscarClientes(this, true).setVisible(true);
+                new BuscarClientes(new Comprobante(), true).setVisible(true);
             } else {
                 buscarcl();
             }
@@ -553,12 +980,12 @@ public class CotizacionT extends javax.swing.JPanel {
     }//GEN-LAST:event_jTableVentaKeyPressed
 
     private void jLabelRegresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegresarMouseClicked
-        int nr = Integer.parseInt(jLabelNoVenta.getText());
+        int nr = Integer.parseInt(jLabelNoCot.getText());
         jLabelImprimir.setVisible(true);
         if (nr > 1) {
             limpiar();
             nr--;
-            jLabelNoVenta.setText("" + nr);
+            jLabelNoCot.setText("" + nr);
             buscarVentas(String.valueOf(nr));
             buscarDetalle(String.valueOf(nr));
             jButtonVender.setVisible(false);
@@ -566,7 +993,7 @@ public class CotizacionT extends javax.swing.JPanel {
     }//GEN-LAST:event_jLabelRegresarMouseClicked
 
     private void jLabelRegresar1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegresar1MouseClicked
-        int nro = Integer.parseInt(jLabelNoVenta.getText());
+        int nro = Integer.parseInt(jLabelNoCot.getText());
 
         try {
             Connection cn = Conexion.Conexion();
@@ -587,7 +1014,7 @@ public class CotizacionT extends javax.swing.JPanel {
                     nroVenta();
                 } else {
                     nro++;
-                    jLabelNoVenta.setText("" + nro);
+                    jLabelNoCot.setText("" + nro);
                     limpiar();
                     buscarDetalle(String.valueOf(nro));
                     buscarVentas(String.valueOf(nro));
@@ -628,7 +1055,7 @@ public class CotizacionT extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextFieldPlacaKeyPressed
 
     private void jButtonBuscandoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonBuscandoActionPerformed
-        new Buscar_Venta(this, true).setVisible(true);
+        new Buscar_Venta(new Comprobante(), true).setVisible(true);
     }//GEN-LAST:event_jButtonBuscandoActionPerformed
 
     private void jTextArea1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextArea1KeyTyped
@@ -641,7 +1068,7 @@ public class CotizacionT extends javax.swing.JPanel {
         String Item = jComboBox1.getSelectedItem().toString();
         if (Item.equals("Agregar")) {
             IngresarEmpleado.m = true;
-            new IngresarEmpleado(this, true).setVisible(true);
+            new IngresarEmpleado(new Comprobante(), true).setVisible(true);
             jComboBox1.setSelectedIndex(0);
         }
     }//GEN-LAST:event_jComboBox1ActionPerformed
@@ -665,10 +1092,10 @@ public class CotizacionT extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JLabel jLabelBuscar;
+    public javax.swing.JLabel jLabelBuscar;
     private static javax.swing.JLabel jLabelFecha;
     private javax.swing.JLabel jLabelImprimir;
-    public static javax.swing.JLabel jLabelNoVenta;
+    public static javax.swing.JLabel jLabelNoCot;
     private javax.swing.JLabel jLabelRegresar;
     private javax.swing.JLabel jLabelRegresar1;
     protected static javax.swing.JLabel jLabelSaldo;

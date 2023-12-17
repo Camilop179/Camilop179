@@ -19,7 +19,7 @@ import javax.swing.JOptionPane;
  * @author harol
  */
 public class IngresarEmpleado extends javax.swing.JDialog {
-    static boolean m=false;
+    public static boolean m=false;
     /**
      * Creates new form NewJDialog
      */
@@ -29,8 +29,8 @@ public class IngresarEmpleado extends javax.swing.JDialog {
         this.setContentPane(fondo);
         initComponents();
         setLocationRelativeTo(null);
-        new Imagenes("disco-flexible.png", jLabelGuardar);
-        new Imagenes("salida.png", jLabelSalir);
+        new Imagenes("disco-flexible.png", jLabelGuardar,37,37);
+        new Imagenes("salida.png", jLabelSalir,37,37);
         
         
     }

@@ -7,7 +7,7 @@ package Ventanas;
 import Clases.Conexion;
 import Clases.Fondo;
 import Clases.ImagenBoton;
-import Clases.Validaciones;
+
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.*;
@@ -66,7 +66,7 @@ public class BuscarClientes extends javax.swing.JDialog {
         buttonGroup1 = new javax.swing.ButtonGroup();
         jRadioButton1 = new javax.swing.JRadioButton();
         jRadioButton2 = new javax.swing.JRadioButton();
-        jTextField1 = new javax.swing.JTextField();
+        jTextFieldBuscar = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         JBotonCerrar = new javax.swing.JButton();
@@ -96,9 +96,9 @@ public class BuscarClientes extends javax.swing.JDialog {
         jRadioButton2.setForeground(new java.awt.Color(255, 255, 255));
         jRadioButton2.setText("Nombre");
 
-        jTextField1.addKeyListener(new java.awt.event.KeyAdapter() {
+        jTextFieldBuscar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                jTextField1KeyReleased(evt);
+                jTextFieldBuscarKeyReleased(evt);
             }
         });
 
@@ -150,7 +150,7 @@ public class BuscarClientes extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jRadioButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jTextFieldBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jRadioButton1))
                 .addContainerGap(20, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
@@ -169,7 +169,7 @@ public class BuscarClientes extends javax.swing.JDialog {
                 .addComponent(JBotonCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(57, 57, 57)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jTextFieldBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jRadioButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -203,23 +203,31 @@ public class BuscarClientes extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_JBotonCerrarActionPerformed
 
-    private void jTextField1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextField1KeyReleased
+    private void jTextFieldBuscarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldBuscarKeyReleased
 
-        String buscar = jTextField1.getText().trim();
+        String buscar = jTextFieldBuscar.getText().trim();
         if (jRadioButton1.isSelected() && jRadioButton2.isSelected()) {
             buscar("select cedula,nombres,celular from clientes where nombres like ? or cedula like ?", buscar, 2);
-        } else if (jRadioButton1.isSelected()) {
+        }
+        if (jRadioButton1.isSelected()) {
             buscar("select cedula,nombres,celular from clientes where cedula like ?", buscar, 1);
-        } else if (jRadioButton2.isSelected()) {
+        }
+        if (jRadioButton2.isSelected()) {
             buscar("select cedula,nombres,celular from clientes where nombres like ?", buscar, 1);
         }
 
-    }//GEN-LAST:event_jTextField1KeyReleased
+    }//GEN-LAST:event_jTextFieldBuscarKeyReleased
 
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         int i = jTable1.getSelectedRow();
-        Ventas.jTextFieldCedula.setText(jTable1.getValueAt(i, 0).toString());
-        dispose();
+        var cedula = jTable1.getValueAt(i, 0).toString().trim();
+        if (Comprobante.m) {
+            Comprobante.jTextFieldCedula.setText(cedula);
+            dispose();
+            Comprobante cm = (Comprobante) this.getParent();
+            cm.buscarCliente();
+        } else {
+        }
     }//GEN-LAST:event_jTable1MouseClicked
 
     public void buscar(String sql, String buscar, int parametros) {
@@ -261,6 +269,6 @@ public class BuscarClientes extends javax.swing.JDialog {
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTextField jTextFieldBuscar;
     // End of variables declaration//GEN-END:variables
 }

@@ -30,8 +30,8 @@ public class IngresarClientes extends javax.swing.JDialog {
         this.setContentPane(fondo);
         initComponents();
         setLocationRelativeTo(null);
-        new Imagenes("disco-flexible.png", jLabelGuardar);
-        new Imagenes("salida.png", jLabelSalir);
+        new Imagenes("disco-flexible.png", jLabelGuardar,37,37);
+        new Imagenes("salida.png", jLabelSalir,37,37);
 
     }
 

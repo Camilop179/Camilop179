@@ -19,13 +19,12 @@ public class Login extends javax.swing.JFrame {
     private static final long serialVersionUID = 1L;
     public static int idUsuario;
     String usuario = "";
-    String contraseña = "";
 
     /**
      * Creates new form Login
      */
     public Login() {
-        Fondo fondo = new Fondo("inicio sesionk´<.jpg");
+        Fondo fondo = new Fondo("inicio sesion.jpg");
         this.setContentPane(fondo);
         this.setUndecorated(true);
         initComponents();
@@ -36,20 +35,20 @@ public class Login extends javax.swing.JFrame {
         setSize(400, 600);
         setResizable(false);
 
-        new Imagenes("icons8-client-management-80.png", jLabelUsuario);
-        new Imagenes("Contraseña.png", jLabelContraseña);
+        new Imagenes("Usuario.png", jLabelUsuario,40,40);
+        new Imagenes("Contraseña.png", jLabelContraseña,40,40);
         this.repaint();
 
     }
+    public static String nombre;
 
     public void iniciarsesion() {
         usuario = jTextFieldUsuario.getText().trim();
-        contraseña = Hash.hash24(new String(jPasswordFieldContraseña.getPassword()));
-        System.out.println(contraseña);
+        String contraseña = Hash.hash24(new String(jPasswordFieldContraseña.getPassword()));
         if (!usuario.equals("") || !contraseña.equals("")) {
             try {
                 Connection cn = Conexion.Conexion();
-                PreparedStatement pre = cn.prepareStatement("select idusuarios,cargo from usuarios where usuario = ? and contraseña = ?");
+                PreparedStatement pre = cn.prepareStatement("select idusuarios,cargo,nombre from usuarios where usuario = ? and contraseña = ?");
                 pre.setString(1, usuario);
                 pre.setString(2, contraseña);
                 ResultSet rs = pre.executeQuery();
@@ -57,6 +56,7 @@ public class Login extends javax.swing.JFrame {
                 if (rs.next()) {
                     String cargo = rs.getString("cargo");
                     idUsuario = rs.getInt("idusuarios");
+                    nombre = rs.getString(3);
                     switch (cargo) {
                         case "Administrador" -> {
                             dispose();

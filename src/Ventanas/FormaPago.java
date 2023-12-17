@@ -42,9 +42,9 @@ public class FormaPago extends javax.swing.JDialog {
         new ImagenBoton("cerrar.png", JBotonCerrar, JBotonCerrar.getBounds().width, JBotonCerrar.getBounds().height);
         Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
-        new Imagenes("efectivo.png", jLabelEfectivo);
-        new Imagenes("tarjeta-de-debito.png", jLabelCredito);
-        new Imagenes("codigo-qr.png", jLabelQr);
+        new Imagenes("efectivo.png", jLabelEfectivo,73,73);
+        new Imagenes("tarjeta-de-debito.png", jLabelCredito,73,73);
+        new Imagenes("codigo-qr.png", jLabelQr,73,73);
         jTextFieldCambio.setText("0");
         jTextFieldEfectivo.setText("0");
         jTextFieldEfectivo.requestFocus();

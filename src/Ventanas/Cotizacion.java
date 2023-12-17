@@ -51,10 +51,10 @@ public final class Cotizacion extends javax.swing.JFrame {
         new ImagenBoton("vender.png", jButtonVender, 43, 43);
         jButtonBuscando.setContentAreaFilled(false);
         ImageIcon imagen1 = new ImageIcon("src/imagenes/carrito-de-compras.png");
-        new Imagenes("buscando.png", jLabelBuscar);
-        new Imagenes("Adelante.png", jLabelRegresar1);
-        new Imagenes("Atras.png", jLabelRegresar);
-        new Imagenes("imprimir.png", jLabelImprimir);
+//        new Imagenes("buscando.png", jLabelBuscar);
+//        new Imagenes("Adelante.png", jLabelRegresar1);
+//        new Imagenes("Atras.png", jLabelRegresar);
+//        new Imagenes("imprimir.png", jLabelImprimir);
         new ImagenBoton("buscando.png", jButtonBuscando, 38, 38);
         jLabelFecha.setText(Fechas.fechaActual());
         this.setLocationRelativeTo(null);

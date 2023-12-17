@@ -6,7 +6,6 @@ package Ventanas;
 
 import Clases.Conexion;
 import Clases.Fondo;
-import static Ventanas.Catalogo.tabla;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

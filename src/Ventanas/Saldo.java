@@ -5,9 +5,9 @@
 package Ventanas;
 
 import Clases.Conexion;
+import Clases.Fondo;
 import Clases.FormatoPesos;
 import java.sql.*;
-;
 
 import javax.swing.JCheckBox;
 import javax.swing.table.DefaultTableModel;
@@ -23,17 +23,15 @@ public class Saldo extends javax.swing.JDialog {
     /**
      * Creates new form Saldo
      */
-    static String Cedula;
-
-    public static void setCedula(String Cedula) {
-        Saldo.Cedula = Cedula;
-    }
 
     public Saldo(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        
+        Fondo fondo = new Fondo("FondoMenu.jpg");
+        this.setContentPane(fondo);
         initComponents();
+        setLocationRelativeTo(null);
         llenar();
-        System.out.println(jTable1.getValueAt(1, 3));
     }
 
     void llenar() {
@@ -43,7 +41,7 @@ public class Saldo extends javax.swing.JDialog {
         try ( Connection cn = Conexion.Conexion()) {
             PreparedStatement pr = cn.prepareStatement("select c.nombres,c.celular,c.saldo,v.nroVentas,v.precio_Total,v.fecha,v.saldo from clientes c join ventas v on "
                     + "c.cedula=v.cedula_cliente where v.FormaPago='Credito' and c.cedula = ?");
-            pr.setString(1, Cedula);
+            pr.setString(1, Comprobante.jTextFieldCedula.getText().trim());
             ResultSet rs = pr.executeQuery();
             while (rs.next()) {
                 Object[] datos = new Object[4];
@@ -55,6 +53,7 @@ public class Saldo extends javax.swing.JDialog {
             }
             jTable1.setModel(df);
             total();
+            cn.close();
         } catch (SQLException e) {
             System.err.println(e);
         }
@@ -143,27 +142,23 @@ public class Saldo extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                            .addContainerGap()
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(144, 144, 144)
-                        .addComponent(jButton1)))
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(101, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addContainerGap(142, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))

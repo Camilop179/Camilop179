@@ -6,6 +6,7 @@ package Clases;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import javax.swing.JOptionPane;
 
 public class Conexion {
     
@@ -28,6 +29,7 @@ public class Conexion {
         } catch (SQLException e) {
             System.out.println("error al conectar " +e );
             Errores.Errores("No se puedo conectar Base de Datos: " +e);
+            JOptionPane.showMessageDialog(null, "No se puedo conectar Base de Datos: \n"+e);
         } 
         return cn;
     }

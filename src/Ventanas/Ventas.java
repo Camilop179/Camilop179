@@ -10,7 +10,6 @@ import Clases.FormatoTablas;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Imprimir;
-import Clases.ShortCut;
 import Clases.Validaciones;
 import Clases.Utilidad;
 import static Ventanas.Administrador.jProgressBar1;
@@ -20,28 +19,14 @@ import java.sql.*;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-import java.awt.Image;
-import java.awt.KeyEventDispatcher;
-import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.URL;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableColumnModel;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.util.JRLoader;
-import net.sf.jasperreports.view.JasperViewer;
 
 /**
  *
@@ -64,14 +49,13 @@ public final class Ventas extends javax.swing.JFrame {
         initComponents();
         llenarEmpleado();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        new ImagenBoton("vender.png", jButtonVender, 43, 43);
-        jButtonBuscando.setContentAreaFilled(false);
-        ImageIcon imagen1 = new ImageIcon("src/imagenes/carrito-de-compras.png");
-        new Imagenes("buscando.png", jLabelBuscar);
-        new Imagenes("Adelante.png", jLabelRegresar1);
-        new Imagenes("Atras.png", jLabelRegresar);
-        new Imagenes("imprimir.png", jLabelImprimir);
-        new ImagenBoton("buscando.png", jButtonBuscando, 38, 38);
+        ImagenBoton imagenBoton = new ImagenBoton("vender.png", jButtonVender, 43, 43);
+        jButtonBuscando.setContentAreaFilled(true);
+        Imagenes imagenes = new Imagenes("buscando.png", jLabelBuscar,45,40);
+        Imagenes imagenes1 = new Imagenes("Adelante.png", jLabelRegresar1,45,40);
+        Imagenes imagenes2 = new Imagenes("Atras.png", jLabelRegresar,45,40);
+        Imagenes imagenes3 = new Imagenes("imprimir.png", jLabelImprimir,45,40);
+        ImagenBoton imagenBoton1 = new ImagenBoton("buscando.png", jButtonBuscando, 38, 38);
         jLabelFecha.setText(Fechas.fechaActual());
         jLabelSaldo.setText("0");
         jTextFieldTotal1.setText("0");
@@ -89,7 +73,7 @@ public final class Ventas extends javax.swing.JFrame {
         reportes();
         cerra();
         eventotabla();
-
+    
     }
 
     public void eventotabla() {
@@ -97,14 +81,18 @@ public final class Ventas extends javax.swing.JFrame {
             if (e.getType() == TableModelEvent.UPDATE) {
                 int columna = e.getColumn();
                 int row = e.getLastRow();
-                if (columna == 2) {
-                    cambiarCant(row);
-                    total();
-                } else if (columna == 4) {
-                    cambiarCant(row);
-                    total();
-                } else if (columna == 3) {
-                    descuento(row);
+                switch (columna) {
+                    case 2 -> {
+                        cambiarCant(row);
+                        total();
+                    }
+                    case 4 -> {
+                        cambiarCant(row);
+                        total();
+                    }
+                    case 3 -> descuento(row);
+                    default -> {
+                    }
                 }
             }
         });
@@ -214,7 +202,7 @@ public final class Ventas extends javax.swing.JFrame {
     public final void tamañoColumna() {
         DefaultTableModel tabla = new DefaultTableModel() {
             boolean[] m = new boolean[]{
-                false, true, true, true, false
+                false, true, true, true,true, false
             };
 
             @Override
@@ -295,9 +283,9 @@ public final class Ventas extends javax.swing.JFrame {
     public static void servicio() {
         DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
 
-        try {
+        try (Connection cnn = Conexion.Conexion()){
             String codigo = jTextFieldCodigo.getText().trim();
-            Connection cnn = Conexion.Conexion();
+            
             PreparedStatement pre = cnn.prepareStatement("select codigo,Concepto,Valor from servicio where codigo = ?");
             pre.setString(1, codigo);
             ResultSet rs = pre.executeQuery();
@@ -480,7 +468,8 @@ public final class Ventas extends javax.swing.JFrame {
             }
             int nro = nroVenta();
             Connection cn = Conexion.Conexion();
-            PreparedStatement pr = cn.prepareStatement("INSERT INTO ventas (idventas,nroVentas,cliente,cedula_cliente,idUsuario,utilidad,fecha,precio_Total,Efectivo,Cambio,FormaPago,moto,placa,color,Saldo,comentario,hora,idEmpleado,Descuento) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+            PreparedStatement pr = cn.prepareStatement("INSERT INTO ventas (idventas,nroVentas,cliente,cedula_cliente,idUsuario,utilidad,fecha,precio_Total,Efectivo,Cambio,FormaPago,moto,placa,color,Saldo,comentario,hora,idEmpleado,Descuento) "
+                    + "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
             pr.setInt(1, 0);
             pr.setInt(2, nro);
             pr.setString(3, jTextFieldNombre.getText());
@@ -530,7 +519,6 @@ public final class Ventas extends javax.swing.JFrame {
         double util = (precio - Utilidad.costo(codigo)) * cant;
         utilidaTotal.set(row, util);
         jTableVenta.setValueAt(total1, row, 5);
-        System.out.println(utilidaTotal);
 
     }
 
@@ -734,27 +722,51 @@ public final class Ventas extends javax.swing.JFrame {
         });
         jScrollPane2.setViewportView(jTableVenta);
 
+        jLabelRegresar.setBackground(new java.awt.Color(51, 51, 51));
         jLabelRegresar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(102, 102, 102), new java.awt.Color(102, 102, 102), new java.awt.Color(0, 102, 102), new java.awt.Color(0, 102, 102)));
         jLabelRegresar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelRegresar.setOpaque(true);
         jLabelRegresar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabelRegresarMouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabelRegresarMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabelRegresarMouseExited(evt);
+            }
         });
 
+        jLabelRegresar1.setBackground(new java.awt.Color(51, 51, 51));
         jLabelRegresar1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(102, 102, 102), new java.awt.Color(102, 102, 102), new java.awt.Color(0, 102, 102), new java.awt.Color(0, 102, 102)));
         jLabelRegresar1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelRegresar1.setOpaque(true);
         jLabelRegresar1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabelRegresar1MouseClicked(evt);
             }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabelRegresar1MouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabelRegresar1MouseExited(evt);
+            }
         });
 
+        jLabelImprimir.setBackground(new java.awt.Color(51, 51, 51));
         jLabelImprimir.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(0, 153, 204), new java.awt.Color(102, 102, 102), null, null));
         jLabelImprimir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelImprimir.setOpaque(true);
         jLabelImprimir.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabelImprimirMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jLabelImprimirMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabelImprimirMouseExited(evt);
             }
         });
 
@@ -794,8 +806,17 @@ public final class Ventas extends javax.swing.JFrame {
             }
         });
 
+        jButtonBuscando.setBackground(new java.awt.Color(51, 51, 51));
         jButtonBuscando.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(102, 102, 102), new java.awt.Color(102, 102, 102), new java.awt.Color(0, 102, 102), new java.awt.Color(0, 102, 102)));
         jButtonBuscando.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonBuscando.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jButtonBuscandoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jButtonBuscandoMouseExited(evt);
+            }
+        });
         jButtonBuscando.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonBuscandoActionPerformed(evt);
@@ -853,9 +874,6 @@ public final class Ventas extends javax.swing.JFrame {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jTextFieldTotal1KeyPressed(evt);
             }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                jTextFieldTotal1KeyReleased(evt);
-            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 jTextFieldTotal1KeyTyped(evt);
             }
@@ -901,7 +919,7 @@ public final class Ventas extends javax.swing.JFrame {
                                 .addGap(18, 18, 18)
                                 .addComponent(jButtonBuscando, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(jLabelImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jLabelImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
@@ -965,10 +983,10 @@ public final class Ventas extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(71, 71, 71)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabelRegresar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButtonBuscando, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabelImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabelRegresar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabelRegresar1, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE)
+                    .addComponent(jLabelRegresar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabelImprimir, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButtonBuscando, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -984,10 +1002,11 @@ public final class Ventas extends javax.swing.JFrame {
                             .addComponent(jLabel6)
                             .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel12)
-                            .addComponent(jLabelSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabelTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabelSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
@@ -1034,9 +1053,11 @@ public final class Ventas extends javax.swing.JFrame {
         if (jTableVenta.getRowCount() != 0) {
             vender();
             Administrador.jProgressBar1.setValue(Utilidad.utilidadMes());
-            int porsentaje = (jProgressBar1.getValue() / jProgressBar1.getMaximum()) * 100;
-            jProgressBar1.setString("%" + porsentaje);
-            Administrador.utilidadPor();
+            if (jProgressBar1.getMaximum() !=0) {
+                int porsentaje = (jProgressBar1.getValue() / jProgressBar1.getMaximum()) * 100;
+                jProgressBar1.setString("%" + porsentaje);
+                Administrador.utilidadPor();
+            }
         } else {
             JOptionPane.showMessageDialog(this, "No hay Productos Para Venta");
         }
@@ -1222,9 +1243,37 @@ public final class Ventas extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jTextFieldTotal1KeyTyped
 
-    private void jTextFieldTotal1KeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldTotal1KeyReleased
+    private void jLabelRegresarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegresarMouseExited
+        jLabelRegresar.setBackground(new Color(51,51,51));// TODO add your handling code here:
+    }//GEN-LAST:event_jLabelRegresarMouseExited
 
-    }//GEN-LAST:event_jTextFieldTotal1KeyReleased
+    private void jLabelRegresar1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegresar1MouseExited
+        jLabelRegresar1.setBackground(new Color(51,51,51));// TODO add your handling code here:
+    }//GEN-LAST:event_jLabelRegresar1MouseExited
+
+    private void jLabelRegresarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegresarMouseEntered
+        jLabelRegresar.setBackground(new Color(115,115,115));// TODO add your handling code here:
+    }//GEN-LAST:event_jLabelRegresarMouseEntered
+
+    private void jLabelRegresar1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegresar1MouseEntered
+        jLabelRegresar1.setBackground(new Color(115,115,115));// TODO add your handling code here:
+    }//GEN-LAST:event_jLabelRegresar1MouseEntered
+
+    private void jButtonBuscandoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonBuscandoMouseEntered
+        jButtonBuscando.setBackground(new Color(115,115,115));// TODO add your handling code here:
+    }//GEN-LAST:event_jButtonBuscandoMouseEntered
+
+    private void jButtonBuscandoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButtonBuscandoMouseExited
+         jButtonBuscando.setBackground(new Color(51,51,51));// TODO add your handling code here:
+    }//GEN-LAST:event_jButtonBuscandoMouseExited
+
+    private void jLabelImprimirMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelImprimirMouseExited
+         jLabelImprimir.setBackground(new Color(51,51,51));// TODO add your handling code here:
+    }//GEN-LAST:event_jLabelImprimirMouseExited
+
+    private void jLabelImprimirMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelImprimirMouseEntered
+         jLabelImprimir.setBackground(new Color(115,115,115));// TODO add your handling code here:
+    }//GEN-LAST:event_jLabelImprimirMouseEntered
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

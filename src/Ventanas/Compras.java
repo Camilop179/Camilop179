@@ -46,8 +46,8 @@ public class Compras extends javax.swing.JFrame {
         initComponents();
         new ImagenBoton("vender.png", jButtonVender, 45, 45);
 
-        new Imagenes("flechaAdelante.png", jLabelRegresar1);
-        new Imagenes("flechaAtras.png", jLabelRegresar);
+        new Imagenes("flechaAdelante.png", jLabelRegresar1,47,40);
+        new Imagenes("flechaAtras.png", jLabelRegresar,47,40);
         jTextFieldNombre.setEditable(false);
         jLabelFecha.setText(Fechas.fechaActual());
         jDateChooser_fechav.setDate(Fechas.fechaActualDate());
@@ -182,7 +182,7 @@ public class Compras extends javax.swing.JFrame {
         tabla.addColumn("Cantidad");
         tabla.addColumn("Total");
 
-        new Imagenes("buscando.png", jLabelBuscar);
+        new Imagenes("buscando.png", jLabelBuscar,47,40);
 
         jTableCompra.setModel(tabla);
         TableColumnModel columnModel = jTableCompra.getColumnModel();
