@@ -4,6 +4,7 @@ import Clases.Conexion;
 import Clases.Fondo;
 import Clases.Imagenes;
 import Clases.Validaciones;
+import Clases.uiJtextField;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
@@ -80,20 +81,20 @@ public class AgregarProveedor extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jTextFieldNit = new javax.swing.JTextField();
+        jTextFieldNit = new uiJtextField();
         jLabel1 = new javax.swing.JLabel();
-        jTextFieldNombre = new javax.swing.JTextField();
+        jTextFieldNombre = new uiJtextField();
         jLabel2 = new javax.swing.JLabel();
-        jTextFieldCelular = new javax.swing.JTextField();
+        jTextFieldCelular = new uiJtextField();
         jLabel3 = new javax.swing.JLabel();
         jLabelGuardar = new javax.swing.JLabel();
         jLabelSalir = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextFieldDireccion = new javax.swing.JTextField();
-        jTextFieldCorreo = new javax.swing.JTextField();
-        jTextFieldAsesor = new javax.swing.JTextField();
+        jTextFieldDireccion = new uiJtextField();
+        jTextFieldCorreo = new uiJtextField();
+        jTextFieldAsesor = new uiJtextField();
         jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);

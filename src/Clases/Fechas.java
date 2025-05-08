@@ -16,12 +16,12 @@ public class Fechas {
     public static Date fecha_a;
     public static String fechaActual(){
         Date fecha_a = new Date();
-        SimpleDateFormat formatdma = new SimpleDateFormat("dd/MM/YYYY");
+        SimpleDateFormat formatdma = new SimpleDateFormat("YYYY-MM-dd");
         String fecha_actual = formatdma.format(fecha_a);
         return fecha_actual;
     }
      public static String fechaString(Date fecha){
-        SimpleDateFormat formatdma = new SimpleDateFormat("dd/MM/YYYY");
+        SimpleDateFormat formatdma = new SimpleDateFormat("YYYY-MM-dd");
         String fechaS = formatdma.format(fecha);
         return fechaS;
     }

@@ -4,7 +4,6 @@
  */
 package Clases;
 
-import static Ventanas.Administrador.jLabelVentaSemana;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,7 +42,7 @@ public class TotalVentas {
             } else {
                 ventaDia = "$0";
             }
-
+            cnn.close();
         } catch (SQLException e) {
             System.err.println(e);
         }
@@ -79,6 +78,7 @@ public class TotalVentas {
             } else {
                 ventaMes = "$0";
             }
+            cnn.close();
 
         } catch (SQLException e) {
             System.err.println(e);
@@ -145,7 +145,7 @@ public class TotalVentas {
                 venta_dia += rs.getDouble(1);
                 dia_semana = "$" + formatea.format(venta_dia);
             }
-
+            cnn.close();
         } catch (SQLException e) {
             System.err.println(e);
         }

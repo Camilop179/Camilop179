@@ -1,61 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.2.0  -->
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="NoPages" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b32506e9-b87b-4d6e-a772-93f437a07740">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<queryString language="SQL">
 		<![CDATA[select * from producto where cantidad >0]]>
 	</queryString>
 	<field name="idProducto" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="idProducto"/>
+		<property name="com.jaspersoft.studio.field.label" value="idProducto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="codigo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.label" value="codigo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="codigo_barras" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="codigo_barras"/>
+		<property name="com.jaspersoft.studio.field.label" value="codigo_barras"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="producto" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="producto"/>
+		<property name="com.jaspersoft.studio.field.label" value="producto"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="cantidad" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="cantidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="cantidad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="precio_compra" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="precio_compra"/>
+		<property name="com.jaspersoft.studio.field.label" value="precio_compra"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
+	<field name="total_cost" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="total_cost"/>
+		<property name="com.jaspersoft.studio.field.label" value="total_cost"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
+	</field>
 	<field name="precio_venta" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="precio_venta"/>
+		<property name="com.jaspersoft.studio.field.label" value="precio_venta"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="utilidad" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="utilidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="utilidad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="porcentaje_utilidad" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="porcentaje_utilidad"/>
+		<property name="com.jaspersoft.studio.field.label" value="porcentaje_utilidad"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="idUsuario" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="idUsuario"/>
+		<property name="com.jaspersoft.studio.field.label" value="idUsuario"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="fecha_ingreso" class="java.sql.Date">
+		<property name="com.jaspersoft.studio.field.name" value="fecha_ingreso"/>
+		<property name="com.jaspersoft.studio.field.label" value="fecha_ingreso"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="fecha_vencimiento" class="java.sql.Date">
-		<fieldDescription><![CDATA[]]></fieldDescription>
+	<field name="minimo" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="minimo"/>
+		<property name="com.jaspersoft.studio.field.label" value="minimo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 	</field>
 	<field name="proveedor" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="proveedor"/>
+		<property name="com.jaspersoft.studio.field.label" value="proveedor"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="marca" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="marca"/>
+		<property name="com.jaspersoft.studio.field.label" value="marca"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="tipo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tipo"/>
+		<property name="com.jaspersoft.studio.field.label" value="tipo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
 	<field name="seccion" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="seccion"/>
+		<property name="com.jaspersoft.studio.field.label" value="seccion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="subInventario" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="subInventario"/>
+		<property name="com.jaspersoft.studio.field.label" value="subInventario"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="producto"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -138,7 +195,7 @@
 	</columnHeader>
 	<detail>
 		<band height="19" splitType="Stretch">
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="24" height="19" uuid="646c7873-d111-4f3a-b8b0-c511e363d3d6"/>
 				<box topPadding="2" leftPadding="4">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -149,7 +206,7 @@
 				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{idProducto}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight">
 				<reportElement stretchType="RelativeToBandHeight" x="24" y="0" width="100" height="19" uuid="7748e93d-f19b-4ce1-ae65-a6ed8efd405d"/>
 				<box topPadding="2" leftPadding="4">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -160,7 +217,7 @@
 				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="false">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="false">
 				<reportElement stretchType="RelativeToBandHeight" x="124" y="0" width="286" height="19" isRemoveLineWhenBlank="true" isPrintInFirstWholeBand="true" isPrintWhenDetailOverflows="true" uuid="e41ec514-34d8-4e62-9f72-7e948c0282ab"/>
 				<box topPadding="2" leftPadding="4">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -171,7 +228,7 @@
 				<textElement textAlignment="Justified"/>
 				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight" pattern="#,##0.###;#,##0.###-">
 				<reportElement stretchType="RelativeToBandHeight" x="410" y="0" width="41" height="19" uuid="94beb39e-ac1d-4a3a-ae0b-2f4275852317"/>
 				<box topPadding="2" leftPadding="4">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -182,7 +239,7 @@
 				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight" pattern="#,##0.###;#,##0.###-">
 				<reportElement stretchType="RelativeToBandHeight" x="451" y="0" width="49" height="19" uuid="ba995769-bc17-45e6-918d-93bf6833bc45"/>
 				<box topPadding="2" leftPadding="4">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -193,7 +250,7 @@
 				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$F{precio_compra}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
+			<textField textAdjust="StretchHeight" pattern="#,##0.###;#,##0.###-">
 				<reportElement stretchType="RelativeToBandHeight" x="500" y="0" width="67" height="19" uuid="3140e842-7978-475e-b907-2b2af81c077b"/>
 				<box topPadding="2" leftPadding="4">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>

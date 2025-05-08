@@ -40,18 +40,18 @@ public class Buscar_Venta extends javax.swing.JDialog {
     public void buscar(String columna) {
         limpiar();
         DefaultTableModel tabla = (DefaultTableModel) jTable1.getModel();
-        String[] datos = new String[5];
+        String[] datos = new String[6];
 
         try {
             Connection cnn = Conexion.Conexion();
 
-            PreparedStatement pre = cnn.prepareStatement("select nroVentas,cliente,cedula_cliente,fecha,precio_Total from ventas"
+            PreparedStatement pre = cnn.prepareStatement("select nroVentas,cliente,cedula_cliente,placa,fecha,precio_Total from ventas"
                     + " where " + columna + " like ?");
             pre.setString(1, '%' + jTextField1.getText().trim() + '%');
             ResultSet rs = pre.executeQuery();
 
             while (rs.next()) {
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 6; i++) {
                     datos[i] = rs.getString(i + 1);
                 }
                 tabla.addRow(datos);
@@ -108,11 +108,11 @@ public class Buscar_Venta extends javax.swing.JDialog {
 
             },
             new String [] {
-                "Nro", "Nombre", "CC", "Fecha", "Total"
+                "Nro", "Nombre", "CC", "Fecha", "Placa", "Total"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -136,7 +136,9 @@ public class Buscar_Venta extends javax.swing.JDialog {
             jTable1.getColumnModel().getColumn(3).setResizable(false);
             jTable1.getColumnModel().getColumn(3).setPreferredWidth(30);
             jTable1.getColumnModel().getColumn(4).setResizable(false);
-            jTable1.getColumnModel().getColumn(4).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(4).setPreferredWidth(30);
+            jTable1.getColumnModel().getColumn(5).setResizable(false);
+            jTable1.getColumnModel().getColumn(5).setPreferredWidth(50);
         }
 
         jRadioButton3.setForeground(new java.awt.Color(255, 255, 255));
@@ -201,7 +203,7 @@ public class Buscar_Venta extends javax.swing.JDialog {
         } else if(jRadioButton3.isSelected()){
             buscar("cedula_cliente");
         }else if(jRadioButton2.isSelected()){
-            buscar("moto");
+            buscar("placa");
         }
     }//GEN-LAST:event_jTextField1KeyReleased
 

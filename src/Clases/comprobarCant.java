@@ -31,6 +31,7 @@ public class comprobarCant {
                     lista.add(obj);
                 }
             }
+            cn.close();
         } catch (Exception e) {
             System.err.println(e);
         }

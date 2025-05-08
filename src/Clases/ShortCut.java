@@ -4,12 +4,8 @@
  */
 package Clases;
 
-import Ventanas.Administrador;
 import Ventanas.FormaPago;
 import Ventanas.Ventas;
-import static Ventanas.Ventas.limpiar;
-import static Ventanas.Ventas.nroVenta;
-import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -50,7 +46,6 @@ public class ShortCut {
             }
             Ventas.limpiar();
             Ventas.nroVenta();
-            Administrador.ventas();
         }
             }
         });

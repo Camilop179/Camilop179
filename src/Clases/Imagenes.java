@@ -9,7 +9,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-public class Imagenes {
+public class Imagenes extends JLabel {
 
    
     public Imagenes(String d,JLabel j,int w,int h){

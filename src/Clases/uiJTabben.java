@@ -15,18 +15,24 @@ import javax.swing.plaf.basic.BasicTabbedPaneUI;
 public class uiJTabben extends BasicTabbedPaneUI {
 
     
+    
 
     @Override
     protected void paintTabBackground(Graphics g, int tabPlacement, int tabIndex, int x, int y, int w, int h, boolean isSelected) {
 
-        super.paintTabBorder(g, tabPlacement, tabIndex, x, y, w, h, isSelected);
         g.setColor(null);
+        
         switch (tabPlacement) {
-            case SwingConstants.TOP -> g.fillRect(x + 1, y + 1, w + 1, h - 1);
-            case SwingConstants.BOTTOM -> g.fillRect(x, y, w + 1, h - 1);
-            case SwingConstants.LEFT -> g.fillRect(x + 1, y + 1, w + 1, h - 2);
-            case SwingConstants.RIGHT -> g.fillRect(x, y + 1, w + 1, h - 2);
+            case SwingConstants.TOP ->
+                g.fillRoundRect(x + 1, y + 1, w + 3, h + 2, w, h);
+            case SwingConstants.BOTTOM ->
+                g.fillRoundRect(x, y, w + 3, h + 2, w, h);
+            case SwingConstants.LEFT ->
+                g.fillRoundRect(x + 1, y + 1, w + 3, h + 2, w, h);
+            case SwingConstants.RIGHT ->
+                g.fillRoundRect(x, y + 1, w + 3, h + 2, w, h);
         }
+        super.paintTabBorder(g, tabPlacement, tabIndex, x, y, w, h, isSelected);
     }
 
 }

@@ -14,6 +14,7 @@ import Clases.FormatoTablas;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Validaciones;
+import Clases.proveedor;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
@@ -33,6 +34,7 @@ import javax.swing.table.TableColumnModel;
 public class Compras extends javax.swing.JFrame {
 
     static boolean n = false;
+    static int id = 0;
 
     FormatoTablas ft = new FormatoTablas();
     static DefaultTableModel tabla;
@@ -44,10 +46,11 @@ public class Compras extends javax.swing.JFrame {
         Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
         initComponents();
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         new ImagenBoton("vender.png", jButtonVender, 45, 45);
 
-        new Imagenes("flechaAdelante.png", jLabelRegresar1,47,40);
-        new Imagenes("flechaAtras.png", jLabelRegresar,47,40);
+        new Imagenes("flechaAdelante.png", jLabelRegresar1, 47, 40);
+        new Imagenes("flechaAtras.png", jLabelRegresar, 47, 40);
         jTextFieldNombre.setEditable(false);
         jLabelFecha.setText(Fechas.fechaActual());
         jDateChooser_fechav.setDate(Fechas.fechaActualDate());
@@ -182,7 +185,7 @@ public class Compras extends javax.swing.JFrame {
         tabla.addColumn("Cantidad");
         tabla.addColumn("Total");
 
-        new Imagenes("buscando.png", jLabelBuscar,47,40);
+        new Imagenes("buscando.png", jLabelBuscar, 47, 40);
 
         jTableCompra.setModel(tabla);
         TableColumnModel columnModel = jTableCompra.getColumnModel();
@@ -224,7 +227,7 @@ public class Compras extends javax.swing.JFrame {
             try {
                 String nit = jTextFieldNit.getText();
                 Connection cn = Conexion.Conexion();
-                PreparedStatement pr = cn.prepareStatement("select Nombre,Asesor from proveedor where Nit = ?");
+                PreparedStatement pr = cn.prepareStatement("select Nombre,Asesor,saldo,idproveedor from proveedor where Nit = ?");
                 pr.setString(1, nit);
                 ResultSet rs = pr.executeQuery();
                 if (rs.next()) {
@@ -232,7 +235,9 @@ public class Compras extends javax.swing.JFrame {
                     String asesor = rs.getString(2);
                     jTextFieldNombre.setText(nombre);
                     jTextFieldAsesorr.setText(asesor);
+                    jTextFieldSaldo.setText(rs.getString(3));
                     jTextFieldNombre.requestFocus();
+                    id = rs.getInt(4);
                 } else {
                     int i = JOptionPane.showConfirmDialog(null, "No se encuentra cliente", "¿desea ingresar el cliente?", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
                     System.out.println(i);
@@ -294,7 +299,26 @@ public class Compras extends javax.swing.JFrame {
         for (int i = 0; i < jTableCompra.getRowCount(); i++) {
             t += Double.parseDouble(jTableCompra.getValueAt(i, 4).toString().replace(",", ""));
         }
-        jTextFieldTotal.setText("" + t);
+        jTextFieldTotal.setText(FormatoPesos.formato(t));
+    }
+    void SumarCuentas(double precio) {
+        try {
+            double valor = new Caja().cuentasTotal();
+            double total = valor - precio;
+            Connection cn = Conexion.Conexion();
+            PreparedStatement ps = cn.prepareStatement("insert into ptm( id,concepto,valor,total,fecha,hora) values (?,?,?,?,?,?)");
+            ps.setInt(1, 0);
+            ps.setString(2, "factura #" + jLabelNoCompra.getText());
+            ps.setDouble(3, Double.parseDouble(jTextFieldTotal.getText().replace(",", "").trim()));
+            ps.setDouble(4, total);
+            ps.setDate(5, new Date(Fechas.fechaActualDate().getTime()));
+            ps.setTime(6, new Time(Fechas.fechaActualDate().getTime()));
+            ps.executeUpdate();
+            cn.close();
+            Administrador.jLabelPtm.setText(FormatoPesos.formato(total));
+        } catch (NumberFormatException | SQLException e) {
+            System.err.println("Error al Sumar Caja: " + e);
+        }
     }
 
     void caja() {
@@ -319,23 +343,15 @@ public class Compras extends javax.swing.JFrame {
 
     public void compra(String FormaPago) {
         try {
-            String fecha_i = Fechas.fechaActual();
-            String fecha_v = ((JTextField) jDateChooser_fechav.getDateEditor().getUiComponent()).getText();
-            SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-            java.util.Date fecha_i_d = formato.parse(fecha_i);
-            java.util.Date fecha_v_d = formato.parse(fecha_v);
-            java.sql.Date fecho_i_bd = new java.sql.Date(fecha_i_d.getTime());
-
-            java.sql.Date fecho_V_bd = new java.sql.Date(fecha_v_d.getTime());
 
             Connection cn = Conexion.Conexion();
             PreparedStatement pr = cn.prepareStatement("INSERT INTO compra (idcompra,numero_factura,fecha_factura,fecha_vencimiento,precio_factura,forma_pago"
                     + ",Nit,proveedor,estado) values(?,?,?,?,?,?,?,?,?)");
             pr.setInt(1, 0);
             pr.setString(2, jLabelNoCompra.getText());
-            pr.setDate(3, fecho_i_bd);
-            pr.setDate(4, fecho_V_bd);
-            pr.setDouble(5, Double.parseDouble(jTextFieldTotal.getText()));
+            pr.setDate(3, new java.sql.Date(Fechas.fechaActualDate().getTime()));
+            pr.setDate(4, new java.sql.Date(Fechas.fechaActualDate().getTime()));
+            pr.setDouble(5, Double.parseDouble(jTextFieldTotal.getText().replace(",", "")));
             pr.setString(6, jComboBox1.getSelectedItem().toString());
             pr.setString(7, jTextFieldNit.getText());
             pr.setString(8, jTextFieldNombre.getText());
@@ -343,7 +359,7 @@ public class Compras extends javax.swing.JFrame {
             pr.executeUpdate();
 
             cn.close();
-        } catch (NumberFormatException | SQLException | ParseException e) {
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al Conectar a la Base de Datos \n " + e);
             System.err.println(e);
         }
@@ -394,6 +410,8 @@ public class Compras extends javax.swing.JFrame {
         jLabelRegresar = new javax.swing.JLabel();
         jLabelRegresar1 = new javax.swing.JLabel();
         jTextFieldAsesorr = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jTextFieldSaldo = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -438,9 +456,6 @@ public class Compras extends javax.swing.JFrame {
         jTableCompra.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jTableCompraKeyPressed(evt);
-            }
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                jTableCompraKeyReleased(evt);
             }
         });
         jScrollPane1.setViewportView(jTableCompra);
@@ -498,6 +513,11 @@ public class Compras extends javax.swing.JFrame {
         jLabel13.setText("Total:");
 
         jLabelBuscar.setText("jLabel16");
+        jLabelBuscar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabelBuscarMouseClicked(evt);
+            }
+        });
 
         jTextFieldTotal.setEditable(false);
         jTextFieldTotal.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
@@ -563,7 +583,7 @@ public class Compras extends javax.swing.JFrame {
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("Forma De Pago:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Efectivo", "Credito" }));
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Efectivo", "Credito", "Pago QR" }));
 
         jLabel16.setBackground(new java.awt.Color(255, 255, 255));
         jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -591,6 +611,13 @@ public class Compras extends javax.swing.JFrame {
                 jTextFieldAsesorrKeyPressed(evt);
             }
         });
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("Saldo:");
+
+        jTextFieldSaldo.setEditable(false);
+        jTextFieldSaldo.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -623,11 +650,12 @@ public class Compras extends javax.swing.JFrame {
                                         .addComponent(jTextFieldCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jLabelBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jTextFieldAsesorr, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabelRegresar1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jTextFieldNit, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(jLabelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jLabelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jTextFieldAsesorr, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGap(31, 31, 31)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createSequentialGroup()
@@ -635,10 +663,13 @@ public class Compras extends javax.swing.JFrame {
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jLabelNoCompra, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
                                             .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jLabel6)
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                    .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                                    .addComponent(jLabelRegresar1, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                    .addComponent(jTextFieldNombre, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)
+                                                    .addComponent(jTextFieldSaldo)))))))
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -692,7 +723,9 @@ public class Compras extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
-                            .addComponent(jTextFieldAsesorr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jTextFieldAsesorr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8)
+                            .addComponent(jTextFieldSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel9)
@@ -704,14 +737,11 @@ public class Compras extends javax.swing.JFrame {
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jDateChooser_fechav, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(6, 6, 6)
-                                .addComponent(jButtonVender, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel16)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 76, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jDateChooser_fechav, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel16))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButtonVender, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 448, Short.MAX_VALUE))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
@@ -832,9 +862,16 @@ public class Compras extends javax.swing.JFrame {
             detalleCompra();
             caja();
             JOptionPane.showMessageDialog(null, "Compra exitosa");
-        } else {
+        } else if(i==1){
             FormaPago = "Pendiente";
 
+            compra(FormaPago);
+            new proveedor(id).actualizarSaldo(-Double.parseDouble(jTextFieldTotal.getText().replace(",", "")));
+            detalleCompra();
+            JOptionPane.showMessageDialog(null, "Compra exitosa");
+        }else if(i==2){
+            FormaPago = "Cancelado";
+            SumarCuentas(Double.parseDouble(jTextFieldTotal.getText().replace(",", "")));
             compra(FormaPago);
             detalleCompra();
             JOptionPane.showMessageDialog(null, "Compra exitosa");
@@ -896,9 +933,10 @@ public class Compras extends javax.swing.JFrame {
         double total1 = cant * precio;
         jTableCompra.setValueAt(total1, row, 4);
     }
-    private void jTableCompraKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableCompraKeyReleased
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTableCompraKeyReleased
+    private void jLabelBuscarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelBuscarMouseClicked
+        producto();
+    }//GEN-LAST:event_jLabelBuscarMouseClicked
+
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -917,6 +955,7 @@ public class Compras extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel jLabelBuscar;
     private javax.swing.JLabel jLabelFecha;
@@ -931,6 +970,7 @@ public class Compras extends javax.swing.JFrame {
     private javax.swing.JTextField jTextFieldEfectivo;
     public static javax.swing.JTextField jTextFieldNit;
     public static javax.swing.JTextField jTextFieldNombre;
+    public static javax.swing.JTextField jTextFieldSaldo;
     public static javax.swing.JTextField jTextFieldTotal;
     // End of variables declaration//GEN-END:variables
 }

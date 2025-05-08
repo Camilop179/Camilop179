@@ -4,17 +4,24 @@
  */
 package Ventanas;
 
+import Clases.Caja;
 import Clases.Conexion;
 import Clases.Fechas;
 import Clases.Fondo;
 import Clases.FormatoPesos;
+import Clases.Imprimir;
 
 import Clases.Validaciones;
 import Clases.uiJTabben;
+import java.awt.Color;
+import java.awt.Component;
 import java.sql.*;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import javax.swing.table.DefaultTableModel;
+import org.jfree.ui.DateCellRenderer;
 
 /**
  *
@@ -26,21 +33,49 @@ public class Comprobante extends javax.swing.JFrame {
      * Creates new form Comprobante_Ingreso
      */
     public static boolean m = false;
+    int id = 0;
 
     public Comprobante() {
         Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
         initComponents();
+        jLabelSaldo.setText("0");
         setLocationRelativeTo(null);
         jLabelFecha.setText(Fechas.fechaActual());
-        nro();
+        nroIngreso();
         jTabbedPane1.setUI(new uiJTabben());
+        jTable1.setDefaultRenderer(Object.class, ft);
+        Egresos egresos = new Egresos();
+        jTabbedPane1.add("Egresos",egresos);
+        egresos.setOpaque(false);
 
     }
+    public DefaultTableCellRenderer ft = new DateCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
-    public void nro() {
+            this.setForeground((isSelected) ? new Color(0, 0, 204) : new Color(51, 153, 255));
+            if (row % 2 == 0) {
+                this.setBackground((isSelected) ? new Color(0, 102, 255) : new Color(234, 234, 234));
+            } else {
+
+                this.setBackground((isSelected) ? new Color(0, 102, 255) : Color.WHITE);
+            }
+            if (column == 1) {
+                double precio = Double.parseDouble(value.toString());
+                setText(FormatoPesos.formato(precio));
+            } else {
+                setValue(value);
+            }
+            setFont(table.getFont());
+            return this;
+        }
+
+    };
+
+    public void nroIngreso() {
         try (Connection cn = Conexion.Conexion()) {
-            PreparedStatement ps = cn.prepareStatement("Select max(Nro) from comprobante_ingresos");
+            PreparedStatement ps = cn.prepareStatement("Select max(nroIngreso) from ingreso");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 int num = rs.getInt(1);
@@ -48,12 +83,13 @@ public class Comprobante extends javax.swing.JFrame {
                     jLabelNro.setText("1");
                 } else {
                     num++;
-                    jLabelNro.setText("1");
+                    jLabelNro.setText("" + num);
                 }
             }
             cn.close();
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            System.err.println("Error en NroIngresos: "+e);
         }
     }
 
@@ -69,7 +105,7 @@ public class Comprobante extends javax.swing.JFrame {
         for (int i = 0; i < jTable1.getRowCount(); i++) {
             total += Double.valueOf(jTable1.getValueAt(i, 1).toString());
         }
-        jTextField2.setText(FormatoPesos.formato(total));
+        jFormattedTextField1.setValue(total);
     }
 
     /**
@@ -98,7 +134,13 @@ public class Comprobante extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        jButton3 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabelSaldo = new javax.swing.JLabel();
+        jFormattedTextField1 = new javax.swing.JFormattedTextField();
+        jButtonAtras = new javax.swing.JButton();
+        jButtonAdelante = new javax.swing.JButton();
+        jButtonImprimir = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -108,6 +150,7 @@ public class Comprobante extends javax.swing.JFrame {
 
         jScrollPane1.setOpaque(false);
 
+        jTable1.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -124,7 +167,14 @@ public class Comprobante extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setOpaque(false);
+        jTable1.setRowHeight(30);
         jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTable1KeyPressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setResizable(false);
@@ -181,9 +231,43 @@ public class Comprobante extends javax.swing.JFrame {
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Total:");
 
-        jTextField2.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        jTextField2.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
-        jTextField2.setText("$0");
+        jButton3.setText("jButton3");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Saldo:");
+
+        jLabelSaldo.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        jLabelSaldo.setForeground(new java.awt.Color(255, 255, 255));
+        jLabelSaldo.setText("jLabel4");
+
+        jFormattedTextField1.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("¤#,##0"))));
+
+        jButtonAtras.setText("Atras");
+        jButtonAtras.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAtrasActionPerformed(evt);
+            }
+        });
+
+        jButtonAdelante.setText("Adelante");
+        jButtonAdelante.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonAdelanteActionPerformed(evt);
+            }
+        });
+
+        jButtonImprimir.setText("Imprimir");
+        jButtonImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonImprimirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -192,20 +276,22 @@ public class Comprobante extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jButton3)
+                        .addGap(132, 132, 132)
+                        .addComponent(jLabel10)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jFormattedTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 142, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addContainerGap()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel1)
-                                    .addComponent(jLabel5))
+                                    .addComponent(jLabel5)
+                                    .addComponent(jLabel2))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel1Layout.createSequentialGroup()
-                                        .addComponent(jLabelFecha)
-                                        .addGap(194, 194, 194)
-                                        .addComponent(jLabel3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabelNro))
                                     .addGroup(jPanel1Layout.createSequentialGroup()
                                         .addComponent(jTextFieldCedula, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -215,33 +301,42 @@ public class Comprobante extends javax.swing.JFrame {
                                         .addGap(136, 136, 136)
                                         .addComponent(jLabel7)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabelTelefono))))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(263, 263, 263)
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 492, Short.MAX_VALUE)
-                                .addComponent(jLabel10)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(jLabelTelefono))
+                                    .addComponent(jLabelSaldo)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(jLabelFecha)
+                                        .addGap(194, 194, 194)
+                                        .addComponent(jLabel3)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelNro)
+                                        .addGap(223, 223, 223)
+                                        .addComponent(jButtonAtras)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonAdelante)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButtonImprimir)))
+                                .addGap(0, 116, Short.MAX_VALUE))
                             .addComponent(jScrollPane1))))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton2)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel3)
                     .addComponent(jLabelFecha)
-                    .addComponent(jLabelNro))
+                    .addComponent(jLabelNro)
+                    .addComponent(jButtonAtras)
+                    .addComponent(jButtonAdelante)
+                    .addComponent(jButtonImprimir))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
@@ -250,17 +345,22 @@ public class Comprobante extends javax.swing.JFrame {
                     .addComponent(jLabel7)
                     .addComponent(jLabelNombre)
                     .addComponent(jLabelTelefono))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 96, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(jLabelSaldo))
+                .addGap(27, 27, 27)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 112, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10))
-                .addGap(20, 20, 20))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 487, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton3)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jFormattedTextField1, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Ingresos", jPanel1);
@@ -296,7 +396,201 @@ public class Comprobante extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         new Abono(this, true).setVisible(true);
+        total();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        if (jTable1.getRowCount() != 0) {
+            double precio=Double.parseDouble(jFormattedTextField1.getValue().toString());
+            ingreso();
+            id = 0;
+            Caja caja = new Caja();
+            caja.sumarCaja("CI"+jLabelNro.getText(), precio);
+            limpiar();
+            nroIngreso();
+            Login.adm.caja();
+        } else {
+            JOptionPane.showMessageDialog(this, "No hay productos para ingreso");
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButtonAtrasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAtrasActionPerformed
+        int nr = Integer.parseInt(jLabelNro.getText());
+        jButtonImprimir.setVisible(true);
+        if (nr > 1) {
+            limpiar();
+            nr--;
+            jLabelNro.setText("" + nr);
+            buscarIngresos(String.valueOf(nr));
+            buscarDetalle(String.valueOf(nr));
+            jButton3.setVisible(false);
+        }
+    }//GEN-LAST:event_jButtonAtrasActionPerformed
+
+    private void jButtonAdelanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonAdelanteActionPerformed
+        int nro = Integer.parseInt(jLabelNro.getText());
+
+        try {
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr = cn.prepareStatement("select max(nroIngreso) from ingreso");
+            ResultSet rs = pr.executeQuery();
+            while (rs.next()) {
+
+                int nur = rs.getInt(1);
+
+                if (nro >= nur) {
+
+                    jButtonImprimir.setVisible(false);
+                    jTextFieldCedula.setEditable(true);
+
+                    jButton3.setVisible(true);
+                    jLabelFecha.setText(Fechas.fechaActual());
+                    limpiar();
+                    nroIngreso();
+
+                } else {
+                    nro++;
+                    jLabelNro.setText("" + nro);
+                    limpiar();
+                    buscarDetalle(String.valueOf(nro));
+                    buscarIngresos(String.valueOf(nro));
+                }
+            }
+            cn.close();
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButtonAdelanteActionPerformed
+
+    private void jButtonImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonImprimirActionPerformed
+        new Imprimir().imprimir4();
+    }//GEN-LAST:event_jButtonImprimirActionPerformed
+
+    private void jTable1KeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTable1KeyPressed
+        if(!Validaciones.validarSuprimir(evt)){
+            int row = jTable1.getSelectedRow();
+            DefaultTableModel df = (DefaultTableModel) jTable1.getModel();
+            df.removeRow(row);
+            total();
+        }
+    }//GEN-LAST:event_jTable1KeyPressed
+    public void buscarDetalle(String NroVenta) {
+        DefaultTableModel tabla = (DefaultTableModel) jTable1.getModel();
+        String[] datos = new String[2];
+        try {
+            Connection cn = Conexion.Conexion();
+            PreparedStatement pr2 = cn.prepareStatement("select concepto,valor from detalleingreso where nroIngreso = ?");
+            pr2.setString(1, NroVenta);
+            ResultSet rs2 = pr2.executeQuery();
+            while (rs2.next()) {
+                for (int i = 0; i < datos.length; i++) {
+                    datos[i] = rs2.getString(i + 1);
+                }
+                tabla.addRow(datos);
+
+            }
+            cn.close();
+        } catch (SQLException e) {
+            System.err.println(e);
+        }
+    }
+
+    public void buscarIngresos(String NroVenta) {
+        try {
+            Connection cn;
+            cn = Conexion.Conexion();
+            PreparedStatement pr;
+            pr = cn.prepareStatement("select v.*,c.* from ingreso v left join clientes c on v.idCliente=c.idclientes  where nroIngreso = ?");
+            pr.setString(1, NroVenta);
+            ResultSet rs = pr.executeQuery();
+
+            while (rs.next()) {
+                jLabelFecha.setText(rs.getString(4));
+                jTextFieldCedula.setText(rs.getString(9));
+                jLabelTelefono.setText(rs.getString(11));
+                jLabelSaldo.setText(rs.getString(12));
+                jLabelNombre.setText(rs.getString(10));
+            }
+
+            jTextFieldCedula.setEditable(false);
+            jFormattedTextField1.setEditable(false);
+            cn.close();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+        }
+    }
+
+    
+
+    void limpiar() {
+        DefaultTableModel tabla = (DefaultTableModel) jTable1.getModel();
+        jTextFieldCedula.setText("");
+        jLabelNombre.setText("");
+        jLabelSaldo.setText("0");
+        jLabelTelefono.setText("");
+        jFormattedTextField1.setValue(0);
+        for (int i = jTable1.getRowCount(); i > 0; i--) {
+            tabla.removeRow(i - 1);
+        }
+    }
+
+    void actualizarSaldo() {
+        double saldo = Double.parseDouble(jLabelSaldo.getText().replace(",", "")) + Double.parseDouble(jFormattedTextField1.getValue().toString().replace(",", ""));
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement ps = cn.prepareStatement("update clientes set saldo=? where idclientes=?");
+            ps.setDouble(1, saldo);
+            ps.setInt(2, id);
+            ps.execute();
+            cn.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al buscar cliente: " + e);
+            System.err.println(e);
+        }
+    }
+
+    void ingreso() {
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement ps = cn.prepareStatement("insert into ingreso(id,idCliente,total,fecha,hora,nroIngreso,idUsuario) values (?,?,?,?,?,?,?)");
+
+            ps.setInt(1, 0);
+            ps.setInt(2, id);
+            ps.setDouble(3, Double.parseDouble(jFormattedTextField1.getValue().toString()));
+            ps.setDate(4, new java.sql.Date(Fechas.fechaActualDate().getTime()));
+            ps.setTime(5, new java.sql.Time(Fechas.fechaActualDate().getTime()));
+            ps.setString(6, jLabelNro.getText().replace(",", ""));
+            ps.setInt(7, Login.idUsuario);
+
+            ps.execute();
+            cn.close();
+
+            detalleingreso();
+            actualizarSaldo();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al buscar cliente: " + e);
+            System.err.println(e);
+        }
+    }
+
+    void detalleingreso() {
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement ps = cn.prepareStatement("insert into detalleingreso(id,concepto,valor,nroIngreso) values (?,?,?,?)");
+
+            for (int i = 0; i < jTable1.getRowCount(); i++) {
+                ps.setInt(1, 0);
+                ps.setString(2, jTable1.getValueAt(i, 0).toString());
+                ps.setString(3, jTable1.getValueAt(i, 1).toString());
+                ps.setString(4, jLabelNro.getText());
+                ps.execute();
+            }
+
+            cn.close();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al buscar cliente: " + e);
+            System.err.println(e);
+        }
+    }
 
     public void buscarCliente() {
         try (Connection cn = Conexion.Conexion()) {
@@ -304,8 +598,10 @@ public class Comprobante extends javax.swing.JFrame {
             ps.setString(1, jTextFieldCedula.getText());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
+                id = rs.getInt(1);
                 jLabelNombre.setText(rs.getString(3));
                 jLabelTelefono.setText(rs.getString(4));
+                jLabelSaldo.setText(FormatoPesos.formato(rs.getDouble(5)));
                 m = false;
             } else {
                 m = true;
@@ -325,21 +621,27 @@ public class Comprobante extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButtonAdelante;
+    private javax.swing.JButton jButtonAtras;
+    private javax.swing.JButton jButtonImprimir;
+    private static javax.swing.JFormattedTextField jFormattedTextField1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabelFecha;
     private javax.swing.JLabel jLabelNombre;
-    private javax.swing.JLabel jLabelNro;
+    public static javax.swing.JLabel jLabelNro;
+    private javax.swing.JLabel jLabelSaldo;
     private javax.swing.JLabel jLabelTelefono;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private static javax.swing.JTable jTable1;
-    private static javax.swing.JTextField jTextField2;
+    public static javax.swing.JTable jTable1;
     public static javax.swing.JTextField jTextFieldCedula;
     // End of variables declaration//GEN-END:variables
 }

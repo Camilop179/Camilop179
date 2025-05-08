@@ -3,6 +3,8 @@ package Ventanas;
 import Clases.Conexion;
 import Clases.Fondo;
 import Clases.Validaciones;
+import Clases.uiJtextField;
+import Clases.uiPassword;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.RoundRectangle2D;
@@ -72,11 +74,11 @@ public class ConexionBaseDatos extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        txtBaseDatos = new javax.swing.JTextField();
-        txtHost = new javax.swing.JTextField();
-        txtUsuario = new javax.swing.JTextField();
+        txtBaseDatos = new uiJtextField();
+        txtHost = new uiJtextField();
+        txtUsuario = new uiJtextField();
         jButton1 = new javax.swing.JButton();
-        txtContraseña = new javax.swing.JPasswordField();
+        txtContraseña = new uiPassword();
         jLabelCerrarPrograma = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);

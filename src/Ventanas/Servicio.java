@@ -26,7 +26,7 @@ public final class Servicio extends javax.swing.JFrame {
 
         setLocationRelativeTo(null);
         setResizable(false);
-        new Imagenes("disco-flexible.png", jLabelListo,37,37);
+        new Imagenes("disco-flexible.png", jLabelListo, 37, 37);
         jLabelFecha.setText(Fechas.fechaActual());
 
         this.repaint();
@@ -38,7 +38,8 @@ public final class Servicio extends javax.swing.JFrame {
             Connection cn;
             cn = Conexion.Conexion();
             PreparedStatement pr;
-            pr = cn.prepareStatement("select * from producto where idProducto = " + id);
+            pr = cn.prepareStatement("select * from servicio where id = ?");
+            pr.setInt(1, id);
             ResultSet rs;
             rs = pr.executeQuery();
             while (rs.next()) {
@@ -60,7 +61,7 @@ public final class Servicio extends javax.swing.JFrame {
         if (!("".equals(codigo + product) && precio_C == 0)) {
             try {
                 Connection cn = Conexion.Conexion();
-                PreparedStatement pre = cn.prepareStatement("Update servicioc set codigo = ?, Concepto=?, Valor=?,idUsuario=?, FechaModificar=? where id=?");
+                PreparedStatement pre = cn.prepareStatement("Update servicio set codigo = ?, Concepto=?, Valor=?,idUsuario=?, FechaModificar=? where id=?");
                 pre.setString(1, codigo);
                 pre.setString(2, product);
                 pre.setDouble(3, precio_C);
@@ -273,7 +274,11 @@ public final class Servicio extends javax.swing.JFrame {
 
     private void jLabelListoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelListoMouseClicked
 
-        agregar();
+        if (idp == 0) {
+            agregar();
+        }else{
+            actualizar(idp);
+        }
 
     }//GEN-LAST:event_jLabelListoMouseClicked
 

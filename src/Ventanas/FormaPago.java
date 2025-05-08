@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
- */
 package Ventanas;
 
 import Clases.Caja;
@@ -12,8 +8,11 @@ import Clases.FormatoPesos;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Validaciones;
+import Clases.cliente;
+import Clases.formaPagoInsert;
 import static Ventanas.Ventas.jLabelNoVenta;
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
 import java.sql.Connection;
@@ -42,9 +41,9 @@ public class FormaPago extends javax.swing.JDialog {
         new ImagenBoton("cerrar.png", JBotonCerrar, JBotonCerrar.getBounds().width, JBotonCerrar.getBounds().height);
         Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
-        new Imagenes("efectivo.png", jLabelEfectivo,73,73);
-        new Imagenes("tarjeta-de-debito.png", jLabelCredito,73,73);
-        new Imagenes("codigo-qr.png", jLabelQr,73,73);
+        new Imagenes("efectivo.png", jLabelEfectivo, 73, 73);
+        new Imagenes("tarjeta-de-debito.png", jLabelCredito, 73, 73);
+        new Imagenes("codigo-qr.png", jLabelQr, 73, 73);
         jTextFieldCambio.setText("0");
         jTextFieldEfectivo.setText("0");
         jTextFieldEfectivo.requestFocus();
@@ -73,6 +72,7 @@ public class FormaPago extends javax.swing.JDialog {
         jLabelQr = new javax.swing.JLabel();
         jLabelCredito = new javax.swing.JLabel();
         JBotonCerrar = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -155,6 +155,13 @@ public class FormaPago extends javax.swing.JDialog {
             }
         });
 
+        jButton1.setText("Multiple Forma de Pagp");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -166,14 +173,19 @@ public class FormaPago extends javax.swing.JDialog {
                         .addComponent(JBotonCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jTextFieldEfectivo)
-                            .addComponent(jTextFieldCambio, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(84, 84, 84)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jTextFieldEfectivo)
+                                    .addComponent(jTextFieldCambio, javax.swing.GroupLayout.PREFERRED_SIZE, 442, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(84, 84, 84))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton1)
+                                .addGap(213, 213, 213)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addComponent(efectivo)
@@ -199,7 +211,9 @@ public class FormaPago extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextFieldCambio, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(78, 78, 78))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addGap(49, 49, 49))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(efectivo)
@@ -228,16 +242,22 @@ public class FormaPago extends javax.swing.JDialog {
     }//GEN-LAST:event_efectivoMouseExited
 
     private void creditoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_creditoActionPerformed
-        Ventas.venta("Credito", Double.parseDouble(jTextFieldCambio.getText()), Double.parseDouble(jTextFieldEfectivo.getText()), Double.valueOf(Ventas.jTextFieldTotal.getText().replace(",", "")));
+        double total = Double.valueOf(Ventas.jTextFieldTotal.getText().replace(",", ""));
+        Ventas.venta(Double.parseDouble(jTextFieldCambio.getText()), Double.parseDouble(jTextFieldEfectivo.getText()), total, "Credito");
         Ventas.detalleVenta();
-        SaldoCliente();
+        if(Ventas.tipoventa){
+            total=-Ventas.saldo;
+        }
+        formaPagoInsert formapago = new formaPagoInsert();
+        formapago.insetFormaPago(Integer.parseInt(Ventas.jLabelNoVenta.getText()), "Credito", total);
         dispose();
+        i = 2;
     }//GEN-LAST:event_creditoActionPerformed
 
-    public void SaldoCliente() {
+      public void SaldoCliente(double saldo) {
         try (Connection cn = Conexion.Conexion()) {
             PreparedStatement ps = cn.prepareStatement("UPDATE clientes SET Saldo = ? WHERE (Cedula = ?)");
-            ps.setDouble(1, Double.valueOf(Ventas.jLabelSaldo.getText().replace(",", "")) - Double.valueOf(Ventas.jTextFieldTotal.getText().replace(",", "")));
+            ps.setDouble(1, saldo);
             ps.setString(2, Ventas.jTextFieldCedula.getText());
             ps.executeUpdate();
             cn.close();
@@ -261,20 +281,27 @@ public class FormaPago extends javax.swing.JDialog {
     private void QRMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_QRMouseExited
         QR.setBackground(new Color(78, 80, 82));
     }//GEN-LAST:event_QRMouseExited
-
+    public int i = 0;
     private void efectivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_efectivoActionPerformed
-        double cambio = Double.parseDouble(jTextFieldCambio.getText());
-        double efecty = Double.parseDouble(jTextFieldEfectivo.getText());
-        Ventas.venta("Efectivo", cambio, efecty, 0);
+        double cambio = Double.parseDouble(jTextFieldCambio.getText().replace(",", ""));
+        double efecty = Double.parseDouble(jTextFieldEfectivo.getText().replace(",", ""));
+       
+        Ventas.venta(cambio, efecty, 0, "Cancelado");
         Ventas.detalleVenta();
-        SumarCaja();
+        formaPagoInsert formapago = new formaPagoInsert();
+        formapago.insetFormaPago(Integer.parseInt(Ventas.jLabelNoVenta.getText()), "Efectivo",efecty);
+        i = 1;
         dispose();
     }//GEN-LAST:event_efectivoActionPerformed
 
     private void QRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_QRActionPerformed
-        Ventas.venta("Pago Qr", Double.parseDouble(jTextFieldCambio.getText()), Double.parseDouble(jTextFieldEfectivo.getText()), 0);
+        Ventas.venta(Double.parseDouble(jTextFieldCambio.getText().replace(",", "")), Double.parseDouble(jTextFieldEfectivo.getText().replace(",", "")), 0, "Cancelado");
         Ventas.detalleVenta();
+        formaPagoInsert formapago = new formaPagoInsert();
+        formapago.insetFormaPago(Integer.parseInt(Ventas.jLabelNoVenta.getText()), "PAGO QR", Double.parseDouble(Ventas.jTextFieldTotal.getText().replace(",", "")));
+
         dispose();
+        i = 3;
     }//GEN-LAST:event_QRActionPerformed
     public static boolean m = true;
     private void JBotonCerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JBotonCerrarActionPerformed
@@ -289,19 +316,32 @@ public class FormaPago extends javax.swing.JDialog {
     private void jTextFieldEfectivoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldEfectivoKeyReleased
         if (!"".equals(jTextFieldEfectivo.getText()) && !Validaciones.validarString(evt)) {
             double efectiv;
-            efectiv = Double.parseDouble(jTextFieldEfectivo.getText());
-            double total = Double.parseDouble(Ventas.jTextFieldTotal.getText().replaceAll("[\\D]", ""));
-            jTextFieldCambio.setText("" + (efectiv - total));
+            efectiv = Double.parseDouble(jTextFieldEfectivo.getText().replace(",", ""));
+            double total = Double.parseDouble(Ventas.jTextFieldTotal.getText().replace(",",""));
+
+            if (Ventas.tipoventa) {
+                total -= Ventas.saldo;
+            }
+            jTextFieldEfectivo.setText(FormatoPesos.formato(Double.parseDouble(jTextFieldEfectivo.getText().replace(",", ""))));
+            jTextFieldCambio.setText(FormatoPesos.formato(efectiv - total));
         } else {
             getToolkit().beep();
             evt.consume();
         }
     }//GEN-LAST:event_jTextFieldEfectivoKeyReleased
 
-    void SumarCaja() {
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        dispose();
+        m = false;
+        variosFormaPago formaPago = new variosFormaPago((Frame) this.getParent(), true);
+        formaPago.setTotalFactura(Double.parseDouble(Ventas.jTextFieldTotal.getText().replace(",", "")));
+        formaPago.setVisible(true);
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    void SumarCaja(double precio) {
         try {
             double valor = new Caja().cajaTotal();
-            double precio = Double.parseDouble(Ventas.jTextFieldTotal.getText().replace(",", ""));
             double total = valor + precio;
             Connection cn = Conexion.Conexion();
             PreparedStatement ps = cn.prepareStatement("insert into caja (id,concepto,valor,total,fecha,hora) values (?,?,?,?,?,?)");
@@ -324,6 +364,7 @@ public class FormaPago extends javax.swing.JDialog {
     private javax.swing.JButton QR;
     private javax.swing.JButton credito;
     private javax.swing.JButton efectivo;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabelCredito;
@@ -332,4 +373,24 @@ public class FormaPago extends javax.swing.JDialog {
     private javax.swing.JTextField jTextFieldCambio;
     private javax.swing.JTextField jTextFieldEfectivo;
     // End of variables declaration//GEN-END:variables
+
+    void SumarCuentas(double precio) {
+        try {
+            double valor = new Caja().cuentasTotal();
+            double total = valor + precio;
+            Connection cn = Conexion.Conexion();
+            PreparedStatement ps = cn.prepareStatement("insert into ptm( id,concepto,valor,total,fecha,hora) values (?,?,?,?,?,?)");
+            ps.setInt(1, 0);
+            ps.setString(2, "factura #" + jLabelNoVenta.getText());
+            ps.setDouble(3, precio);
+            ps.setDouble(4, total);
+            ps.setDate(5, new Date(Fechas.fechaActualDate().getTime()));
+            ps.setTime(6, new Time(Fechas.fechaActualDate().getTime()));
+            ps.executeUpdate();
+            cn.close();
+            Administrador.jLabelPtm.setText(FormatoPesos.formato(total));
+        } catch (NumberFormatException | SQLException e) {
+            System.err.println("Error al Sumar Caja: " + e);
+        }
+    }
 }

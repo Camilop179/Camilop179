@@ -13,7 +13,7 @@ import javax.swing.JButton;
  *
  * @author harol
  */
-public class ImagenBoton {
+public class ImagenBoton extends JButton{
     public ImagenBoton(String imagen,JButton b,int w,int h){
         Image imagen1 = new ImageIcon(getClass().getResource("/imagenes/"+imagen)).getImage();
         Icon icono = new  ImageIcon(imagen1.getScaledInstance(w, h, Image.SCALE_DEFAULT));

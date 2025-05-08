@@ -6,6 +6,7 @@ package Clases;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -18,31 +19,31 @@ public class FormatoTablas extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-        this.setForeground((isSelected) ? new Color(0, 0, 204) : new Color(51, 153, 255));
+        this.setForeground((isSelected) ? new Color(0,0,0) : new Color(0,0,0));
         if (row % 2 == 0) {
-            this.setBackground((isSelected) ? new Color(0, 102, 255) : new Color(234,234,234));
+            this.setBackground((isSelected) ? new Color(90,90,90) : new Color(102,102,102));
         }else{
             
-            this.setBackground((isSelected) ? new Color(0, 102, 255) : Color.WHITE);
+            this.setBackground((isSelected) ? new Color(90,90,90) : Color.WHITE);
         }
-
-        if (column == 2) {
+        
+        if(column ==2){
+            this.setFont(Font.getFont("Segoe UI 12 Bold"));
+        }
+        else if (column == 3) {
             double precio = Double.parseDouble(value.toString().replace(",", ""));
             setText(FormatoPesos.formato(precio));
-        } else if (column == 4) {
+        } else if (column == 6) {
             double precio = Double.parseDouble(value.toString().replace(",", ""));
             setText(FormatoPesos.formato(precio));
         }
 
-        setFont(table.getFont());
 
         return this;
     }
 
     @Override
-    public Color getBackground() {
-        return super.getBackground(); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
+    public void setFont(Font font) {
+        super.setFont(font); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/OverriddenMethodBody
     }
-    
-
 }

@@ -7,12 +7,15 @@ import Clases.Fondo;
 import Clases.FormatoPesos;
 import Clases.Imprimir;
 import Clases.Validaciones;
+import java.awt.Component;
 import java.awt.HeadlessException;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
@@ -25,6 +28,7 @@ public final class Catalogo extends javax.swing.JFrame {
     static String sql;
     public static int vent = 0;
     static int column = 0;
+    static boolean importadora = false;
 
     public Catalogo() {
         Fondo fondo = new Fondo("FondoMenu.jpg");
@@ -37,24 +41,26 @@ public final class Catalogo extends javax.swing.JFrame {
         jCheckBoxNombre.setContentAreaFilled(false);
         setLocationRelativeTo(null);
 
-        new Imagenes("agregar-producto.png", jLabelNP,70,60);
+        new Imagenes("agregar-producto.png", jLabelNP, 70, 60);
         jTextFieldBusqueda.requestFocus();
         inventario();
         total();
         llenarTipo();
         cerra();
+        Table.setDefaultRenderer(Object.class, dtc);
     }
-    
-    void llenarTipo(){
-        try (Connection cnn = Conexion.Conexion()){
+
+    void llenarTipo() {
+        jComboBox1.addItem("");
+        try (Connection cnn = Conexion.Conexion()) {
             PreparedStatement pre = cnn.prepareStatement("select Tipo from tipo");
             ResultSet rs = pre.executeQuery();
             while (rs.next()) {
                 jComboBox1.addItem(rs.getString(1));
             }
             cnn.close();
-        }catch(SQLException e){
-            
+        } catch (SQLException e) {
+
         }
     }
 
@@ -83,32 +89,29 @@ public final class Catalogo extends javax.swing.JFrame {
             t += Double.parseDouble(Table.getValueAt(i, 5).toString());
         }
 
-
         jTextFieldTotal.setText("$" + FormatoPesos.formato(t));
     }
 
     /**
      * Consulatar Base de Datos para los Productos
      */
-    
-
     public static void inventario() {
         if (Ventas.m) {
-            sql = "select p.idProducto,p.codigo,p.codigo_barras,p.producto"
-                    + ",p.precio_venta,p.cantidad,p.tipo,p.seccion"
-                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.minimo from producto p left join usuarios u on p.idUsuario = u.idusuarios";
-            column = 13;
+            sql = "SELECT * FROM(select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_venta,p.cantidad,p.tipo,"
+                    + "p.seccion,p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.minimo,p.subInventario from producto p "
+                    + "left join usuarios u on p.idUsuario = u.idusuarios";
+            column = 14;
         } else {
-            sql = "select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_compra"
+            sql = "SELECT * FROM(select p.idProducto,p.codigo,p.codigo_barras,p.producto,p.precio_compra"
                     + ",total_cost,p.precio_venta,p.cantidad,p.utilidad,p.porcentaje_utilidad,p.tipo,p.seccion"
-                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.minimo from producto p left join usuarios u on p.idUsuario = u.idusuarios";
-            column = 17;
+                    + ",p.marca,p.proveedor,u.nombre,p.fecha_ingreso,p.minimo,p.subInventario from producto p left join usuarios u on p.idUsuario = u.idusuarios";
+            column = 18;
         }
         DefaultTableModel tabla = tabla(column);
 
         String[] datos = new String[column];
         try (Connection cnn = Conexion.Conexion()) {
-            PreparedStatement pre = cnn.prepareStatement(sql);
+            PreparedStatement pre = cnn.prepareStatement(sql + ") p");
             ResultSet rs = pre.executeQuery();
 
             while (rs.next()) {
@@ -127,6 +130,34 @@ public final class Catalogo extends javax.swing.JFrame {
 
     }
 
+    DefaultTableCellRenderer dtc = new DefaultTableCellRenderer() {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (table.getColumnCount() == 18) {
+                if (column == 4) {
+                    double precio = Double.parseDouble(value.toString().replace(",", ""));
+                    setText(FormatoPesos.formato(precio));
+                }
+                else if (column == 5) {
+                    double precio = Double.parseDouble(value.toString().replace(",", ""));
+                    setText(FormatoPesos.formato(precio));
+                }
+                else if (column == 6) {
+                    double precio = Double.parseDouble(value.toString().replace(",", ""));
+                    setText(FormatoPesos.formato(precio));
+                }
+            } else {
+                if (column == 4) {
+                    double precio = Double.parseDouble(value.toString().replace(",", ""));
+                    setText(FormatoPesos.formato(precio));
+                }
+            }
+            return this;
+        }
+
+    };
+
     public static DefaultTableModel tabla(int column) {
         DefaultTableModel tabla = new DefaultTableModel() {
             @Override
@@ -134,6 +165,7 @@ public final class Catalogo extends javax.swing.JFrame {
                 return false;
             }
         };
+
         tabla.addColumn("id");
         tabla.addColumn("Codigo");
         tabla.addColumn("Codigo Barra");
@@ -155,6 +187,7 @@ public final class Catalogo extends javax.swing.JFrame {
         tabla.addColumn("Usuario");
         tabla.addColumn("Fecha Entrada");
         tabla.addColumn("Minimo");
+        tabla.addColumn("Sub Inventario");
 
         Table.setModel(tabla);
 
@@ -180,7 +213,7 @@ public final class Catalogo extends javax.swing.JFrame {
     public static void buscar() {
         boolean[] c = new boolean[]{jCheckBoxCodigo.isSelected(), jCheckBoxCodigo_Barra.isSelected(), jCheckBoxNombre.isSelected()};
         int x = 0;
-        boolean n=false;
+        boolean n = false;
         String code = "";
         for (int i = 0; i < 3; i++) {
             if (c[i]) {
@@ -197,35 +230,49 @@ public final class Catalogo extends javax.swing.JFrame {
                         code += "p.producto like ?";
                 }
             }
-
         }
+        if (jComboBox1.getSelectedIndex() > 0) {
+            code = sql + " where " + code + " ) P WHERE P.TIPO =?";
+            n = true;
+            if (importadora) {
+                code += " and subInventario = 'Importadora'";
+            }
+        } else {
+            code = sql + " where " + code + ")p";
+            if (importadora) {
+                code += " where subInventario = 'Importadora'";
+            }
+        }
+
         DefaultTableModel tabla = tabla(column);
         String[] datos = new String[column];
-        try (Connection cnn = Conexion.Conexion()){
-            PreparedStatement pre = cnn.prepareStatement(sql + " where " + code);
+        try (Connection cnn = Conexion.Conexion()) {
+            PreparedStatement pre = cnn.prepareStatement(code);
             for (int i = 1; i <= x; i++) {
                 pre.setString(i, '%' + jTextFieldBusqueda.getText().trim() + '%');
             }
-            x++;
-            if(n){
-                pre.setString(x,  jComboBox1.getSelectedItem().toString());
+
+            if (n) {
+                x++;
+                pre.setString(x, jComboBox1.getSelectedItem().toString());
             }
+
             ResultSet rs = pre.executeQuery();
 
             while (rs.next()) {
                 for (int i = 0; i < column; i++) {
                     datos[i] = rs.getString(i + 1);
                 }
-                
+
                 if (Ventas.m) {
                     datos[4] = FormatoPesos.formato(rs.getDouble(5));
                 }
-                
+
                 tabla.addRow(datos);
             }
             cnn.close();
         } catch (SQLException e) {
-            System.err.println(e);
+            System.err.println("Error buscar producto: " + e);
         }
 
     }
@@ -253,6 +300,8 @@ public final class Catalogo extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         jComboBox1 = new javax.swing.JComboBox<>();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setSize(new java.awt.Dimension(1900, 1800));
@@ -263,10 +312,10 @@ public final class Catalogo extends javax.swing.JFrame {
         jScrollPane1.setOpaque(false);
 
         Table.setAutoCreateRowSorter(true);
-        Table.setBackground(new java.awt.Color(51, 153, 255));
+        Table.setBackground(new java.awt.Color(75, 75, 75));
         Table.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 204, 204)));
         Table.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        Table.setForeground(new java.awt.Color(0, 51, 51));
+        Table.setForeground(new java.awt.Color(0, 0, 0));
         Table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -278,7 +327,7 @@ public final class Catalogo extends javax.swing.JFrame {
         Table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         Table.setAutoscrolls(false);
         Table.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
-        Table.setGridColor(new java.awt.Color(0, 153, 153));
+        Table.setGridColor(new java.awt.Color(204, 204, 204));
         Table.setInheritsPopupMenu(true);
         Table.setOpaque(false);
         Table.setRowHeight(30);
@@ -357,7 +406,7 @@ public final class Catalogo extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Total:");
 
-        jButton1.setText("jButton1");
+        jButton1.setText("MANO DE OBRA");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -367,7 +416,19 @@ public final class Catalogo extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Tipo:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar" }));
+        jButton2.setText("IMPORTADORA");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("jButton3");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -378,7 +439,6 @@ public final class Catalogo extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(42, 42, 42)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jCheckBoxCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jCheckBoxCodigo_Barra, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -387,7 +447,16 @@ public final class Catalogo extends javax.swing.JFrame {
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jCheckBoxNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jCheckBoxNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(jButton1)
+                                            .addComponent(jCheckBoxCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jButton2)))
+                                .addGap(0, 0, Short.MAX_VALUE)))
                         .addGap(12, 12, 12)
                         .addComponent(jLabelNP, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -398,24 +467,24 @@ public final class Catalogo extends javax.swing.JFrame {
                         .addComponent(jLabel2)
                         .addGap(0, 367, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap()
+                        .addComponent(jButton3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel1)
                         .addGap(184, 184, 184)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextFieldTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(107, 107, 107)
-                .addComponent(jButton1)
-                .addGap(18, 18, 18)
+                .addGap(113, 113, 113)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabelNP, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
@@ -429,12 +498,13 @@ public final class Catalogo extends javax.swing.JFrame {
                             .addComponent(jLabel4)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
                 .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jTextFieldTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
+                    .addComponent(jLabel3)
+                    .addComponent(jButton3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addContainerGap())
@@ -471,12 +541,18 @@ public final class Catalogo extends javax.swing.JFrame {
                 this.dispose();
                 Compras.producto();
                 Compras.n = false;
-            } else if (Cotizacion.m) {
+            } else if (CotizacionT.m) {
                 cod = Table.getValueAt(i, 1).toString();
-                Cotizacion.jTextFieldCodigo.setText(cod);
+                CotizacionT.jTextFieldCodigo.setText(cod);
                 this.dispose();
-                Cotizacion.producto();
-                Cotizacion.m = false;
+                CotizacionT.producto();
+                CotizacionT.m = false;
+            } else if (OrdenDeTrabajo.m) {
+                cod = Table.getValueAt(i, 1).toString();
+                OrdenDeTrabajo.jTextFieldCodigo.setText(cod);
+                this.dispose();
+                OrdenDeTrabajo.producto();
+                OrdenDeTrabajo.m = false;
             } else if (Administrador.m) {
                 vent = 1;
                 int id = Integer.parseInt(Table.getValueAt(i, 0).toString());
@@ -521,17 +597,39 @@ public final class Catalogo extends javax.swing.JFrame {
     }//GEN-LAST:event_jCheckBoxCodigo_BarraActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
-            new Imprimir().catalogo();
-        } catch (Exception e) {
-            
-        }
+
+        new Servicios().setVisible(true);
+        dispose();
+
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if (importadora) {
+            importadora = false;
+        } else {
+            importadora = true;
+        }
+
+        buscar();
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        Object[] opc = new Object[]{"Ticket", "Carta", "NO"};
+        int i = JOptionPane.showOptionDialog(null, "Venta Exitosa\n¿Desea imprimir factura?", "Venta Exitosa", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opc, opc[0]);
+
+        if (i == 0) {
+            new Imprimir().catalogo();
+        } else if (i == 1) {
+            new Imprimir().catalogo();
+        }
+    }//GEN-LAST:event_jButton3ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public static javax.swing.JTable Table;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private static javax.swing.JCheckBox jCheckBoxCodigo;
     private static javax.swing.JCheckBox jCheckBoxCodigo_Barra;
     private static javax.swing.JCheckBox jCheckBoxNombre;

@@ -58,20 +58,22 @@ public class CotizacionT extends javax.swing.JPanel {
         }
         jScrollPane2.getViewport().setBackground(new Color(51, 153, 255));
         tamañoColumna();
-        jTableVenta.setDefaultRenderer(Object.class, ft);
+        jTableCotizacion.setDefaultRenderer(Object.class, ft);
         reportes();
         eventotabla();
         imagenes();
     }
+    
     public void imagenes(){
          new ImagenBoton("vender.png", jButtonVender, 43, 43);
         jButtonBuscando.setContentAreaFilled(false);
         new Imagenes("buscando.png", jLabelBuscar,43,43);
-        new Imagenes("Adelante.png", jLabelRegresar1,43,43);
-        new Imagenes("Atras.png", jLabelRegresar,43,43);
+        new Imagenes("ADELANTE.png", jLabelRegresar1,43,43);
+        new Imagenes("ATRAS.png", jLabelRegresar,43,43);
         new Imagenes("imprimir.png", jLabelImprimir,43,43);
         new ImagenBoton("buscando.png", jButtonBuscando, 38, 38);
     }
+    
     @Override
     public void paint(Graphics g) {
         Image fondo = new ImageIcon(getClass().getResource("/imagenes/FondoMenu.jpg")).getImage();
@@ -85,7 +87,7 @@ public class CotizacionT extends javax.swing.JPanel {
     }
     
     public void eventotabla() {
-        jTableVenta.getModel().addTableModelListener((TableModelEvent e) -> {
+        jTableCotizacion.getModel().addTableModelListener((TableModelEvent e) -> {
             if (e.getType() == TableModelEvent.UPDATE) {
                 int columna = e.getColumn();
                 int row = e.getLastRow();
@@ -111,7 +113,7 @@ public class CotizacionT extends javax.swing.JPanel {
 
     public static void buscarDetalle(String NroVenta) {
         limpiar();
-        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        DefaultTableModel tabla = (DefaultTableModel) jTableCotizacion.getModel();
         String[] datos = new String[5];
         try (Connection cn = Conexion.Conexion()){
             
@@ -166,6 +168,7 @@ public class CotizacionT extends javax.swing.JPanel {
     }
 
     public final void tamañoColumna() {
+        
         DefaultTableModel tabla = new DefaultTableModel() {
             boolean[] m = new boolean[]{
                 false, true, true, true, false
@@ -176,16 +179,17 @@ public class CotizacionT extends javax.swing.JPanel {
                 return m[columnIndex];
             }
         };
+        
         tabla.addColumn("Codigo");
         tabla.addColumn("Producto");
         tabla.addColumn("Precio Unidad");
         tabla.addColumn("Cantidad");
         tabla.addColumn("Total");
 
-        jTableVenta.setEditingColumn(-1);
+        jTableCotizacion.setEditingColumn(-1);
 
-        jTableVenta.setModel(tabla);
-        TableColumnModel columnModel = jTableVenta.getColumnModel();
+        jTableCotizacion.setModel(tabla);
+        TableColumnModel columnModel = jTableCotizacion.getColumnModel();
         columnModel.getColumn(0).setResizable(false);
         columnModel.getColumn(1).setResizable(false);
         columnModel.getColumn(2).setResizable(false);
@@ -229,14 +233,14 @@ public class CotizacionT extends javax.swing.JPanel {
 
     public static void total() {
         double t = 0;
-        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
-            t += Double.parseDouble(jTableVenta.getValueAt(i, 4).toString());
+        for (int i = 0; i < jTableCotizacion.getRowCount(); i++) {
+            t += Double.parseDouble(jTableCotizacion.getValueAt(i, 4).toString());
         }
         jTextFieldTotal.setText(FormatoPesos.formato(t));
     }
 
     public static void servicio() {
-        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        DefaultTableModel tabla = (DefaultTableModel) jTableCotizacion.getModel();
 
         try {
             String codigo = jTextFieldCodigo.getText().trim();
@@ -247,9 +251,9 @@ public class CotizacionT extends javax.swing.JPanel {
             if (rs.next()) {
                 int i = tabla(rs.getString(1));
                 if (i >= 0) {
-                    int cant = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
+                    int cant = Integer.parseInt(jTableCotizacion.getValueAt(i, 3).toString());
                     cant++;
-                    jTableVenta.setValueAt(cant, i, 3);
+                    jTableCotizacion.setValueAt(cant, i, 3);
                     total();
                 } else {
                     String[] datos = new String[5];
@@ -278,7 +282,7 @@ public class CotizacionT extends javax.swing.JPanel {
     }
 
     public static void producto() {
-        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
+        DefaultTableModel tabla = (DefaultTableModel) jTableCotizacion.getModel();
 
         try {
             String codigo = jTextFieldCodigo.getText().trim();
@@ -290,12 +294,12 @@ public class CotizacionT extends javax.swing.JPanel {
             if (rs.next()) {
                 int i = tabla(rs.getString(1));
                 if (i >= 0) {
-                    int cant = Integer.parseInt(jTableVenta.getValueAt(i, 3).toString());
-                    int precio = Integer.parseInt(jTableVenta.getValueAt(i, 2).toString());
+                    int cant = Integer.parseInt(jTableCotizacion.getValueAt(i, 3).toString());
+                    int precio = Integer.parseInt(jTableCotizacion.getValueAt(i, 2).toString());
                     cant++;
                     int totalV = precio * cant;
-                    jTableVenta.setValueAt(cant, i, 3);
-                    jTableVenta.setValueAt(totalV, i, 4);
+                    jTableCotizacion.setValueAt(cant, i, 3);
+                    jTableCotizacion.setValueAt(totalV, i, 4);
                     utilidaTotal.set(i, (precio - rs.getDouble(4)) * cant);
                     total();
                 } else {
@@ -360,8 +364,8 @@ public class CotizacionT extends javax.swing.JPanel {
     }
 
     public static void limpiar() {
-        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
-        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+        DefaultTableModel tabla = (DefaultTableModel) jTableCotizacion.getModel();
+        for (int i = 0; i < jTableCotizacion.getRowCount(); i++) {
             tabla.removeRow(i);
             i--;
             jTextFieldCedula.setText("");
@@ -384,15 +388,15 @@ public class CotizacionT extends javax.swing.JPanel {
         try (Connection cn = Conexion.Conexion()) {
 
             PreparedStatement pr = cn.prepareStatement("INSERT INTO detallescotizacion (id,nro_Cotizacion,codigo,producto,precioUnitario,cantidad,utilidad,precioTotal,Servicio) values(?,?,?,?,?,?,?,?,?)");
-            for (int i = 0; i < jTableVenta.getRowCount(); i++) {
+            for (int i = 0; i < jTableCotizacion.getRowCount(); i++) {
                 pr.setInt(1, 0);
                 pr.setInt(2, Integer.parseInt(jLabelNoCot.getText()));
-                pr.setString(3, jTableVenta.getValueAt(i, 0).toString());
-                pr.setString(4, jTableVenta.getValueAt(i, 1).toString());
-                pr.setDouble(5, Double.parseDouble(jTableVenta.getValueAt(i, 2).toString()));
-                pr.setInt(6, Integer.parseInt(jTableVenta.getValueAt(i, 3).toString()));
+                pr.setString(3, jTableCotizacion.getValueAt(i, 0).toString());
+                pr.setString(4, jTableCotizacion.getValueAt(i, 1).toString());
+                pr.setDouble(5, Double.parseDouble(jTableCotizacion.getValueAt(i, 2).toString()));
+                pr.setInt(6, Integer.parseInt(jTableCotizacion.getValueAt(i, 3).toString()));
                 pr.setDouble(7, (double) utilidaTotal.get(i));
-                pr.setDouble(8, Double.parseDouble(jTableVenta.getValueAt(i, 4).toString()));
+                pr.setDouble(8, Double.parseDouble(jTableCotizacion.getValueAt(i, 4).toString()));
                 pr.setBoolean(9, (boolean) Servicio.get(i));
                 pr.executeUpdate();
             }
@@ -442,30 +446,30 @@ public class CotizacionT extends javax.swing.JPanel {
     }
 
     public void eliminarProducto() {
-        DefaultTableModel tabla = (DefaultTableModel) jTableVenta.getModel();
-        int row = jTableVenta.getSelectedRow();
+        DefaultTableModel tabla = (DefaultTableModel) jTableCotizacion.getModel();
+        int row = jTableCotizacion.getSelectedRow();
         utilidaTotal.remove(row);
         Servicio.remove(row);
-        tabla.removeRow(jTableVenta.getSelectedRow());
+        tabla.removeRow(jTableCotizacion.getSelectedRow());
         total();
     }
 
     public void cambiarCant(int row) {
-        String codigo = jTableVenta.getValueAt(row, 0).toString();
-        int cant = Integer.parseInt(jTableVenta.getValueAt(row, 3).toString());
-        double precio = Double.parseDouble(jTableVenta.getValueAt(row, 2).toString());
+        String codigo = jTableCotizacion.getValueAt(row, 0).toString();
+        int cant = Integer.parseInt(jTableCotizacion.getValueAt(row, 3).toString());
+        double precio = Double.parseDouble(jTableCotizacion.getValueAt(row, 2).toString());
         double total1 = cant * precio;
         double util = (precio - Utilidad.costo(codigo)) * cant;
         utilidaTotal.set(row, util);
-        jTableVenta.setValueAt(total1, row, 4);
+        jTableCotizacion.setValueAt(total1, row, 4);
         System.out.println(utilidaTotal);
 
     }
 
     public static int tabla(String codigo) {
         int l = -1;
-        for (int i = 0; i < jTableVenta.getRowCount(); i++) {
-            if (jTableVenta.getValueAt(i, 0).toString().equals(codigo)) {
+        for (int i = 0; i < jTableCotizacion.getRowCount(); i++) {
+            if (jTableCotizacion.getValueAt(i, 0).toString().equals(codigo)) {
                 l = i;
             }
         }
@@ -516,7 +520,7 @@ public class CotizacionT extends javax.swing.JPanel {
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTableVenta = new javax.swing.JTable();
+        jTableCotizacion = new javax.swing.JTable();
         jLabelRegresar = new javax.swing.JLabel();
         jLabelRegresar1 = new javax.swing.JLabel();
         jLabelImprimir = new javax.swing.JLabel();
@@ -627,10 +631,10 @@ public class CotizacionT extends javax.swing.JPanel {
         jScrollPane2.setForeground(new java.awt.Color(51, 153, 255));
         jScrollPane2.setOpaque(false);
 
-        jTableVenta.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(0, 102, 255), new java.awt.Color(0, 51, 255), new java.awt.Color(0, 102, 255), new java.awt.Color(0, 51, 204)));
-        jTableVenta.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jTableVenta.setForeground(new java.awt.Color(51, 153, 255));
-        jTableVenta.setModel(new javax.swing.table.DefaultTableModel(
+        jTableCotizacion.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(0, 102, 255), new java.awt.Color(0, 51, 255), new java.awt.Color(0, 102, 255), new java.awt.Color(0, 51, 204)));
+        jTableCotizacion.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jTableCotizacion.setForeground(new java.awt.Color(51, 153, 255));
+        jTableCotizacion.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -641,19 +645,19 @@ public class CotizacionT extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jTableVenta.setGridColor(new java.awt.Color(51, 153, 255));
-        jTableVenta.setOpaque(false);
-        jTableVenta.setRowHeight(40);
-        jTableVenta.setRowMargin(2);
-        jTableVenta.setSelectionBackground(new java.awt.Color(0, 102, 255));
-        jTableVenta.setSelectionForeground(new java.awt.Color(0, 0, 204));
-        jTableVenta.getTableHeader().setReorderingAllowed(false);
-        jTableVenta.addKeyListener(new java.awt.event.KeyAdapter() {
+        jTableCotizacion.setGridColor(new java.awt.Color(51, 153, 255));
+        jTableCotizacion.setOpaque(false);
+        jTableCotizacion.setRowHeight(40);
+        jTableCotizacion.setRowMargin(2);
+        jTableCotizacion.setSelectionBackground(new java.awt.Color(0, 102, 255));
+        jTableCotizacion.setSelectionForeground(new java.awt.Color(0, 0, 204));
+        jTableCotizacion.getTableHeader().setReorderingAllowed(false);
+        jTableCotizacion.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                jTableVentaKeyPressed(evt);
+                jTableCotizacionKeyPressed(evt);
             }
         });
-        jScrollPane2.setViewportView(jTableVenta);
+        jScrollPane2.setViewportView(jTableCotizacion);
 
         jLabelRegresar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(102, 102, 102), new java.awt.Color(102, 102, 102), new java.awt.Color(0, 102, 102), new java.awt.Color(0, 102, 102)));
         jLabelRegresar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -778,37 +782,12 @@ public class CotizacionT extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(181, 181, 181)
                         .addComponent(jButtonVender, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 360, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jLabel13)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTextFieldTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jTextFieldMoto, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jLabel8)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jTextFieldColor, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jLabel10)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jTextFieldPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(jLabelTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabelSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(jLabel11)
@@ -822,12 +801,45 @@ public class CotizacionT extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabelBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
+                                .addGap(68, 68, 68)
+                                .addComponent(jLabelRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabelRegresar1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButtonBuscando, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabelImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel10)
+                                    .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jTextFieldPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(jLabel4)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jTextFieldMoto, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(3, 3, 3)
+                                        .addComponent(jLabel8)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jTextFieldColor, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 73, Short.MAX_VALUE)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabelTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jLabel12)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabelSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(jLabelFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(79, 79, 79)
@@ -839,18 +851,9 @@ public class CotizacionT extends javax.swing.JPanel {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jLabel6)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(68, 68, 68)
-                                .addComponent(jLabelRegresar, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabelRegresar1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jButtonBuscando, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jLabelImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addGap(9, 9, 9)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 489, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -877,19 +880,26 @@ public class CotizacionT extends javax.swing.JPanel {
                             .addComponent(jLabel6)
                             .addComponent(jTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabelTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel12)
-                            .addComponent(jLabelSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(26, 26, 26)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel4)
-                            .addComponent(jTextFieldMoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8)
-                            .addComponent(jTextFieldColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel10)
-                            .addComponent(jTextFieldPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(20, 20, 20)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabelTelefono, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jLabelSaldo, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(26, 26, 26)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel8)
+                                    .addComponent(jTextFieldColor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(20, 20, 20))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel10)
+                                    .addComponent(jTextFieldPlaca, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel4)
+                                    .addComponent(jTextFieldMoto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel14)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -955,7 +965,7 @@ public class CotizacionT extends javax.swing.JPanel {
 
     private void jButtonVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonVenderActionPerformed
 
-        if (jTableVenta.getRowCount() != 0) {
+        if (jTableCotizacion.getRowCount() != 0) {
             vender();
             limpiar();
             nroVenta();
@@ -973,11 +983,11 @@ public class CotizacionT extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jLabelBuscarMouseClicked
 
-    private void jTableVentaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableVentaKeyPressed
+    private void jTableCotizacionKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTableCotizacionKeyPressed
         if (!Validaciones.validarSuprimir(evt)) {
             eliminarProducto();
         }
-    }//GEN-LAST:event_jTableVentaKeyPressed
+    }//GEN-LAST:event_jTableCotizacionKeyPressed
 
     private void jLabelRegresarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegresarMouseClicked
         int nr = Integer.parseInt(jLabelNoCot.getText());
@@ -1030,7 +1040,7 @@ public class CotizacionT extends javax.swing.JPanel {
         int i = JOptionPane.showOptionDialog(null, "Venta Exitosa\n¿Desea imprimir factura?", "Venta Exitosa", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opc, opc[0]);
 
         if (i == 0) {
-            new Imprimir().imprimir1();
+//            new Imprimir().imprimir1();
         } else if (i == 1) {
             new Imprimir().imprimir3();
         }
@@ -1050,7 +1060,7 @@ public class CotizacionT extends javax.swing.JPanel {
 
     private void jTextFieldPlacaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldPlacaKeyPressed
         if (!Validaciones.validarEnter(evt)) {
-            jTextFieldCodigo.requestFocus();
+            BuscarMoto();
         }
     }//GEN-LAST:event_jTextFieldPlacaKeyPressed
 
@@ -1073,6 +1083,31 @@ public class CotizacionT extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
+    public void BuscarMoto() {
+        try (Connection cn = Conexion.Conexion()) {
+            PreparedStatement ps = cn.prepareStatement("select * from motos where placa = ?");
+            ps.setString(1, jTextFieldPlaca.getText());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                jTextFieldColor.setText(rs.getString(4));
+                jTextFieldMoto.setText(rs.getString(3));
+
+                jTextFieldColor.setEditable(true);
+                jTextFieldMoto.setEditable(true);
+
+                jTextFieldColor.requestFocus();
+                cn.close();
+            } else {
+                Moto moto = new Moto(null, true);
+                moto.setPlaca(jTextFieldPlaca.getText());
+                moto.setVisible(true);
+            }
+
+        } catch (SQLException e) {
+            System.err.println(e);
+            JOptionPane.showMessageDialog(this, e);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButtonBuscando;
@@ -1102,7 +1137,7 @@ public class CotizacionT extends javax.swing.JPanel {
     private static javax.swing.JLabel jLabelTelefono;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private static javax.swing.JTable jTableVenta;
+    private static javax.swing.JTable jTableCotizacion;
     private static javax.swing.JTextArea jTextArea1;
     public static javax.swing.JTextField jTextFieldCedula;
     public static javax.swing.JTextField jTextFieldCodigo;

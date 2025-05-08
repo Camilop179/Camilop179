@@ -7,7 +7,6 @@ import Clases.Fondo;
 import Clases.FormatoPesos;
 import Clases.FormatoTablas;
 import Clases.ImagenBoton;
-import Clases.Imagenes;
 import Clases.Imprimir;
 import Clases.Validaciones;
 import Clases.Utilidad;

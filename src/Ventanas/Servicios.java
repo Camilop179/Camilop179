@@ -9,7 +9,6 @@ import Clases.Fondo;
 import Clases.ImagenBoton;
 import Clases.TablaFondo;
 import Clases.Validaciones;
-import static Ventanas.Catalogo.sql;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
@@ -38,6 +37,7 @@ public class Servicios extends javax.swing.JFrame {
         inventario();
         cerra();
     }
+    static String sql = "";
 
     public static void inventario() {
         sql = "select p.id,p.codigo,p.concepto,p.valor,"
@@ -260,11 +260,23 @@ public class Servicios extends javax.swing.JFrame {
                 this.dispose();
                 Compras.producto();
                 Compras.n = false;
-            } else if (Administrador.m) {
+            }else if (OrdenDeTrabajo.m) {
+                cod = Table.getValueAt(i, 1).toString();
+                OrdenDeTrabajo.jTextFieldCodigo.setText(cod);
+                this.dispose();
+                OrdenDeTrabajo.servicio();
+                OrdenDeTrabajo.n = false;
+            } else if (CotizacionT.m) {
+                cod = Table.getValueAt(i, 1).toString();
+                CotizacionT.jTextFieldCodigo.setText(cod);
+                this.dispose();
+                CotizacionT.servicio();
+                CotizacionT.m = false;
+            }else if (Administrador.m) {
                 int id = Integer.parseInt(Table.getValueAt(i, 0).toString());
-                new Producto().setVisible(true);
-                Producto.modificar(id);
-                Producto.idp = id;
+                new Servicio().setVisible(true);
+                Servicio.modificar(id);
+                Servicio.idp = id;
             }
         }
 
@@ -274,14 +286,14 @@ public class Servicios extends javax.swing.JFrame {
         if (Administrador.m) {
             if (!Validaciones.validarSuprimir(evt)) {
                 try {
-                    int k = JOptionPane.showConfirmDialog(null, "Desea eliminar Producto?", "Eliminar Producto", JOptionPane.YES_NO_OPTION);
+                    int k = JOptionPane.showConfirmDialog(null, "Desea eliminar Servicio?", "Eliminar Producto", JOptionPane.YES_NO_OPTION);
                     if (k == 0) {
                         int i = Table.getSelectedRow();
                         Connection cn = Conexion.Conexion();
-                        PreparedStatement pr = cn.prepareStatement("Delete from producto where (idProducto = ?)");
+                        PreparedStatement pr = cn.prepareStatement("Delete from servicio where (id = ?)");
                         pr.setInt(1, Integer.parseInt(Table.getValueAt(i, 0).toString()));
                         pr.executeUpdate();
-                        JOptionPane.showMessageDialog(null, "Producto eliminado");
+                        JOptionPane.showMessageDialog(null, "Servicio eliminado");
                     }
                 } catch (NumberFormatException | SQLException e) {
                     System.err.println("Error Eliminar producto: " + e);

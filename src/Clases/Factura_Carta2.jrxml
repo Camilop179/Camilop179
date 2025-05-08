@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.2.0  -->
+<!-- Created with Jaspersoft Studio version 6.20.6.final using JasperReports Library version 6.20.6-5c96b6aa8a39ac1dc6b6bea4b81168e16dd39231  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Factura_Carta" pageWidth="612" pageHeight="792" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="bea4041f-c630-4f7e-8e5e-e4322fd098b8">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Sample DB"/>
 	<parameter name="NroVentas" class="java.lang.String">
 		<defaultValueExpression><![CDATA[1101]]></defaultValueExpression>
 	</parameter>
@@ -12,11 +12,14 @@
 	<parameter name="SinIva" class="java.lang.String"/>
 	<parameter name="iva" class="java.lang.String"/>
 	<queryString language="SQL">
-		<![CDATA[select distinct v.*,d.*,u.nombre,c.celular,e.Nombre from cotizacion v 
-right join detallescotizacion d on nroCotizacion= nro_Cotizacion
-left join usuarios u on u.idUsuarios=v.idUsuario
- left join clientes c on c.cedula=v.cedula_cliente 
- left join empleados e on e.id = v.idEmpleado
+		<![CDATA[select distinct v.*,d.*,u.nombre,c.celular,e.Nombre as tecnico , 
+	m.nroMotor as motor,m.nroChasis as chasis 
+from cotizacion v 
+	right join detallescotizacion d on nroCotizacion= nro_Cotizacion
+	left join usuarios u on u.idUsuarios=v.idUsuario
+ 	left join clientes c on c.cedula=v.cedula_cliente 
+ 	left join empleados e on e.id = v.idEmpleado
+ 	left join motos m on m.placa = v.placa
  where nroCotizacion =  $P{NroVentas}]]>
 	</queryString>
 	<field name="id" class="java.lang.Integer">
@@ -154,16 +157,26 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 		<property name="com.jaspersoft.studio.field.label" value="celular"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="clientes"/>
 	</field>
-	<field name="Nombre" class="java.lang.String">
+	<field name="tecnico" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="Nombre"/>
-		<property name="com.jaspersoft.studio.field.label" value="Nombre"/>
+		<property name="com.jaspersoft.studio.field.label" value="tecnico"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="empleados"/>
+	</field>
+	<field name="motor" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nroMotor"/>
+		<property name="com.jaspersoft.studio.field.label" value="motor"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motos"/>
+	</field>
+	<field name="chasis" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nroChasis"/>
+		<property name="com.jaspersoft.studio.field.label" value="chasis"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="motos"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="165" splitType="Stretch">
+		<band height="180" splitType="Stretch">
 			<staticText>
 				<reportElement positionType="FixRelativeToBottom" mode="Opaque" x="9" y="94" width="51" height="19" backcolor="#D1D1D1" uuid="78a84c0c-efed-41d0-b88f-764cc7c08ee6"/>
 				<box topPadding="1" leftPadding="2" bottomPadding="1" rightPadding="1">
@@ -248,7 +261,7 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 				<textFieldExpression><![CDATA[$F{celular}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement positionType="FixRelativeToBottom" mode="Opaque" x="380" y="75" width="180" height="76" backcolor="#D1D1D1" uuid="35680d8a-6f27-405f-bb2f-5e75817d10f5"/>
+				<reportElement positionType="FixRelativeToBottom" mode="Opaque" x="380" y="75" width="180" height="94" backcolor="#D1D1D1" uuid="35680d8a-6f27-405f-bb2f-5e75817d10f5"/>
 				<box topPadding="1" bottomPadding="1" rightPadding="1">
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -338,13 +351,13 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 				</textElement>
 				<textFieldExpression><![CDATA[$F{placa}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="false">
-				<reportElement x="0" y="-10" width="242" height="70" forecolor="#030303" uuid="474a24cf-05ba-43be-ae98-af030fa56e86"/>
+			<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+				<reportElement x="161" y="-10" width="219" height="83" forecolor="#030303" uuid="474a24cf-05ba-43be-ae98-af030fa56e86"/>
 				<box leftPadding="2" bottomPadding="4"/>
 				<textElement textAlignment="Left" markup="html">
 					<font size="12" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["FullMotors - NIT: 1004805976-4 <br>Barrio Centro Calle 8 #8-42 <br> CAJAMARCA-TOLIMA <br>No Responsables IVA<br>Actividad Economica 4541"]]></textFieldExpression>
+				<textFieldExpression><![CDATA["FullMotors - NIT: 1088735974-4 <br>Barrio Maria Gracia KDX 73 <br> CUCUTA-NORTE DE SANTANDER <br>No Responsables IVA<br>Actividad Economica 4541"]]></textFieldExpression>
 				<patternExpression><![CDATA["FULLMOTORS - NIT: 1004805976-4"]]></patternExpression>
 			</textField>
 			<textField>
@@ -407,10 +420,10 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 				<textElement>
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{Nombre}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{tecnico}]]></textFieldExpression>
 			</textField>
 			<image>
-				<reportElement x="330" y="5" width="62" height="70" uuid="23098db9-0865-4158-bb41-7707c74cfe27"/>
+				<reportElement x="8" y="-10" width="91" height="84" uuid="23098db9-0865-4158-bb41-7707c74cfe27"/>
 				<imageExpression><![CDATA[$P{Imagen1}]]></imageExpression>
 			</image>
 			<image vAlign="Middle">
@@ -419,6 +432,58 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 				</reportElement>
 				<imageExpression><![CDATA[$P{Imagen2}]]></imageExpression>
 			</image>
+			<textField>
+				<reportElement positionType="FixRelativeToBottom" x="219" y="151" width="151" height="19" backcolor="#D1D1D1" uuid="68fa1638-d2ca-4776-81a8-37a93ecb4192"/>
+				<box topPadding="1" leftPadding="2" bottomPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{motor}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="FixRelativeToBottom" mode="Opaque" x="168" y="151" width="51" height="19" backcolor="#D1D1D1" uuid="eca58c0a-6c9a-4e35-8cc3-e10ee39b0dbb"/>
+				<box topPadding="1" leftPadding="2" bottomPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[No.Motor:]]></text>
+			</staticText>
+			<textField>
+				<reportElement positionType="FixRelativeToBottom" x="60" y="151" width="108" height="19" backcolor="#D1D1D1" uuid="254677b9-81ba-4489-af28-2f997062e1b9"/>
+				<box topPadding="1" leftPadding="2" bottomPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{chasis}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement positionType="FixRelativeToBottom" mode="Opaque" x="9" y="151" width="51" height="19" backcolor="#D1D1D1" uuid="b0593cae-c873-4629-b5d5-455609d3aa74"/>
+				<box topPadding="1" leftPadding="2" bottomPadding="1" rightPadding="1">
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<text><![CDATA[Chasis:]]></text>
+			</staticText>
 		</band>
 	</pageHeader>
 	<columnHeader>
@@ -517,8 +582,8 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 	</columnHeader>
 	<detail>
 		<band height="10">
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="8" y="0" width="101" height="10" uuid="97822771-1f98-4acd-8572-9ff743f69d61">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+				<reportElement stretchType="RelativeToTallestObject" x="8" y="0" width="101" height="10" uuid="97822771-1f98-4acd-8572-9ff743f69d61">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="88bd80d1-1393-44dd-ab8f-625c099d5a32"/>
 				</reportElement>
 				<box topPadding="1" leftPadding="3" bottomPadding="1" rightPadding="1">
@@ -532,8 +597,8 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 				</textElement>
 				<textFieldExpression><![CDATA[$F{codigo}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="109" y="0" width="189" height="10" uuid="219a3ea4-0769-48cc-964c-2e462a435198">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+				<reportElement stretchType="RelativeToTallestObject" x="109" y="0" width="189" height="10" uuid="219a3ea4-0769-48cc-964c-2e462a435198">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4e5e7064-bd82-4146-a379-4528848c190a"/>
 				</reportElement>
 				<box topPadding="1" leftPadding="3" bottomPadding="1" rightPadding="1">
@@ -547,8 +612,8 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 				</textElement>
 				<textFieldExpression><![CDATA[$F{producto}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="298" y="0" width="62" height="10" uuid="5fade805-7f7c-4ef6-b6b0-cb6cc5ef3d0c">
+			<textField textAdjust="StretchHeight" pattern="¤#,##0.##;¤-#,##0.##" isBlankWhenNull="false">
+				<reportElement stretchType="RelativeToTallestObject" x="298" y="0" width="62" height="10" uuid="5fade805-7f7c-4ef6-b6b0-cb6cc5ef3d0c">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f674ebda-7d00-49b8-996c-c2e2c6b011de"/>
 				</reportElement>
 				<box topPadding="1" leftPadding="3" bottomPadding="1" rightPadding="1">
@@ -562,8 +627,8 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 				</textElement>
 				<textFieldExpression><![CDATA[$F{precioUnitario}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="428" y="0" width="42" height="10" uuid="a7ad46c9-8f56-4544-a1d8-7b86117e2680">
+			<textField textAdjust="StretchHeight" isBlankWhenNull="false">
+				<reportElement stretchType="RelativeToTallestObject" x="428" y="0" width="42" height="10" uuid="a7ad46c9-8f56-4544-a1d8-7b86117e2680">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="0b8ff4b1-6c48-4b83-bfbf-4edac8ea96c2"/>
 				</reportElement>
 				<box topPadding="1" leftPadding="3" bottomPadding="1" rightPadding="1">
@@ -577,8 +642,8 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 				</textElement>
 				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="470" y="0" width="90" height="10" uuid="f210882f-7c0b-48c6-822e-4f5831944fcc">
+			<textField textAdjust="StretchHeight" pattern="¤#,##0.##;¤-#,##0.##" isBlankWhenNull="false">
+				<reportElement stretchType="RelativeToTallestObject" x="470" y="0" width="90" height="10" uuid="f210882f-7c0b-48c6-822e-4f5831944fcc">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="64b96a65-70ad-4409-9e94-f7c5561153a4"/>
 				</reportElement>
 				<box topPadding="1" leftPadding="3" bottomPadding="1" rightPadding="1">
@@ -592,8 +657,8 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 				</textElement>
 				<textFieldExpression><![CDATA[$F{precioTotal}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true">
-				<reportElement x="360" y="0" width="68" height="10" uuid="511b8032-bcc9-4d44-9985-c75ee0965261">
+			<textField textAdjust="StretchHeight" pattern="¤#,##0.##;¤-#,##0.##" isBlankWhenNull="false">
+				<reportElement stretchType="RelativeToTallestObject" x="360" y="0" width="68" height="10" uuid="511b8032-bcc9-4d44-9985-c75ee0965261">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="0b8ff4b1-6c48-4b83-bfbf-4edac8ea96c2"/>
 				</reportElement>
 				<box topPadding="1" leftPadding="3" bottomPadding="1" rightPadding="1">
@@ -610,7 +675,7 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="189">
+		<band height="181">
 			<rectangle>
 				<reportElement x="8" y="10" width="552" height="100" uuid="d00949cd-80ee-4c9b-a2bd-5acc2bbc389b"/>
 			</rectangle>
@@ -627,9 +692,9 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 			<staticText>
 				<reportElement x="309" y="10" width="132" height="20" uuid="6b6c01ee-4fbb-4eef-bf95-672580ec34da"/>
 				<box leftPadding="3">
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left"/>
@@ -638,9 +703,9 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 			<staticText>
 				<reportElement x="309" y="30" width="132" height="20" uuid="d975d349-4092-4e16-add0-5250559d5881"/>
 				<box leftPadding="3">
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left"/>
@@ -649,9 +714,9 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 			<staticText>
 				<reportElement x="309" y="50" width="132" height="20" uuid="09c62789-ee4e-410a-a38d-a925c192bdb2"/>
 				<box leftPadding="3">
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left"/>
@@ -660,9 +725,9 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 			<staticText>
 				<reportElement x="309" y="70" width="132" height="20" uuid="143afe98-41d7-47dd-995f-fb7126dafa5b"/>
 				<box leftPadding="3">
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left"/>
@@ -671,37 +736,52 @@ left join usuarios u on u.idUsuarios=v.idUsuario
 			<staticText>
 				<reportElement x="309" y="90" width="132" height="20" uuid="79ff9652-63a2-4d43-a5c5-b87c5ecc5878"/>
 				<box leftPadding="3">
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Left"/>
 				<text><![CDATA[Total Neto:]]></text>
 			</staticText>
-			<textField>
+			<textField pattern="¤#,##0.##;¤-#,##0.##">
 				<reportElement x="440" y="10" width="120" height="20" uuid="94576c28-abdb-4db0-9edf-6860378ce8c2"/>
-				<box leftPadding="3"/>
-				<textFieldExpression><![CDATA[$P{SinIva}]]></textFieldExpression>
+				<box leftPadding="3">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{precio_Total}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="¤#,##0.##;¤-#,##0.##">
 				<reportElement x="440" y="30" width="120" height="20" uuid="ef0681cb-fb99-4ce5-80d5-c06035722ce4"/>
-				<box leftPadding="3"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
 				<textFieldExpression><![CDATA[$F{Descuento}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="¤#,##0.##;¤-#,##0.##">
 				<reportElement x="440" y="50" width="120" height="20" uuid="0cb2dd9a-d083-4fde-bfc5-8b42a6b70136"/>
-				<box leftPadding="3"/>
-				<textFieldExpression><![CDATA[$P{Subtotal}]]></textFieldExpression>
+				<box leftPadding="3">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
+				<textFieldExpression><![CDATA[$F{precio_Total}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="¤#,##0.##;¤-#,##0.##">
 				<reportElement x="440" y="70" width="120" height="20" uuid="0192cd28-0efc-4793-a66c-6bc7a89c3299"/>
-				<box leftPadding="3"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
 				<textFieldExpression><![CDATA[$P{iva}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="¤#,##0.##;¤-#,##0.##">
 				<reportElement x="440" y="90" width="120" height="20" uuid="18534964-091d-420c-8ccf-50b98ba343af"/>
-				<box leftPadding="3"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+				</box>
 				<textElement markup="styled">
 					<font size="12" isBold="true"/>
 				</textElement>
