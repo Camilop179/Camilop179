@@ -54,10 +54,10 @@ public final class Administrador extends javax.swing.JFrame {
 
         JBotonCerrar = new ImagenBoton("cerrar.png", JBotonCerrar, JBotonCerrar.getBounds().width, JBotonCerrar.getBounds().height);
         Minimizar = new ImagenBoton("Minimizar.png", Minimizar, Minimizar.getBounds().width, Minimizar.getBounds().height);
-        jLabelCerrarSesion = new Imagenes("Cerrar_Sesion.png", jLabelCerrarSesion, jLabelCerrarSesion.getWidth(), jLabelCerrarSesion.getHeight());
+        new Imagenes("Cerrar_Sesion.png", jLabelCerrarSesion, jLabelCerrarSesion.getWidth(), jLabelCerrarSesion.getHeight());
         jLabel11 = new Imagenes("CAJA.png", jLabel11, 40, jLabel11.getHeight());
         jLabelAdministrador = new Imagenes("Administrador.png", jLabelAdministrador, 70, 60);
-        jLabelAgregarUsuario = new Imagenes("icons8_agregar_usuario.png", jLabelAgregarUsuario, 30, 30);
+        new Imagenes("icons8_agregar_usuario.png", jLabelAgregarUsuario, 30, 30);
 
         JBotonCerrar.setContentAreaFilled(false);
         Minimizar.setContentAreaFilled(false);
@@ -84,6 +84,8 @@ public final class Administrador extends javax.swing.JFrame {
         ptm();
         progesoUtilidad();
         repaint();
+        jLabelCerrarSesion.setVisible(false);
+        jLabelAgregarUsuario.setVisible(false);
     }
 
     public static void uiProgresos(String s) {
@@ -252,12 +254,12 @@ public final class Administrador extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabelbarra = new javax.swing.JLabel();
         jLabelinventario = new javax.swing.JLabel();
         jLabelreportes = new javax.swing.JLabel();
         jLabelfacturas = new javax.swing.JLabel();
         jLabelAgregarUsuario = new javax.swing.JLabel();
         jLabelCerrarSesion = new javax.swing.JLabel();
-        jLabelbarra = new javax.swing.JLabel();
         jLabelAdministrador = new javax.swing.JLabel();
         jLabelventas = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
@@ -297,6 +299,21 @@ public final class Administrador extends javax.swing.JFrame {
             }
         });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabelbarra.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                jLabelbarraMouseDragged(evt);
+            }
+            public void mouseMoved(java.awt.event.MouseEvent evt) {
+                jLabelbarraMouseMoved(evt);
+            }
+        });
+        jLabelbarra.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                jLabelbarraMouseExited(evt);
+            }
+        });
+        getContentPane().add(jLabelbarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 370, 110, 220));
 
         jLabelinventario.setBackground(new java.awt.Color(153, 153, 153));
         jLabelinventario.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -347,18 +364,6 @@ public final class Administrador extends javax.swing.JFrame {
             }
         });
         getContentPane().add(jLabelCerrarSesion, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 380, 30, 30));
-
-        jLabelbarra.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-            public void mouseMoved(java.awt.event.MouseEvent evt) {
-                jLabelbarraMouseMoved(evt);
-            }
-        });
-        jLabelbarra.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jLabelbarraMouseExited(evt);
-            }
-        });
-        getContentPane().add(jLabelbarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 370, 110, 220));
 
         jLabelAdministrador.setText("          0");
         jLabelAdministrador.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -667,7 +672,7 @@ public final class Administrador extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelCerrarSesionMouseClicked
 
     private void jLabelbarraMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelbarraMouseMoved
-        visible();
+
     }//GEN-LAST:event_jLabelbarraMouseMoved
 
     private void jLabelbarraMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelbarraMouseExited
@@ -675,11 +680,11 @@ public final class Administrador extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabelbarraMouseExited
 
     private void jLabelCerrarSesionMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelCerrarSesionMouseMoved
-        visible();
+
     }//GEN-LAST:event_jLabelCerrarSesionMouseMoved
 
     private void jLabelAgregarUsuarioMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelAgregarUsuarioMouseMoved
-        visible();
+
     }//GEN-LAST:event_jLabelAgregarUsuarioMouseMoved
 
     private void jLabelAgregarUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelAgregarUsuarioMouseClicked
@@ -814,6 +819,10 @@ public final class Administrador extends javax.swing.JFrame {
     private void jLabel7MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel7MouseExited
         jLabel7.setBackground(new Color(51, 51, 51));
     }//GEN-LAST:event_jLabel7MouseExited
+
+    private void jLabelbarraMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelbarraMouseDragged
+        visible();
+    }//GEN-LAST:event_jLabelbarraMouseDragged
 
     void Cambioptm(double valor, String concepto) {
         try (Connection cn = Conexion.Conexion()) {
