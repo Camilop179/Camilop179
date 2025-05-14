@@ -732,7 +732,6 @@ public final class Administrador extends javax.swing.JFrame {
         if (!jTextFieldPtm.getText().equals("")) {
             double valor = Double.parseDouble(jTextFieldPtm.getText().trim().replace(",", ""));
             if (jComboBox1.getSelectedItem() == "Consignar") {
-
                 CambioCaja(-valor, "RECARGA BANCO");
                 Cambioptm(valor, "RECARGA BANCO");
                 jTextFieldPtm.setText("0");

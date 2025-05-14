@@ -31,7 +31,7 @@ public class Caja_Dia extends javax.swing.JDialog {
 
     public Caja_Dia(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        Fondo fondo = new Fondo("Fondo.jpg");
+        Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setUndecorated(true);
         this.setContentPane(fondo);
         initComponents();
