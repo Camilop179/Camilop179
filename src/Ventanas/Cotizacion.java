@@ -40,10 +40,8 @@ public final class Cotizacion extends javax.swing.JFrame {
     static ArrayList Servicio = new ArrayList();
 
     public Cotizacion() {
-        Fondo fondo = new Fondo("FondoMenu.jpg");
         idEmp.add(0);
         n = true;
-        this.setContentPane(fondo);
         initComponents();
         llenarEmpleado();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
