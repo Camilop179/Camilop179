@@ -260,7 +260,7 @@ public class variosFormaPago extends javax.swing.JDialog {
                     break;
                 case "Credito":
                     saldo += Double.parseDouble(jTable1.getValueAt(i, 1).toString());
-                    fp.SaldoCliente(-saldo);
+                    fp.SaldoCliente(saldo);
                     break;
                 case "Codigo QR":
                     fp.SumarCuentas(Double.parseDouble(jTable1.getValueAt(i, 1).toString()));
