@@ -38,7 +38,7 @@ public class variosFormaPago extends javax.swing.JDialog {
 
         this.setContentPane(fondo);
         initComponents();
-        new Imagenes("logo fondo.png", jLabel3, jLabel3.getHeight(), jLabel3.getWidth());
+        new Imagenes("logo fondo.png", jLabel3);
         jTable1.setDefaultRenderer(Object.class, cellrender);
     }
 

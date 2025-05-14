@@ -38,8 +38,8 @@ public class Vendedor extends javax.swing.JFrame {
         this.setContentPane(fondo);
         this.setUndecorated(true);
         initComponents();
-        new ImagenBoton("cerrar.png", JBotonCerrar, JBotonCerrar.getBounds().width, JBotonCerrar.getBounds().height);
-        new ImagenBoton("Minimizar.png", Minimizar, Minimizar.getBounds().width, Minimizar.getBounds().height);
+        new ImagenBoton("cerrar.png", JBotonCerrar);
+        new ImagenBoton("Minimizar.png", Minimizar);
         JBotonCerrar.setContentAreaFilled(false);
         Minimizar.setContentAreaFilled(false);
         this.setLocationRelativeTo(null);

@@ -18,7 +18,7 @@ import javax.swing.JOptionPane;
 public class ConexionBaseDatos extends javax.swing.JFrame {
 
     public ConexionBaseDatos() {
-        Fondo fondo = new Fondo("Fondo.jpg");
+        Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
         this.setUndecorated(true);
         initComponents();

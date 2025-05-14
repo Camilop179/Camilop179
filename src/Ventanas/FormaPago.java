@@ -38,7 +38,7 @@ public class FormaPago extends javax.swing.JDialog {
         this.setContentPane(fondo);
         this.setUndecorated(true);
         initComponents();
-        new ImagenBoton("cerrar.png", JBotonCerrar, JBotonCerrar.getBounds().width, JBotonCerrar.getBounds().height);
+        new ImagenBoton("cerrar.png", JBotonCerrar);
         Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
         new Imagenes("efectivo.png", jLabelEfectivo, 73, 73);

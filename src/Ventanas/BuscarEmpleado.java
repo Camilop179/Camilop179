@@ -30,7 +30,7 @@ public final class BuscarEmpleado extends javax.swing.JDialog {
         this.setLocationRelativeTo(null);
         Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
-        new ImagenBoton("cerrar.png", JBotonCerrar, JBotonCerrar.getBounds().width - 2, JBotonCerrar.getBounds().height - 2);
+        new ImagenBoton("cerrar.png", JBotonCerrar);
         JBotonCerrar.setContentAreaFilled(false);
         personal();
     }

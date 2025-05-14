@@ -31,7 +31,7 @@ public class Servicios extends javax.swing.JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         jCheckBoxCodigo.setContentAreaFilled(false);
         setLocationRelativeTo(null);
-        new ImagenBoton("Agregar.gif", jButton1, jButton1.getHeight() - 2, jButton1.getWidth() - 2);
+        new ImagenBoton("Agregar.gif", jButton1);
         jButton1.setContentAreaFilled(false);
         jTextFieldBusqueda.requestFocus();
         inventario();

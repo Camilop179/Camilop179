@@ -47,10 +47,10 @@ public class Compras extends javax.swing.JFrame {
         this.setContentPane(fondo);
         initComponents();
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        new ImagenBoton("vender.png", jButtonVender, 45, 45);
+        new ImagenBoton("vender.png", jButtonVender,40,45);
 
-        new Imagenes("flechaAdelante.png", jLabelRegresar1, 47, 40);
-        new Imagenes("flechaAtras.png", jLabelRegresar, 47, 40);
+        new Imagenes("flechaAdelante.png", jLabelRegresar1);
+        new Imagenes("flechaAtras.png", jLabelRegresar);
         jTextFieldNombre.setEditable(false);
         jLabelFecha.setText(Fechas.fechaActual());
         jDateChooser_fechav.setDate(Fechas.fechaActualDate());

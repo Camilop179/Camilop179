@@ -65,13 +65,13 @@ public class CotizacionT extends javax.swing.JPanel {
     }
     
     public void imagenes(){
-         new ImagenBoton("vender.png", jButtonVender, 43, 43);
+        new ImagenBoton("vender.png", jButtonVender,45,45);
         jButtonBuscando.setContentAreaFilled(false);
-        new Imagenes("buscando.png", jLabelBuscar,43,43);
-        new Imagenes("ADELANTE.png", jLabelRegresar1,43,43);
-        new Imagenes("ATRAS.png", jLabelRegresar,43,43);
-        new Imagenes("imprimir.png", jLabelImprimir,43,43);
-        new ImagenBoton("buscando.png", jButtonBuscando, 38, 38);
+        new Imagenes("buscando.png", jLabelBuscar,45,45);
+        new Imagenes("ADELANTE.png", jLabelRegresar1,45,45);
+        new Imagenes("ATRAS.png", jLabelRegresar,45,45);
+        new Imagenes("imprimir.png", jLabelImprimir,45,45);
+        new ImagenBoton("buscando.png", jButtonBuscando,45,45);
     }
     
     @Override

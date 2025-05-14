@@ -10,11 +10,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 public class Imagenes extends JLabel {
-
-   
-    public Imagenes(String d,JLabel j,int w,int h){
+    
+    public Imagenes(String d,JLabel j, int w, int h){
         ImageIcon imagen1 = new ImageIcon(getClass().getResource("/imagenes/"+d));
-        Icon icono = new  ImageIcon(imagen1.getImage().getScaledInstance(w, h, Image.SCALE_DEFAULT));
+        Icon icono = new  ImageIcon(imagen1.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH));
+        j.setIcon(icono);
+    }
+    public Imagenes(String d,JLabel j){
+        ImageIcon imagen1 = new ImageIcon(getClass().getResource("/imagenes/"+d));
+        Icon icono = new  ImageIcon(imagen1.getImage().getScaledInstance(j.getWidth(), j.getHeight(), Image.SCALE_SMOOTH));
         j.setIcon(icono);
     }
 }

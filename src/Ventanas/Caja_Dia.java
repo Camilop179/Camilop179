@@ -36,7 +36,7 @@ public class Caja_Dia extends javax.swing.JDialog {
         this.setContentPane(fondo);
         initComponents();
         setLocationRelativeTo(null);
-        jLabel5 = new Imagenes("logo fondo.png", jLabel5, jLabel5.getWidth(), jLabel5.getHeight());
+        jLabel5 = new Imagenes("logo fondo.png", jLabel5);
         Shape p = new RoundRectangle2D.Double(0, 0, this.getBounds().width, this.getBounds().height, 30, 30);
         this.setShape(p);
         caja();

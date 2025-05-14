@@ -105,11 +105,11 @@ public final class Reportes extends javax.swing.JFrame {
         jscroll();
 
         new ImagenBoton(
-                "buscando.png", jButtonBuscar, jButtonBuscar.getWidth() - 5, jButtonBuscar.getHeight() - 5);
+                "buscando.png", jButtonBuscar);
         new ImagenBoton(
-                "buscando.png", jButtonBuscar1, jButtonBuscar1.getWidth() - 5, jButtonBuscar1.getHeight() - 5);
+                "buscando.png", jButtonBuscar1);
         new ImagenBoton(
-                "proximo.png", jButton3, jButton3.getWidth() - 20, jButton3.getHeight() - 5);
+                "proximo.png", jButton3);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         jButtonBuscar.setContentAreaFilled(
@@ -273,12 +273,12 @@ public final class Reportes extends javax.swing.JFrame {
         tx = new TextoFondo("Concepto", jTextField9);
         tx = new TextoFondo("Concepto", jTextField11);
         tx = new TextoFondo("Concepto", jTextField16);
-        new ImagenBoton("cheque.png", jButton6, jButton6.getWidth() - 3, jButton6.getHeight() - 3);
-        new ImagenBoton("cheque.png", jButton7, jButton7.getWidth() - 3, jButton7.getHeight() - 3);
-        new ImagenBoton("cheque.png", jButton8, jButton8.getWidth() - 3, jButton8.getHeight() - 3);
-        new ImagenBoton("cheque.png", jButton9, jButton9.getWidth() - 3, jButton9.getHeight() - 3);
-        new ImagenBoton("cheque.png", jButton10, jButton10.getWidth() - 3, jButton10.getHeight() - 3);
-        new ImagenBoton("cheque.png", jButton11, jButton11.getWidth() - 3, jButton11.getHeight() - 3);
+        new ImagenBoton("cheque.png", jButton6);
+        new ImagenBoton("cheque.png", jButton7);
+        new ImagenBoton("cheque.png", jButton8);
+        new ImagenBoton("cheque.png", jButton9);
+        new ImagenBoton("cheque.png", jButton10);
+        new ImagenBoton("cheque.png", jButton11);
         jButton3.setBackground(new Color(41, 128, 185));
         jButton3.setBorder(null);
         jButton6.setContentAreaFilled(false);
@@ -473,7 +473,7 @@ public final class Reportes extends javax.swing.JFrame {
             jTextFieldRentEs.setText(dm1.format(rentEs));
             jTextFieldTotalInv1.setText(dm1.format(totalIn));
             Caja caja = new Caja();
-            jTextFieldCapitalTotal.setText(dm1.format(totalIn+caja.cajaTotal()+caja.cuentasTotal()));
+            jTextFieldCapitalTotal.setText(dm1.format(totalIn + caja.cajaTotal() + caja.cuentasTotal()));
             jTextFieldResto.setText(FormatoPesos.formato(totalIn + rentabilidad(fecha_actual, fecha_actual)[1] - entraInventario()));
         } catch (SQLException e) {
             System.err.println("Error en Administracion: " + e);
@@ -2564,9 +2564,9 @@ public final class Reportes extends javax.swing.JFrame {
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         int fila = jTable1.rowAtPoint(evt.getPoint());
         if (fila > -1) {
-            m=1;
+            m = 1;
             nro = jTable1.getValueAt(fila, 1).toString();
-            
+
             new Compras().setVisible(true);
         }
     }//GEN-LAST:event_jTable1MouseClicked
@@ -2857,7 +2857,7 @@ public final class Reportes extends javax.swing.JFrame {
         plot.setRangeGridlinePaint(Color.white);
         plot.setDomainGridlinePaint(Color.white);
         plot.setBackgroundPaint(Color.BLACK);
-////        renderer.setUseFillPaint(true);
+        ////        renderer.setUseFillPaint(true);
 ////        renderer.setSeriesShapesFilled(0, true);
 ////        renderer.setSeriesShapesVisible(0, false);
 //        renderer.setSeriesPaint(0, Color.GRAY);
