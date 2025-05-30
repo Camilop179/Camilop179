@@ -197,7 +197,7 @@ public final class Catalogo extends javax.swing.JFrame {
             columnModel.getColumn(i).setPreferredWidth(150);
         }
         columnModel.getColumn(0).setPreferredWidth(50);
-        columnModel.getColumn(3).setPreferredWidth(400);
+        columnModel.getColumn(3).setPreferredWidth(700);
         if (!Ventas.m) {
             columnModel.getColumn(14).setPreferredWidth(150);
             columnModel.getColumn(15).setPreferredWidth(150);

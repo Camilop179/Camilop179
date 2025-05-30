@@ -8,7 +8,6 @@ import Clases.FormatoPesos;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Validaciones;
-import Clases.cliente;
 import Clases.formaPagoInsert;
 import static Ventanas.Ventas.jLabelNoVenta;
 import java.awt.Color;
@@ -34,7 +33,7 @@ public class FormaPago extends javax.swing.JDialog {
     public FormaPago(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         m = true;
-        Fondo fondo = new Fondo("Dialogos.jpg");
+        Fondo fondo = new Fondo("FondoMenu.jpg");
         this.setContentPane(fondo);
         this.setUndecorated(true);
         initComponents();
