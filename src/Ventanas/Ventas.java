@@ -6,7 +6,6 @@ import Clases.Errores;
 import Clases.Fechas;
 import Clases.Fondo;
 import Clases.FormatoPesos;
-import Clases.FormatoTablas;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Imprimir;
@@ -291,7 +290,7 @@ public final class Ventas extends javax.swing.JFrame {
                 jTextFieldMoto.setText(rs.getString(12));
                 jTextFieldColor.setText(rs.getString(14));
                 jTextArea1.setText(rs.getString(16));
-                jComboBox1.setSelectedIndex(rs.getInt(18));
+                jComboBox1.setSelectedIndex((int) idEmp.indexOf(rs.getInt(18)));
             }
 
             jTextFieldCodigo.setEditable(false);
@@ -311,7 +310,6 @@ public final class Ventas extends javax.swing.JFrame {
             boolean[] m = new boolean[]{
                 false, true, true, true, true, false
             };
-
             @Override
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return m[columnIndex];
