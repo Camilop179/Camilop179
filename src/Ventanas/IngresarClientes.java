@@ -9,8 +9,10 @@ import Clases.Fondo;
 import Clases.ImagenBoton;
 import Clases.Imagenes;
 import Clases.Validaciones;
+import java.awt.HeadlessException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 /**
@@ -23,6 +25,8 @@ public class IngresarClientes extends javax.swing.JDialog {
 
     /**
      * Creates new form NewJDialog
+     * @param parent
+     * @param modal
      */
     public IngresarClientes(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -38,8 +42,8 @@ public class IngresarClientes extends javax.swing.JDialog {
     public void agregar() {
 
         if (!((jTextFieldCedula.getText() + jTextFieldCelular.getText() + jTextFieldNombre.getText()).equals(""))) {
-            try {
-                Connection cn = Conexion.Conexion();
+            try (Connection cn = Conexion.Conexion();){
+                
                 PreparedStatement pre = cn.prepareStatement("INSERT INTO clientes (idclientes,cedula,nombres,celular) values(?,?,?,?)");
                 pre.setInt(1, 0);
                 pre.setString(2, jTextFieldCedula.getText());
@@ -54,7 +58,7 @@ public class IngresarClientes extends javax.swing.JDialog {
                 dispose();
                 cn.close();
 
-            } catch (Exception e) {
+            } catch (HeadlessException | SQLException e) {
                 System.err.println("Error al ingresar el producto " + e);
                 JOptionPane.showMessageDialog(null, "¡Error al ingresar el producto!. Contacte al soporte Corporacion Portillo.");
             }

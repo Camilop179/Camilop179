@@ -7,6 +7,7 @@ package Ventanas;
 import Clases.Conexion;
 import Clases.Fondo;
 import Clases.ImagenBoton;
+import java.awt.Frame;
 
 import java.awt.Shape;
 import java.awt.geom.RoundRectangle2D;
@@ -70,6 +71,7 @@ public class BuscarClientes extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         JBotonCerrar = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -140,6 +142,13 @@ public class BuscarClientes extends javax.swing.JDialog {
             }
         });
 
+        jButton1.setText("Nuevo Cliente");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -150,9 +159,11 @@ public class BuscarClientes extends javax.swing.JDialog {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jRadioButton2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextFieldBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jTextFieldBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 409, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton1))
                     .addComponent(jRadioButton1))
-                .addContainerGap(20, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,7 +180,9 @@ public class BuscarClientes extends javax.swing.JDialog {
                 .addComponent(JBotonCerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(57, 57, 57)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jTextFieldBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextFieldBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton1))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jRadioButton1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -226,9 +239,30 @@ public class BuscarClientes extends javax.swing.JDialog {
             dispose();
             Comprobante cm = (Comprobante) this.getParent();
             cm.buscarCliente();
-        } else {
+            Comprobante.m=false;
+        } if(OrdenDeTrabajo.m){
+            
+            OrdenDeTrabajo.jTextFieldCedula.setText(cedula);
+            dispose();
+            OrdenDeTrabajo cm = (OrdenDeTrabajo) this.getParent();
+            cm.buscarcl();
+            OrdenDeTrabajo.m=false;
+        } if(Ventas.m){
+            
+            Ventas.jTextFieldCedula.setText(cedula);
+            dispose();
+            Ventas cm = (Ventas) this.getParent();
+            cm.buscarcl();
+            Ventas.m=false;
         }
     }//GEN-LAST:event_jTable1MouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        new IngresarClientes((Frame) this.getParent(),false).setVisible(true);
+        if (jRadioButton1.isSelected() && jRadioButton2.isSelected()) {
+            buscar("select cedula,nombres,celular from clientes where nombres like ? or cedula like ?", jTextFieldBuscar.getText().trim(), 2);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     public void buscar(String sql, String buscar, int parametros) {
         DefaultTableModel df = (DefaultTableModel) jTable1.getModel();
@@ -265,6 +299,7 @@ public class BuscarClientes extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton JBotonCerrar;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JButton jButton1;
     private javax.swing.JRadioButton jRadioButton1;
     private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JScrollPane jScrollPane1;

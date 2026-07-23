@@ -7,6 +7,7 @@ import Clases.Fondo;
 import Clases.FormatoPesos;
 import Clases.Imprimir;
 import Clases.Validaciones;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.HeadlessException;
 import java.awt.event.WindowAdapter;
@@ -46,6 +47,7 @@ public final class Catalogo extends javax.swing.JFrame {
         inventario();
         total();
         llenarTipo();
+        llenarProv();
         cerra();
         Table.setDefaultRenderer(Object.class, dtc);
     }
@@ -57,6 +59,20 @@ public final class Catalogo extends javax.swing.JFrame {
             ResultSet rs = pre.executeQuery();
             while (rs.next()) {
                 jComboBox1.addItem(rs.getString(1));
+            }
+            cnn.close();
+        } catch (SQLException e) {
+
+        }
+    }
+
+    void llenarProv() {
+        jComboBox2.addItem("");
+        try (Connection cnn = Conexion.Conexion()) {
+            PreparedStatement pre = cnn.prepareStatement("select nombre from proveedor");
+            ResultSet rs = pre.executeQuery();
+            while (rs.next()) {
+                jComboBox2.addItem(rs.getString(1));
             }
             cnn.close();
         } catch (SQLException e) {
@@ -134,25 +150,45 @@ public final class Catalogo extends javax.swing.JFrame {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
             if (table.getColumnCount() == 18) {
+
+                int cant = Integer.parseInt(table.getValueAt(row, 7).toString());
+                if (cant < 0) {
+                    setBackground(Color.red);
+                } else {
+                    setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+                }
+                setForeground(Color.WHITE);
+
                 if (column == 4) {
                     double precio = Double.parseDouble(value.toString().replace(",", ""));
                     setText(FormatoPesos.formato(precio));
-                }
-                else if (column == 5) {
+
+                } else if (column == 5) {
+                    double precio = Double.parseDouble(value.toString().replace(",", ""));
+                    setText(FormatoPesos.formato(precio));
+
+                } else if (column == 6) {
                     double precio = Double.parseDouble(value.toString().replace(",", ""));
                     setText(FormatoPesos.formato(precio));
                 }
-                else if (column == 6) {
-                    double precio = Double.parseDouble(value.toString().replace(",", ""));
-                    setText(FormatoPesos.formato(precio));
-                }
+
             } else {
+                
+                int cant = Integer.parseInt(table.getValueAt(row, 5).toString());
+                if (cant < 0) {
+                    setBackground(Color.red);
+                } else {
+                    setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+                }
+                setForeground(Color.white);
                 if (column == 4) {
                     double precio = Double.parseDouble(value.toString().replace(",", ""));
                     setText(FormatoPesos.formato(precio));
                 }
             }
+
             return this;
         }
 
@@ -231,17 +267,18 @@ public final class Catalogo extends javax.swing.JFrame {
                 }
             }
         }
-        if (jComboBox1.getSelectedIndex() > 0) {
-            code = sql + " where " + code + " ) P WHERE P.TIPO =?";
-            n = true;
-            if (importadora) {
-                code += " and subInventario = 'Importadora'";
-            }
+        int m = 0;
+        if (jComboBox1.getSelectedIndex() > 0 && jComboBox2.getSelectedIndex() > 0) {
+            code = sql + " where " + code + ")p where tipo =? and proveedor =?";
+            m = 1;
+        } else if (jComboBox1.getSelectedIndex() > 0) {
+            code = sql + " where " + code + ")p where tipo =?";
+            m = 2;
+        } else if (jComboBox2.getSelectedIndex() > 0) {
+            code = sql + " where " + code + ")p where proveedor=?";
+            m = 3;
         } else {
             code = sql + " where " + code + ")p";
-            if (importadora) {
-                code += " where subInventario = 'Importadora'";
-            }
         }
 
         DefaultTableModel tabla = tabla(column);
@@ -252,9 +289,19 @@ public final class Catalogo extends javax.swing.JFrame {
                 pre.setString(i, '%' + jTextFieldBusqueda.getText().trim() + '%');
             }
 
-            if (n) {
-                x++;
-                pre.setString(x, jComboBox1.getSelectedItem().toString());
+            switch (m) {
+                case 0 -> {
+                }
+                case 1 -> {
+                    pre.setString(x + 1, jComboBox1.getSelectedItem().toString());
+                    pre.setString(x + 2, jComboBox2.getSelectedItem().toString());
+                }
+                case 2 ->
+                    pre.setString(x + 1, jComboBox1.getSelectedItem().toString());
+                case 3 ->
+                    pre.setString(x + 1, jComboBox2.getSelectedItem().toString());
+                default ->
+                    throw new AssertionError();
             }
 
             ResultSet rs = pre.executeQuery();
@@ -302,6 +349,8 @@ public final class Catalogo extends javax.swing.JFrame {
         jComboBox1 = new javax.swing.JComboBox<>();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jComboBox2 = new javax.swing.JComboBox<>();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setSize(new java.awt.Dimension(1900, 1800));
@@ -315,7 +364,6 @@ public final class Catalogo extends javax.swing.JFrame {
         Table.setBackground(new java.awt.Color(75, 75, 75));
         Table.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 1, 1, 1, new java.awt.Color(0, 204, 204)));
         Table.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        Table.setForeground(new java.awt.Color(0, 0, 0));
         Table.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -380,7 +428,7 @@ public final class Catalogo extends javax.swing.JFrame {
         });
 
         jLabelNP.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, java.awt.Color.blue, new java.awt.Color(51, 51, 51), new java.awt.Color(0, 0, 204), new java.awt.Color(204, 204, 204)));
-        jLabelNP.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelNP.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabelNP.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 jLabelNPMouseClicked(evt);
@@ -430,6 +478,9 @@ public final class Catalogo extends javax.swing.JFrame {
             }
         });
 
+        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel5.setText("Prov:");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -448,15 +499,18 @@ public final class Catalogo extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jCheckBoxNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                            .addComponent(jButton1)
-                                            .addComponent(jCheckBoxCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jButton2)))
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jButton1)
+                                    .addComponent(jCheckBoxCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton2)
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jCheckBoxNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(12, 12, 12)
                         .addComponent(jLabelNP, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -490,7 +544,10 @@ public final class Catalogo extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jCheckBoxCodigo)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jCheckBoxNombre)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jCheckBoxNombre)
+                            .addComponent(jLabel5)
+                            .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jCheckBoxCodigo_Barra)
@@ -498,7 +555,7 @@ public final class Catalogo extends javax.swing.JFrame {
                             .addComponent(jLabel4)
                             .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 588, Short.MAX_VALUE)
                 .addGap(10, 10, 10)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
@@ -634,10 +691,12 @@ public final class Catalogo extends javax.swing.JFrame {
     private static javax.swing.JCheckBox jCheckBoxCodigo_Barra;
     private static javax.swing.JCheckBox jCheckBoxNombre;
     private static javax.swing.JComboBox<String> jComboBox1;
+    private static javax.swing.JComboBox<String> jComboBox2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabelNP;
     private javax.swing.JScrollPane jScrollPane1;
     private static javax.swing.JTextField jTextFieldBusqueda;

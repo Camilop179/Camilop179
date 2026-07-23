@@ -545,7 +545,7 @@ from ventas v
 					</box>
 				</element>
 				<element kind="textField" uuid="5fade805-7f7c-4ef6-b6b0-cb6cc5ef3d0c" stretchType="ElementGroupHeight" x="290" y="0" width="62" height="13" fontSize="8.0" textAdjust="StretchHeight" pattern="$ #,##0;#,##0.###-" printWhenDetailOverflows="true">
-					<expression><![CDATA[$F{precioUnitario}-($F{precioUnitario}*0.1596638655462185)]]></expression>
+					<expression><![CDATA[$F{precioUnitario}]]></expression>
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="f674ebda-7d00-49b8-996c-c2e2c6b011de"/>
 					<box topPadding="1" leftPadding="3" bottomPadding="1" rightPadding="1">
 						<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>

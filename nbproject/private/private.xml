@@ -5,15 +5,20 @@
             <url>src/Ventanas/Ventas.java</url>
             <bookmark id="1">
                 <name/>
-                <line>121</line>
+                <line>120</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/USER/Documents/GitHub/Camilop179/src/Ventanas/OrdenDeTrabajo.java</file>
-            <file>file:/C:/Users/USER/Documents/GitHub/Camilop179/src/Ventanas/Administrador.java</file>
+            <file>file:/C:/Users/Angie/Documents/GitHub/Camilop179/src/Ventanas/OrdenDeTrabajo.java</file>
+            <file>file:/C:/Users/Angie/Documents/GitHub/Camilop179/src/Ventanas/CotizacionT.java</file>
+            <file>file:/C:/Users/Angie/Documents/GitHub/Camilop179/src/Ventanas/Reportes.java</file>
+            <file>file:/C:/Users/Angie/Documents/GitHub/Camilop179/src/Ventanas/Producto.java</file>
+            <file>file:/C:/Users/Angie/Documents/GitHub/Camilop179/src/Ventanas/Compras.java</file>
+            <file>file:/C:/Users/Angie/Documents/GitHub/Camilop179/src/Ventanas/Ventas.java</file>
+            <file>file:/C:/Users/Angie/Documents/GitHub/Camilop179/src/Ventanas/FormaPago.java</file>
         </group>
     </open-files>
 </project-private>

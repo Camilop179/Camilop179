@@ -97,8 +97,8 @@ public final class Ventas extends javax.swing.JFrame {
         ImagenBoton imagenBoton = new ImagenBoton("vender.png", jButtonVender, 43, 43);
         jButtonBuscando.setContentAreaFilled(true);
         Imagenes imagenes = new Imagenes("buscando.png", jLabelBuscar, 45, 40);
-        Imagenes imagenes1 = new Imagenes("ADELANTE.png", jLabelRegresar1, jLabelRegresar1.getWidth() - 2, jLabelRegresar1.getHeight());
-        Imagenes imagenes2 = new Imagenes("ATRAS.png", jLabelRegresar, jLabelRegresar.getWidth() - 2, jLabelRegresar.getHeight());
+        Imagenes imagenes1 = new Imagenes("Adelante.png", jLabelRegresar1, jLabelRegresar1.getWidth() - 2, jLabelRegresar1.getHeight());
+        Imagenes imagenes2 = new Imagenes("Atras.png", jLabelRegresar, jLabelRegresar.getWidth() - 2, jLabelRegresar.getHeight());
         Imagenes imagenes3 = new Imagenes("imprimir.png", jLabelImprimir, 45, 40);
         ImagenBoton imagenBoton1 = new ImagenBoton("buscando.png", jButtonBuscando, 38, 38);
         jLabelFecha.setText(Fechas.fechaActual());
@@ -369,12 +369,12 @@ public final class Ventas extends javax.swing.JFrame {
         if (fp.m) {
             Object[] opc = new Object[]{"Ticket", "Carta", "NO"};
 
-            if (fp.i == 1) {
-                fp.SumarCaja(total);
-            } else if (fp.i == 2) {
-                fp.SaldoCliente(new cliente().saldoCliente(jTextFieldCedula.getText()) - total);
-            } else if (fp.i == 3) {
-                fp.SumarCuentas(total);
+            switch (fp.i) {
+                case 1 -> fp.SumarCaja(total);
+                case 2 -> fp.SaldoCliente(total);
+                case 3 -> fp.SumarCuentas(total);
+                default -> {
+                }
             }
             int i = JOptionPane.showOptionDialog(null, "¿Desea imprimir factura?", "salir", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, opc, opc[0]);
             if (i == 0) {
@@ -832,7 +832,7 @@ public final class Ventas extends javax.swing.JFrame {
 
         jLabelRegresar.setBackground(new java.awt.Color(51, 51, 51));
         jLabelRegresar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(102, 102, 102), new java.awt.Color(102, 102, 102), new java.awt.Color(0, 102, 102), new java.awt.Color(0, 102, 102)));
-        jLabelRegresar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelRegresar.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabelRegresar.setOpaque(true);
         jLabelRegresar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -848,7 +848,7 @@ public final class Ventas extends javax.swing.JFrame {
 
         jLabelRegresar1.setBackground(new java.awt.Color(51, 51, 51));
         jLabelRegresar1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(102, 102, 102), new java.awt.Color(102, 102, 102), new java.awt.Color(0, 102, 102), new java.awt.Color(0, 102, 102)));
-        jLabelRegresar1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelRegresar1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabelRegresar1.setOpaque(true);
         jLabelRegresar1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -864,7 +864,7 @@ public final class Ventas extends javax.swing.JFrame {
 
         jLabelImprimir.setBackground(new java.awt.Color(51, 51, 51));
         jLabelImprimir.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(0, 153, 204), new java.awt.Color(102, 102, 102), null, null));
-        jLabelImprimir.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jLabelImprimir.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jLabelImprimir.setOpaque(true);
         jLabelImprimir.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -916,7 +916,7 @@ public final class Ventas extends javax.swing.JFrame {
 
         jButtonBuscando.setBackground(new java.awt.Color(51, 51, 51));
         jButtonBuscando.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(102, 102, 102), new java.awt.Color(102, 102, 102), new java.awt.Color(0, 102, 102), new java.awt.Color(0, 102, 102)));
-        jButtonBuscando.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jButtonBuscando.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         jButtonBuscando.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 jButtonBuscandoMouseEntered(evt);
@@ -1215,7 +1215,8 @@ public final class Ventas extends javax.swing.JFrame {
 
         if (!Validaciones.validarEnter(evt)) {
             if (jTextFieldCedula.getText().equals("")) {
-                new BuscarClientes(this, true).setVisible(true);
+                m=true;
+                new BuscarClientes(this, false).setVisible(true);
                 buscarcl();
             } else {
                 buscarcl();
@@ -1414,15 +1415,15 @@ public final class Ventas extends javax.swing.JFrame {
                 venta(0, 0, 0, "cancelado");
                 detalleVenta();
                 new formaPagoInsert().insetFormaPago(Integer.parseInt(jLabelNoVenta.getText()), "Efectivo", total);
-                fp.SaldoCliente(saldo - total);
+                fp.SaldoCliente(total);
             } else {
                 fp.setVisible(true);
-                if (fp.i == 1) {
-                    fp.SumarCaja(-1 * resta);
-                } else if (fp.i == 2) {
-                    fp.SaldoCliente(new cliente().saldoCliente(jTextFieldCedula.getText()) - total);
-                } else if (fp.i == 3) {
-                    fp.SumarCuentas(-1 * resta);
+                switch (fp.i) {
+                    case 1 -> fp.SumarCaja(resta);
+                    case 2 -> fp.SaldoCliente(total);
+                    case 3 -> fp.SumarCuentas(resta);
+                    default -> {
+                    }
                 }
                 new formaPagoInsert().insetFormaPago(Integer.parseInt(jLabelNoVenta.getText()), "Efectivo", -1 * resta);
             }
@@ -1516,7 +1517,7 @@ public final class Ventas extends javax.swing.JFrame {
     public static javax.swing.JLabel jLabelNoVenta;
     private javax.swing.JLabel jLabelRegresar;
     private javax.swing.JLabel jLabelRegresar1;
-    protected static javax.swing.JLabel jLabelSaldo;
+    public static javax.swing.JLabel jLabelSaldo;
     private static javax.swing.JLabel jLabelTelefono;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

@@ -68,8 +68,8 @@ public class CotizacionT extends javax.swing.JPanel {
         new ImagenBoton("vender.png", jButtonVender,45,45);
         jButtonBuscando.setContentAreaFilled(false);
         new Imagenes("buscando.png", jLabelBuscar,45,45);
-        new Imagenes("ADELANTE.png", jLabelRegresar1,45,45);
-        new Imagenes("ATRAS.png", jLabelRegresar,45,45);
+        new Imagenes("Adelante.png", jLabelRegresar1,45,45);
+        new Imagenes("Atras.png", jLabelRegresar,45,45);
         new Imagenes("imprimir.png", jLabelImprimir,45,45);
         new ImagenBoton("buscando.png", jButtonBuscando,45,45);
     }
@@ -153,7 +153,7 @@ public class CotizacionT extends javax.swing.JPanel {
                 jTextFieldMoto.setText(rs.getString(9));
                 jTextFieldColor.setText(rs.getString(11));
                 jTextArea1.setText(rs.getString(12));
-                jComboBox1.setSelectedIndex(rs.getInt(14));
+                jComboBox1.setSelectedIndex((int) idEmp.indexOf(rs.getInt(14)));
             }
 
             jTextFieldCodigo.setEditable(false);

@@ -359,6 +359,7 @@ public static void llenarInventario() {
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("Precio Venta:");
 
+        jTextFieldCantidad.setEditable(false);
         jTextFieldCantidad.setBackground(new java.awt.Color(0, 153, 153));
         jTextFieldCantidad.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
 

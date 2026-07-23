@@ -174,8 +174,8 @@ public final class Imprimir {
         JasperReport jr;
         URL file = this.getClass().getResource("/Clases/Factura_Carta2.jasper");
         try {
-            double iva = total * 0.1596638655462185;
-            double subtotal = total - descuento - iva;
+            double iva = 0;
+            double subtotal = total - descuento;
             double anteIva = subtotal + descuento;
             Connection cn = Conexion.Conexion();
             Map parametro = new HashMap();

@@ -256,7 +256,7 @@ public class FormaPago extends javax.swing.JDialog {
       public void SaldoCliente(double saldo) {
         try (Connection cn = Conexion.Conexion()) {
             PreparedStatement ps = cn.prepareStatement("UPDATE clientes SET Saldo = ? WHERE (Cedula = ?)");
-            ps.setDouble(1, saldo);
+            ps.setDouble(1, Ventas.saldo-saldo);
             ps.setString(2, Ventas.jTextFieldCedula.getText());
             ps.executeUpdate();
             cn.close();
